@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "reader.h"
+#include "pipeline.h"
 
 #define MEMORY_SIZE 1 << 16
 #define NUM_OF_REGISTERS 17
@@ -17,6 +18,8 @@ int main(int argc, char **argv) {
     clear_memory();
 
     bin_to_mem(argv);
+
+    emulate();
 
     return EXIT_SUCCESS;
 }

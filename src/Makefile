@@ -9,7 +9,7 @@ all: assemble emulate
 
 assemble: assemble.o
 
-emulate: emulate.o reader.o
+emulate: emulate.o reader.o pipeline.o
 
 clean:
 	rm -f $(wildcard *.o)
