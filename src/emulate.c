@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "reader.h"
 #include "pipeline.h"
+#include "printer.h"
 
 #define MEMORY_SIZE 1 << 16
 #define NUM_OF_REGISTERS 17
@@ -20,6 +21,8 @@ int main(int argc, char **argv) {
     bin_to_mem(argv);
 
     emulate();
+
+    print_registers();
 
     return EXIT_SUCCESS;
 }
