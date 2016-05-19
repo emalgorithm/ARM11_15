@@ -1,6 +1,6 @@
 #include "reader.h"
 
-void clear_memory() {
+void clear_memory(void) {
 
 }
 

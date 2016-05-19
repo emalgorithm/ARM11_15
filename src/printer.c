@@ -1,3 +1,3 @@
-void print_registers() {
+void print_registers(void) {
 
 }
