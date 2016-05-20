@@ -33,3 +33,8 @@ assemble
 *.nav
 *.toc
 
+#IntelliJ Folder
+.idea/
+*.iml
+
+
