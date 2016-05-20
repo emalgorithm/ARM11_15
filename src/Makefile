@@ -9,7 +9,10 @@ all: assemble emulate
 
 assemble: assemble.o
 
-emulate: emulate.o reader.o pipeline.o printer.o multiply.o
+<<<<<<< HEAD
+=======
+emulate: emulate.o reader.o pipeline.o printer.o branch.o sdt.o multiply.o
+>>>>>>> FETCH_HEAD
 
 clean:
 	rm -f $(wildcard *.o)
