@@ -4,9 +4,9 @@
 #include <stdint.h>
 
 /* Include argument name in declarations? */
-void dp_exec(void*);
+void mul_exec(void*);
 
-struct dp_instr {
+struct mul_instr {
     uint32_t cond : 4;
     uint32_t imm_op: 1;
     uint32_t set_cond : 1;
