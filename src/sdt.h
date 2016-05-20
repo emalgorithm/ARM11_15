@@ -6,7 +6,7 @@
 void sdt_exect(void*);
 
 struct sdt_instr {
-	uint32_t cond: 4;;
+	uint32_t cond: 4;
 	uint32_t imm_offset: 1;
 	uint32_t index_bit: 1;
 	uint32_t up : 1;
@@ -16,4 +16,4 @@ struct sdt_instr {
 	uint32_t offset: 12;
 };
 
-#define endif
+#endif
