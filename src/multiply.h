@@ -1,5 +1,5 @@
-#ifndef multiply
-#define multiply
+#ifndef MULTIPLY_H
+#define MULTIPLY_H
 
 #include <stdint.h>
 
