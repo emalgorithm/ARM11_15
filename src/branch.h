@@ -1,5 +1,5 @@
 #ifndef BRANCH_H
-#define BRANCH
+#define BRANCH_H
 
 #include <stdint.h>
 
@@ -10,4 +10,4 @@ struct br_instr {
 	uint32_t offset: 24;
 };
 
-#endif 
+#endif
