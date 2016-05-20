@@ -3,6 +3,3 @@
 void sdt_exect(void* instruction) {
 
 }
-
-
-
