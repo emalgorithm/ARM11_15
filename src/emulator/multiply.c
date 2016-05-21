@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "multiply.h"
 
 struct mul_instr* instr;
