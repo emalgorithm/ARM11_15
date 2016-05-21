@@ -9,7 +9,7 @@
 #define NUM_OF_REGISTERS 17
 
 int main(int argc, char **argv) {
-    
+
     initialize();
 
     bin_to_mem(argv);
