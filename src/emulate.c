@@ -5,9 +5,6 @@
 #include "emulator/printer.h"
 #include "emulator/arm11.h"
 
-#define MEMORY_SIZE (1 << 16)
-#define NUM_OF_REGISTERS 17
-
 int main(int argc, char **argv) {
 
     initialize();
