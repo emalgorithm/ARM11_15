@@ -1,21 +1,24 @@
+#include "data_processing.h"
+
+
 void dp_exec (void* instruction) {
 	
 	/*Work In Progress*/
 
 	/*OpCode enum*/
-	//enum op_code {AND, EOR, SUB, RSB, ADD, TST, TEQ, CMP, ORR, MOV}
+	typedef enum {AND, EOR, SUB, RSB, ADD, TST, TEQ, CMP, ORR, MOV} op_code;
 	
 	/*Declarations*/
-	//(struct dp_instr) dp_instr;
+	typedef struct dp_instr dp_instr_struct;
 
 	/*Put Value at instruction in dp_instr*/
-	//dp_instr = *instruction;
+	dp_instr_struct = *(struct dp_instr)instruction;
 
 	/*Switch here for the two cases of Operand 2*/
 
 	/*Define the behaviour according to the given OpCode*/
 
-	/*switch (dp_instr.op_code) {
+	switch (dp_instr_struct.op_code) {
 		case AND:
 			break;
 		case EOR:
@@ -36,7 +39,7 @@ void dp_exec (void* instruction) {
 			break;
 		case MOV:
 			break;
-	}*/
+	}
 
 
 }
