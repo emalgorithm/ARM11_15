@@ -32,7 +32,7 @@ test: $(TESTS)
 
 # Remove all object files and executables
 clean:
-	rm -f *.o
+	rm -f {`find . -name '*.o'`}
 	rm -f $(TESTS)
 	rm -f assemble
 	rm -f emulate
