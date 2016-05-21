@@ -3,8 +3,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
-
-/* Include argument name in declarations? */
+#include "arm11.h"
 
 void mul_exec(void*);
 
