@@ -21,6 +21,7 @@ assemble: assemble.o $(ASSEMBLER_OBJ)
 emulate: emulate.o $(EMULATOR_OBJ)
 
 # Runs all tests
+# where a test is a *.spec executable in the tree of test/
 test: $(TESTS)
 	for unit in $(shell find ../test/ -type f -name '*.spec'); do  $$unit; done
 
@@ -32,7 +33,7 @@ test: $(TESTS)
 
 # Remove all object files and executables
 clean:
-	rm -f {`find . -name '*.o'`}
-	rm -f $(TESTS)
-	rm -f assemble
-	rm -f emulate
+	rm -f $(shell find ../ -type f -name '*.o') # remove all object files
+	rm -f $(TESTS)                              # remove test executables
+	rm -f assemble                              # remove assemble executable
+	rm -f emulate                               # remove emulate executable
