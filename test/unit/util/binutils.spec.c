@@ -46,6 +46,7 @@ static int test_all() {
 }
 
 int main(int argc, char **argv) {
+
     int res = test_all();
 
     if (res != 0) {

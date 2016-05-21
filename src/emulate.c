@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdint.h>
-#include "reader.h"
-#include "pipeline.h"
-#include "printer.h"
-#include "arm11.h"
+#include "emulator/reader.h"
+#include "emulator/pipeline.h"
+#include "emulator/printer.h"
+#include "emulator/arm11.h"
 
 #define MEMORY_SIZE (1 << 16)
 #define NUM_OF_REGISTERS 17
