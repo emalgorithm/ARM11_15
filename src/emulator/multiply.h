@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 /* Include argument name in declarations? */
+
 void mul_exec(void*);
 
 struct mul_instr {

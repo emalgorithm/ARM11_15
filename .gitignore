@@ -39,3 +39,6 @@ assemble
 #IntelliJ Folder
 .idea/
 *.iml
+
+#ignore unit test executables
+*.spec
