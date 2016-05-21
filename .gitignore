@@ -37,4 +37,7 @@ assemble
 .idea/
 *.iml
 
+#ignore unit test executables
+*.spec
+
 
