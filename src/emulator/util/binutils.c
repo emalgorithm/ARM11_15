@@ -44,15 +44,3 @@ uint32_t toggle_endian(uint32_t val) {
            | ((val << BYTE) & BYTE2)
            | ((val << 3 * BYTE) & MSB);
 }
-
-/* Returns a 32-bit word (big-endian) starting at the given address
- * of the passed array. Useful for reading from ARM 11 memory which
- * is byte-aligned. */
-uint32_t get_word(uint8_t memory[], uint32_t address) {
-    uint32_t word = ((uint32_t)memory[address++]);
-
-    word |= ((uint32_t)memory[address++]) << BYTE;
-    word |= ((uint32_t)memory[address++]) << 2 * BYTE;
-
-    return (word | ((uint32_t)memory[address]) << 3 * BYTE);
-}

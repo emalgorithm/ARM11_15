@@ -1,4 +1,12 @@
 #include "arm11.h"
+#include <assert.h>
+#include <stdlib.h>
+
+#define BYTE 8
+#define LSB 0x000000ff
+#define ASSERT_ADDRESS(address) assert(address >= 0 && address < MEMORY_SIZE)
+#define ASSERT_INDEX(index) assert(index >= 0 && index < NUM_OF_REGISTERS)
+
 
 struct state {
     uint8_t *memory;  
@@ -6,10 +14,10 @@ struct state {
 };
 
 struct word {
-	uint32_t b1: 8;
+	uint32_t lsb: 8;
 	uint32_t b2: 8;
 	uint32_t b3: 8;
-	uint32_t b4: 8;
+	uint32_t msb: 8;
 };
 
 union decoded_instr {
@@ -38,15 +46,46 @@ void initialize(void) {
  * This function takes an address in memory and 
  * returns the instruction starting at that address
  */
-union instruction *get_instr(uint32_t address);
+union instruction *get_instr(uint32_t address) {
+	struct word raw;
 
-void set_register(uint32_t index, uint32_t value);
 
-uint32_t get_register(uint32_t index);
+	raw.lsb = arm11.memory[address++];
+	raw.b2 = arm11.memory[address++];
+	raw.b3 = arm11.memory[address++];
+	raw.msb = arm11.memory[address];
 
-void set_byte(uint32_t address, uint8_t value);
+	union instruction *instr = malloc(sizeof *instr);
 
-uint8_t get_byte(uint32_t address);
+	instr->
+	raw = raw;
+
+	return instr;
+}
+
+void set_register(uint32_t index, uint32_t value) {
+	ASSERT_INDEX(index);
+
+	arm11.registers[index] = value;
+}
+
+uint32_t get_register(uint32_t index) {
+	ASSERT_INDEX(index);
+ 
+	return arm11.registers[index];
+}
+
+void set_byte(uint32_t address, uint8_t value) {
+	ASSERT_ADDRESS(address);
+
+	arm11.memory[address] = value;
+}
+
+uint8_t get_byte(uint32_t address) {
+	ASSERT_ADDRESS(address);
+
+	return arm11.memory[address];
+}
 
 /* 
  * This procedure takes an address in memory and a 
@@ -54,11 +93,33 @@ uint8_t get_byte(uint32_t address);
  * at the desired address after converting it to
  * little endian
  */
-void set_word(uint32_t address, uint32_t value);
+void set_word(uint32_t address, uint32_t value) {
+	ASSERT_ADDRESS(address);
+
+	uint32_t mask = LSB;
+
+	arm11.memory[address++] = (uint8_t)(value & mask);
+	value = value >> BYTE;
+	arm11.memory[address++] = (uint8_t)(value & mask);
+	value = value >> BYTE;
+	arm11.memory[address++] = (uint8_t)(value & mask);
+	value = value >> BYTE;
+	arm11.memory[address] = (uint8_t)(value & mask);
+}
 
 /* 
  * This procedure takes an address in memory and 
- * it returns the word at the desired address 
- * after converting it to big endian
+ * it returns the word (32-bit) starting at the 
+ * desired address after converting it to big endian
  */
-uint32_t get_word(uint32_t address);
+uint32_t get_word(uint32_t address){
+	ASSERT_ADDRESS(address);
+
+    uint32_t word = ((uint32_t)arm11.memory[address++]);
+    word |= ((uint32_t)arm11.memory[address++]) << BYTE;
+    word |= ((uint32_t)arm11.memory[address++]) << 2 * BYTE;
+    word |= ((uint32_t)arm11.memory[address]) << 3 * BYTE;
+
+    return word;
+}
+
