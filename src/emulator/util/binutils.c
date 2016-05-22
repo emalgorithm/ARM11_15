@@ -28,7 +28,7 @@
  *      Constraints:
  *          pos - count >= 0
  */
-uint32_t getbits(uint32_t val, short pos, short count) {
+uint32_t get_bits(uint32_t val, short pos, short count) {
     assert(pos - count >= 0);
     assert(pos >= 0 && pos < sizeof(uint32_t) * BYTE);
 
