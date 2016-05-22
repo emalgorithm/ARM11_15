@@ -10,7 +10,6 @@
 #define PIPELINE_H
 
 #include <stdint.h>
-#include <assert.h>
 
 /*
  * Enum : status
