@@ -21,15 +21,6 @@ static int test_getbits() {
     return 0;
 }
 
-static int test_get_word() {
-    uint8_t mem[10] = {0x11, 0xAB, 0xBA, 0xF3, 0x08, 0xAB, 0xB5, 0xF4, 0xD3, 0xC2};
-    mu_assert(get_word(mem, 0) == 0xF3BAAB11);
-    mu_assert(get_word(mem, 3) == 0xB5AB08F3);
-    mu_assert(get_word(mem, 4) == 0xF4B5AB08);
-
-    return 0;
-}
-
 static int test_all() {
     printf("Running all tests for %s | ", spec);
 
@@ -40,7 +31,6 @@ static int test_all() {
     mu_run_test(test_toggle_endian);
     mu_run_test(test_getbits_0);
     mu_run_test(test_getbits);
-    mu_run_test(test_get_word);
 
     return 0;
 }
