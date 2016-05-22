@@ -6,6 +6,8 @@
 
 #define MEMORY_SIZE (1 << 16)
 #define NUM_OF_REGISTERS 17
+#define BYTE 8
+#define WORD_SIZE 4
 
 /* Instruction types
  * -----------------

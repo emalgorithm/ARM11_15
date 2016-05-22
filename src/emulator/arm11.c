@@ -3,8 +3,6 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#define BYTE 8
-#define WORD_SIZE 4
 #define LSB 0x000000ff
 #define WORD_ADDRESS(address) address / WORD_SIZE
 #define ASSERT_ADDRESS(address) assert(address >= 0 && address < MEMORY_SIZE)

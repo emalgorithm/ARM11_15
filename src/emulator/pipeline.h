@@ -11,6 +11,8 @@
 
 #include <stdint.h>
 
+#define PC_OFFSET 8
+
 /*
  * Enum : status
  * -------------

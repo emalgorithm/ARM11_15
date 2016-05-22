@@ -12,8 +12,6 @@
 #include <assert.h>
 #include "arm11.h"
 
-#define WORD_SIZE 4
-
 /* Pipeline state */
 
 static enum status current = initial;
@@ -31,7 +29,7 @@ bool can_decode, can_execute, is_branch;
 /* Helper functions */
 static void (*decode(union instruction * ))(union instruction * );
 
-void halt(union instruction * );
+static void halt(union instruction * );
 
 /*
  * Function : emulate
@@ -156,6 +154,6 @@ static void (*decode(union instruction *fetched))(union instruction * ) {
 }
 
 /* Dummy handler */
-void halt(union instruction *instr) {
+static void halt(union instruction *instr) {
     current = terminated;
 }
