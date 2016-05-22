@@ -56,6 +56,7 @@ static int test_all() {
      * The position of the failed one is returned and printed.
      * If all pass 0 is returned. */
 
+    mu_run_test(test_and_imm);
     mu_run_test(test_add_imm);
 
     return 0;
