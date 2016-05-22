@@ -6,9 +6,9 @@ void dp_exec (void* instruction) {
 	
 	/*Work In Progress*/
 
-	/*OpCode enum*/
-	
-	uint32_t AND = 0;
+	/*Declarations*/
+    struct dp_instr dp_instruction;
+    uint32_t AND = 0;
 	uint32_t EOR = 1;
 	uint32_t SUB = 2;
 	uint32_t RSB = 3;
@@ -19,19 +19,14 @@ void dp_exec (void* instruction) {
 	uint32_t ORR = 8;
 	uint32_t MOV = 9;
 
-	/*Declarations*/
-	//struct dp_instr dp_instruction;
-
 	/*Put Value at instruction in dp_instr*/
-	struct dp_instr dp_instruction;
-
+	
 	dp_instruction = *((struct dp_instr *) instruction);
-
-	printf("Pointer: %p", (void *) &dp_instruction);
 
 	/*Switch here for the two cases of Operand 2*/
 
-	/*Define the behaviour according to the given OpCode*/
+
+	/*Different behaviours acco*/
 
 	uint32_t op_code = dp_instruction.op_code;
 
@@ -68,9 +63,7 @@ void dp_exec (void* instruction) {
 	else {
 		printf("Invalid OpCode!");
 	}
-	
-	
-
-
 }
+
+
 
