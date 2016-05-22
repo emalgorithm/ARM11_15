@@ -50,7 +50,7 @@ extern struct state arm11;
  *            the return value corresponds to an error code
  */
 int emulate(void) {
-    getbits(15, 3, 2);
+    get_bits(15, 3, 2);
     //init_pipeline();
 
     // A 0 instruction terminates

@@ -5,6 +5,9 @@
 static char spec[] = "arm11";
 int tests_run = 0;
 
+void setup() {}
+void tear_down() {}
+
 static int test_initialize() {
 
 

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include "../minunit.h"
 #include "../../../src/emulator/util/binutils.h"
 
@@ -6,18 +7,30 @@ static char spec[] = "binutils";
 
 int tests_run = 0;
 
+void setup() {}
+void tear_down() {}
+
 static int test_toggle_endian() {
     mu_assert(toggle_endian(0xABCDEF12) == 0x12EFCDAB);
     return 0;
 }
 
-static int test_getbits_0() {
-    mu_assert(getbits(0xA1B2C3D4, 0, 0) == 0);
+static int test_get_bits_0() {
+    mu_assert(get_bits(0xA1B2C3D4, 0, 0) == 0);
     return 0;
 }
 
-static int test_getbits() {
-    mu_assert(getbits(0xA1B2C3D4, 17, 4) == 0xB);
+static int test_get_bits() {
+    mu_assert(get_bits(0xA1B2C3D4, 17, 4) == 0xB);
+    return 0;
+}
+
+static int test_set_byte_at() {
+    uint32_t source = 0xfa12fb34;
+    set_byte_at(&source, 0, 0xff);
+
+    mu_assert(source == 0xfa12fbff);
+
     return 0;
 }
 
@@ -29,8 +42,9 @@ static int test_all() {
      * If all pass 0 is returned. */
 
     mu_run_test(test_toggle_endian);
-    mu_run_test(test_getbits_0);
-    mu_run_test(test_getbits);
+    mu_run_test(test_get_bits_0);
+    mu_run_test(test_get_bits);
+    mu_run_test(test_set_byte_at);
 
     return 0;
 }

@@ -83,7 +83,7 @@ uint8_t get_byte(uint32_t address) {
 
     uint32_t offset = (address % WORD_SIZE) * BYTE;
 
-    return getbits(arm11.memory[WORD_ADDRESS(address)].bin, offset, BYTE);
+    return get_bits(arm11.memory[WORD_ADDRESS(address)].bin, offset, BYTE);
 }
 
 /*

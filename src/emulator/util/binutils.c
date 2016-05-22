@@ -28,13 +28,23 @@
  *      Constraints:
  *          pos - count >= 0
  */
-uint32_t getbits(uint32_t val, short pos, short count) {
+uint32_t get_bits(uint32_t val, short pos, short count) {
     assert(pos - count >= 0);
     assert(pos >= 0 && pos < sizeof(uint32_t) * BYTE);
 
     /* Shift value so that rightmost wanted bit is in position 0
      * and then apply a mask of 1 on the region up to count */
     return ((val >> (pos + 1 - count)) & ~(~0 << count));
+}
+
+/*
+ * Function : set_byte
+ * Usage    : set_byte(&word, 24, 0xfa)
+ * ------------------------------------
+ * Sets the byte in a word starting at the given position starting
+ */
+void set_byte_at(uint32_t *src, short pos, uint8_t byte) {
+    *src = (*src & ~(0xff << pos)) | (((uint32_t)byte) << pos);
 }
 
 /* Endianess conversion */
