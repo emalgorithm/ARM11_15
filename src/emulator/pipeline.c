@@ -1,75 +1,134 @@
-/***************************************************************************
- * FILE NAME: pipeline.c                                                   *
- *                                                                         *
- * PURPOSE: Emulate a three-stage pipeline as in ARM 11.                   *
- *                                                                         *
- * DEVELOPMENT HISTORY:                                                    *
- *                                                                         *
- * Date          Author                Description of Changes              *
- * ----          ------                ----------------------              *
- * 20/05/2016    Tencho Tenev          Initial version                     *
- ***************************************************************************/
+/* Module  : pipeline
+ *
+ * Usage   : A top-level module which initialises arm11 can call emulate() to
+ *           begin program execution. An instruction handler can read the
+ *           program counter.
+ *
+ * Authors : Tencho Tenev
+ */
 
-#include "./util/binutils.h"
+#include "pipeline.h"
+#include <stdbool.h>
 #include <assert.h>
+#include "arm11.h"
 
-/* Global state */
-extern struct state arm11;
+#define WORD_SIZE 4
 
 /* Pipeline state */
 
-// /* 4 bytes from arm11 memory */
-// static uint32_t fetched;
+static enum status current = initial;
 
-// /* 4 bytes from arm 11 memory which are prepared for execution */
-// static uint32_t decoded;
+static uint32_t pc;
 
-// /* A pointer for handling the decoded instruction */
-// static (*handler)(void*);
-// static void *instruction;
+// static instruction *fetched, *decoded;
 
-// static uint32_t pc;
+// static (*handler)(instruction*);
+
+bool can_decode, can_execute;
 
 /* End of Pipeline state*/
 
-
-/* Utility functions */
-
-// static void init_pipeline(void);
-// static uint32_t getWordAt(uint32_t address);
-
-/* End of utility functions */
-
-/* PRE:  arm11 memory is initialised and populated with the executable binary
- * POST:
- *       if emulate returns 0
- *           state of arm11 registers corresponds to the termination state of
- *           the binary
+/*
+ * Function : emulate
+ * Usage    : emulate(0x00000000)
+ * ------------------------------
+ * This procedure takes an address (usually 0) and emulates ARM11 3-stage
+ * pipeline execution using the arm11 interface. The actual emulation
+ * reproduces the fetch-decode-execute cycle. PC is guaranteed to be 8 bytes
+ * greater than the address of an executed instruction.
  *
- *       otherwise
- *            the return value corresponds to an error code
+ * The value at the given address is used to set the program counter.
+ *
+ * PRE  : The arm11 module is initialised.
+ *        pc is a valid address (0x0000****)
+ *        status is initial
+ *
+ * POST : Returns 0 if the program terminated successfully meaning that the
+ *        state of arm11 registers matches the termination state.
+ *
+ *        Returns non-zero in case of errors which prevented the program
+ *        execution to reach a termination instruction.
  */
-int emulate(void) {
-    get_bits(15, 3, 2);
-    //init_pipeline();
+int emulate(uint32_t pc_address) {
+    // TODO
+    return 1;
 
-    // A 0 instruction terminates
-    // while (!decoded) {
-    //     // Execute decoded instruction
-    //     //*handler(decoded);
+    if (current != initial) {
+        return 1;
+    }
 
-    //     // Decode fetched
-    //     //decode(fetched);
+    current = running;
+    can_decode = can_execute = false;
 
-    //     // Fetch next
-    //     //pc += INSTRUCTION_SIZE;
-    //     //fetched = getWordAt(pc);
-    // }
+    while (current == running) {
+        if (can_decode) {
+            if (can_execute) {
+                // Execute
+//                handler*(decoded);
+            }
+
+            // Decode
+            can_execute = true;
+            // decode will set can_execute to FALSE if this is a branch instruction
+//            handler = decode(fetched);
+//            decoded = fetched;
+        }
+
+        // Fetch
+//        fetched = get_instruction(pc);
+        can_decode = true;
+
+        // Update PC
+        pc += WORD_SIZE;
+    }
 
     return 0;
 }
 
-/* */
-// void decode(uint32_t ) {
+/*
+ * Function : reset
+ * ----------------
+ * Sets the status to initial. If emulate is running, it will return after
+ * completing the current cycle.
+ */
+void reset() {
+    current = initial;
+}
 
-// }
+/*
+ * Function : get_status
+ * Usage    : status emu_status = get_status()
+ * ---------------------------------
+ * Returns one of initial, running, or terminated
+ *      initial iff emulate has not been called
+ *      running iff emulate was called and has not returned
+ *      terminated iff emulate was called and returned
+ */
+enum status get_status() {
+    return current;
+}
+
+/*
+ * Function : get_pc
+ * Usage    : uint32_t pc = get_pc()
+ * ---------------------------------
+ * Provides read access to the program counter. Note that the program counter
+ * is always exactly 8 bytes greater than the currently executed instruction
+ */
+uint32_t get_pc(void) {
+    return pc;
+}
+
+/*
+ * Function : decode
+ * Usage    : handler = decode(fetched)
+ * -----------------
+ * Takes a pointer to an instruction and returns a function pointer to the
+ * correct handler for the instruction type
+ *
+ * If the fetched instruction is branch also sets can_decode and can_execute to
+ * FALSE
+ */
+//static void (*decode(*instruction fetched))(*instruction) {
+// TODO
+//}
