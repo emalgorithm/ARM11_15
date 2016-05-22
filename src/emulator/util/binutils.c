@@ -37,6 +37,16 @@ uint32_t get_bits(uint32_t val, short pos, short count) {
     return ((val >> (pos + 1 - count)) & ~(~0 << count));
 }
 
+/*
+ * Function : set_byte
+ * Usage    : set_byte(&word, 24, 0xfa)
+ * ------------------------------------
+ * Sets the byte in a word starting at the given position starting
+ */
+void set_byte_at(uint32_t *src, short pos, uint8_t byte) {
+    *src = (*src & ~(0xff << pos)) | (((uint32_t)byte) << pos);
+}
+
 /* Endianess conversion */
 uint32_t toggle_endian(uint32_t val) {
     return ((val >> 3 * BYTE) & LSB)
