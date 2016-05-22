@@ -20,13 +20,18 @@ static enum status current = initial;
 
 static uint32_t pc;
 
-// static instruction *fetched, *decoded;
+static union instruction *fetched, *decoded;
 
-// static (*handler)(instruction*);
+static void (*handler)(union instruction * );
 
-bool can_decode, can_execute;
+bool can_decode, can_execute, is_branch;
 
 /* End of Pipeline state*/
+
+/* Helper functions */
+static void (*decode(union instruction * ))(union instruction * );
+
+void halt(union instruction * );
 
 /*
  * Function : emulate
@@ -50,36 +55,53 @@ bool can_decode, can_execute;
  *        execution to reach a termination instruction.
  */
 int emulate(uint32_t pc_address) {
-    // TODO
-    return 1;
 
     if (current != initial) {
         return 1;
     }
 
     current = running;
-    can_decode = can_execute = false;
+    can_decode = can_execute = is_branch = false;
+
+    pc = get_word(pc_address);
 
     while (current == running) {
-        if (can_decode) {
-            if (can_execute) {
-                // Execute
-//                handler*(decoded);
-            }
 
-            // Decode
+        // Execute
+        if (can_execute) {
+            handler(decoded);
+
+            if (is_branch) {
+                /* This must be a branch so the next cycle will skip execution
+                 * and this cycle will skip decode
+                 */
+                can_decode = can_execute = false;
+            }
+        }
+
+        // Decode
+        if (can_decode) {
+            /* decode will set is_branch to true if this is a branch
+             * instruction because it will be executed on the next cycle when
+             * no decoding should occur
+             */
+            handler = decode(fetched);
+            decoded = fetched;
+
+            // Enable execution after decoding
             can_execute = true;
-            // decode will set can_execute to FALSE if this is a branch instruction
-//            handler = decode(fetched);
-//            decoded = fetched;
         }
 
         // Fetch
-//        fetched = get_instruction(pc);
-        can_decode = true;
+        fetched = get_instr(pc);
 
         // Update PC
         pc += WORD_SIZE;
+
+        // Enable decode on next cycle after branch (or initially)
+        if (!can_execute) {
+            can_decode = true;
+        }
     }
 
     return 0;
@@ -91,7 +113,7 @@ int emulate(uint32_t pc_address) {
  * Sets the status to initial. If emulate is running, it will return after
  * completing the current cycle.
  */
-void reset() {
+void em_reset() {
     current = initial;
 }
 
@@ -104,7 +126,7 @@ void reset() {
  *      running iff emulate was called and has not returned
  *      terminated iff emulate was called and returned
  */
-enum status get_status() {
+enum status em_get_status() {
     return current;
 }
 
@@ -115,7 +137,7 @@ enum status get_status() {
  * Provides read access to the program counter. Note that the program counter
  * is always exactly 8 bytes greater than the currently executed instruction
  */
-uint32_t get_pc(void) {
+uint32_t em_get_pc(void) {
     return pc;
 }
 
@@ -126,9 +148,14 @@ uint32_t get_pc(void) {
  * Takes a pointer to an instruction and returns a function pointer to the
  * correct handler for the instruction type
  *
- * If the fetched instruction is branch also sets can_decode and can_execute to
- * FALSE
+ * If the fetched instruction is branch also sets is_branch to true
  */
-//static void (*decode(*instruction fetched))(*instruction) {
-// TODO
-//}
+static void (*decode(union instruction *fetched))(union instruction * ) {
+    // TODO: Implement actual decoding
+    return halt;
+}
+
+/* Dummy handler */
+void halt(union instruction *instr) {
+    current = terminated;
+}
