@@ -28,7 +28,7 @@
  *      Constraints:
  *          pos - count >= 0
  */
-uint32_t getbits(uint32_t val, short pos, short count) {
+uint32_t get_bits(uint32_t val, short pos, short count) {
     assert(pos - count >= 0);
     assert(pos >= 0 && pos < sizeof(uint32_t) * BYTE);
 
@@ -37,22 +37,20 @@ uint32_t getbits(uint32_t val, short pos, short count) {
     return ((val >> (pos + 1 - count)) & ~(~0 << count));
 }
 
+/*
+ * Function : set_byte
+ * Usage    : set_byte(&word, 24, 0xfa)
+ * ------------------------------------
+ * Sets the byte in a word starting at the given position starting
+ */
+void set_byte_at(uint32_t *src, short pos, uint8_t byte) {
+    *src = (*src & ~(0xff << pos)) | (((uint32_t)byte) << pos);
+}
+
 /* Endianess conversion */
 uint32_t toggle_endian(uint32_t val) {
     return ((val >> 3 * BYTE) & LSB)
            | ((val >> BYTE) & BYTE1)
            | ((val << BYTE) & BYTE2)
            | ((val << 3 * BYTE) & MSB);
-}
-
-/* Returns a 32-bit word (big-endian) starting at the given address
- * of the passed array. Useful for reading from ARM 11 memory which
- * is byte-aligned. */
-uint32_t get_word(uint8_t memory[], uint32_t address) {
-    uint32_t word = ((uint32_t)memory[address++]);
-
-    word |= ((uint32_t)memory[address++]) << BYTE;
-    word |= ((uint32_t)memory[address++]) << 2 * BYTE;
-
-    return (word | ((uint32_t)memory[address]) << 3 * BYTE);
 }
