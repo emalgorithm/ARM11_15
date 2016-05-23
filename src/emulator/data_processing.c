@@ -10,9 +10,19 @@
 #include "data_processing.h"
 #include "arm11.h"
 
+int FOUR_BITS = 0xF;
+int EIGHT_BITS = 0xFF;
+int ROTATE_BIT = 8;
+int MAX_BITS = 32;
+
 static uint32_t get_op2 (struct dp_instr dp_instruction) {
+    uint32_t rotate = (dp_instruction.op2  & ( FOUR_BITS << ROTATE_BIT )) >> ROTATE_BIT;
+    uint32_t imm_val = dp_instruction.op2  & EIGHT_BITS;
     if (dp_instruction.imm_op) {
-        return dp_instruction.op2;
+        uint32_t left_shift = (int)((unsigned)imm_val >> rotate);
+        uint32_t right_shift = imm_val << (MAX_BITS - rotate);
+        uint32_t new_op2 = left_shift | right_shift;
+        return new_op2;
     } else {
         return 0;
     }
