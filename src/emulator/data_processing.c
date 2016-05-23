@@ -13,10 +13,10 @@
 
 /*Declarations*/
 
-int FOUR_BITS = 0xF;
-int EIGHT_BITS = 0xFF;
-int ROTATE_BIT = 8;
-int MAX_BITS = 32;
+#define FOUR_BITS (0xF)
+#define EIGHT_BITS (0xFF)
+#define ROTATE_BIT (0x8)
+#define MAX_BITS (0x20)
 
 /*Typedefs for Function Pointers*/
 
