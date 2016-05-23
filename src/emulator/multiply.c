@@ -9,6 +9,8 @@
 
 static uint32_t mul_accumulate(uint32_t, uint32_t, uint32_t);
 static uint32_t mul_normal(uint32_t, uint32_t);
+
+static void update_cpsr_flag(uint32_t result);
 static uint32_t check_zero(uint32_t);
 static uint32_t check_neg(uint32_t);
 
@@ -17,7 +19,6 @@ void mul_exec(void* instruction) {
     struct mul_instr* instr;
     instr = (struct mul_instr*) instruction;
 
-    /* TODO: Add set-condition flag behaviour */
     uint32_t m = get_register((*instr).rm);
     uint32_t n = get_register((*instr).rn);
     uint32_t s = get_register((*instr).rs);
@@ -26,11 +27,20 @@ void mul_exec(void* instruction) {
                                      : mul_normal(m, s);
 
     if ((*instr).set_cond) {
-        uint32_t cpsr_change = check_zero(result) | check_neg(result);
-        set_register(CPSR_REG, cpsr_change);
+        update_cpsr_flag(result);
     }
 
     set_register((*instr).dest, result);
+}
+
+/*
+ * Procedure : update_cpsr_flag
+ * ----------------------------
+ * Handle instruction behaviour to do with setting flags.
+ */
+static void update_cpsr_flag(uint32_t result) {
+    uint32_t cpsr_change = check_zero(result) | check_neg(result);
+    set_register(CPSR_REG, cpsr_change);
 }
 
 /*
