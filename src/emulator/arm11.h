@@ -32,12 +32,15 @@
  * A bit field representation of the multiply instruction type.
  */
 struct mul_instr {
-    uint32_t cond : 4;
-    uint32_t imm_op: 1;
-    uint32_t set_cond : 1;
-    uint32_t op1 : 4;
-    uint32_t dest : 4;
-    uint32_t op2 : 12;
+    uint32_t rm   : 4;
+    uint32_t      : 4;
+    uint32_t rs   : 4; 
+    uint32_t rn   : 4;
+    uint32_t rd   : 4;
+    uint32_t s    : 1;
+    uint32_t a    : 1;
+    uint32_t      : 6;
+    uint32_t cond : 4; 
 };
 
 /*
