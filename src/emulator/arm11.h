@@ -30,6 +30,22 @@
  * |--------------------------------------------------------------------------|
  */
 
+ /*
+* Struct: dp_instr
+* -----------------
+* A bit field representation of the data processing instruction type.
+*/
+struct dp_instr {
+    uint32_t op2      : 12;
+    uint32_t rd       : 4;
+    uint32_t rn       : 4;
+    uint32_t set_cond : 1;
+    uint32_t op_code  : 4;
+    uint32_t imm_op   : 1;
+    uint32_t _id      : 2;
+    uint32_t cond     : 4;
+};
+
 /*
  * Struct: mul_instr
  * -----------------
@@ -51,34 +67,6 @@ struct mul_instr {
 };
 
 /*
-* Struct: br_instr
-* -----------------
-* A bit field representation of the branch instruction type.
-*/
-struct br_instr {
-    uint32_t offset : 24;
-    uint32_t        : 2;
-    uint32_t _id    : 2;
-    uint32_t cond   : 4;
-};
-
-/*
-* Struct: dp_instr
-* -----------------
-* A bit field representation of the data processing instruction type.
-*/
-struct dp_instr {
-    uint32_t op2      : 12;
-    uint32_t rd       : 4;
-    uint32_t rn       : 4;
-    uint32_t set_cond : 1;
-    uint32_t op_code  : 4;
-    uint32_t imm_op   : 1;
-    uint32_t _id      : 2;
-    uint32_t cond     : 4;
-};
-
-/*
 * Struct: sdt_instr
 * -----------------
 * A bit field representation of the single data transfer instruction type.
@@ -93,8 +81,21 @@ struct sdt_instr {
     uint32_t            : 2;
     uint32_t up         : 1;
     uint32_t index_bit  : 1;
+    uint32_t imm_off    : 1;
     uint32_t _id        : 2;
     uint32_t cond       : 4;
+};
+
+/*
+* Struct: br_instr
+* -----------------
+* A bit field representation of the branch instruction type.
+*/
+struct br_instr {
+    uint32_t offset : 24;
+    uint32_t        : 2;
+    uint32_t _id    : 2;
+    uint32_t cond   : 4;
 };
 
 /* Memory representation
