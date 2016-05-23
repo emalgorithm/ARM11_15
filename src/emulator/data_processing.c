@@ -26,7 +26,7 @@ void dp_exec (void* instruction) {
     uint32_t op2 = dp_instruction.op2;
     
     uint32_t op1_val = get_register(op1);
-    uint32_t res;
+    uint32_t res = 0;
 	
 	//uint32_t res = (uint32_t) -1 + (uint32_t) 2;
 	//printf("%d %x %o\n", 10, (uint32_t) res, 10);
@@ -34,46 +34,46 @@ void dp_exec (void* instruction) {
 	switch (op_code) {
 	    case AND:	        
 	        res = op1_val & op2;
-	        /*
-	        printf("AND, OpCode: %d\n", op_code);	        
+	        /*printf("AND, OpCode: %d\n", op_code);	        
 	        printf("Op1_val: %d\n", op1_val);
 	        printf("Op2: %d\n", op2);
 	        printf("Res: %d\n", res); */
-	        set_register(dest, res);
 	        break;
         case EOR:
             res = op1_val ^ op2;
-            //printf("EOR, OpCode: %d\n", op_code);
-            set_register(dest, res);
             break;
         case SUB:
-            printf("SUB, OpCode: %d\n", op_code);
+            res = op1_val - op2;
             break;
         case RSB:
-            printf("RSB, OpCode: %d\n", op_code);
+            res = op2 - op1_val;
             break;
         case ADD:
-            printf("ADD, OpCode: %d\n", op_code);
+            res = op2 + op1_val;
             break;
         case TST:
-            printf("TST, OpCode: %d\n", op_code);
+            // Loop?
+            // FUnction with AND behaviour? Applies also below
+            res = 0;
             break;
         case TEQ:
-            printf("TEQ, OpCode: %d\n", op_code);
+            res = 0;
             break;
         case CMP:
-            printf("CMP, OpCode: %d\n", op_code);
+            res = 0;
             break;
         case ORR:
-            printf("ORR, OpCode: %d\n", op_code);
+            res = op1_val | op2;
             break;
         case MOV:
-            printf("MOV, OpCode: %d\n", op_code);
+            res = op2;
             break;
         default:
             printf("INVALID OPCODE!\n");
             break;
 	}
+	
+	set_register(dest, res);
 
 }
 
