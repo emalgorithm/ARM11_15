@@ -48,7 +48,7 @@ static int test_and_imm() {
     run_gen_instr(0);
     
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content==4);
+    mu_assert(reg_content == 4);
     return 0;
 }
 
@@ -60,11 +60,11 @@ static int test_eor_imm() {
     run_gen_instr(1);
     
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content==10);
+    mu_assert(reg_content == 10);
     return 0;
 }
 
-static int test_sub_imm() {
+static int test_sub_imm_1() {
     /* 1010 SUB 0110
      * = 0100 */
     set_register(0, 10);
@@ -72,11 +72,22 @@ static int test_sub_imm() {
     run_gen_instr(2);
     
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content==4);
+    mu_assert(reg_content == 4);
     return 0;
 }
 
-static int test_rsb_imm() {
+static int test_sub_imm_2() {
+    /* -5 SUB 6 = -11 */
+    set_register(0, (uint32_t) -5);
+    
+    run_gen_instr(2);
+    
+    uint32_t reg_content = get_register(1);
+    mu_assert (reg_content == (uint32_t) -11);
+    return 0;
+}
+
+static int test_rsb_imm_1() {
     /* 0011 RSB 0110
      * = 0011 */
     set_register(0, 3);
@@ -84,7 +95,18 @@ static int test_rsb_imm() {
     run_gen_instr(3);
     
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content==3);
+    mu_assert(reg_content == 3);
+    return 0;
+}
+
+static int test_rsb_imm_2() {
+    /* 10 RSB 6 = -4 */
+    set_register(0, 10);
+    
+    run_gen_instr(3);
+    
+    uint32_t reg_content = get_register(1);
+    mu_assert(reg_content == (uint32_t) -4);
     return 0;
 }
 
@@ -96,7 +118,7 @@ static int test_add_imm() {
     run_gen_instr(4);
     
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content==8);
+    mu_assert(reg_content == 8);
     return 0;
 }
 
@@ -104,11 +126,12 @@ static int test_tst_imm() {
     /* 0100 TST 0110
      * = 0100 -- RESULT NOT WRITTEN */
     set_register(0, 8);
+    set_register(1, 15);
     
     run_gen_instr(5);
     
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content==0);
+    mu_assert(reg_content == 15);
     return 0;
 }
 
@@ -116,11 +139,12 @@ static int test_teq_imm() {
     /* 1100 TEQ 0110
      * = 1010 -- RESULT NOT WRITTEN */
     set_register(0, 12);
+    set_register(1, 15);
     
     run_gen_instr(6);
     
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content==0);
+    mu_assert(reg_content == 15);
     return 0;
 }
 
@@ -128,11 +152,12 @@ static int test_cmp_imm() {
     /* 1010 CMP 0110
      * = 0100 -- RESULT NOT WRITTEN */
     set_register(0, 10);
+    set_register(1, 15);
     
     run_gen_instr(7);
     
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content==0);
+    mu_assert(reg_content == 15);
     return 0;
 }
 
@@ -144,7 +169,7 @@ static int test_orr_imm() {
     run_gen_instr(8);
     
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content==14);
+    mu_assert(reg_content == 14);
     return 0;
 }
 
@@ -156,7 +181,7 @@ static int test_mov_imm() {
     run_gen_instr(9);
     
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content==6);
+    mu_assert(reg_content == 6);
     return 0;
 }
 
@@ -171,8 +196,10 @@ static int test_all() {
 
     mu_run_test(test_and_imm);
     mu_run_test(test_eor_imm);
-    mu_run_test(test_sub_imm);
-    mu_run_test(test_rsb_imm);
+    mu_run_test(test_sub_imm_1);
+    mu_run_test(test_sub_imm_2);
+    mu_run_test(test_rsb_imm_1);
+    mu_run_test(test_rsb_imm_2);
     mu_run_test(test_add_imm);
     mu_run_test(test_tst_imm);
     mu_run_test(test_teq_imm);
