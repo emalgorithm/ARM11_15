@@ -8,49 +8,7 @@
 #define ASSERT_ADDRESS(address) assert(address >= 0 && address < MEMORY_SIZE)
 #define ASSERT_INDEX(index) assert(index >= 0 && index < NUM_OF_REGISTERS)
 
-/* Memory representation
- * ---------------------
- * The unit of memory is a union which provides access to the whole word as a
- * 32-bit unsigned integer in big-endian, the 4 bytes that form a word, and an
- * instruction union, which can be treated as one of the 4 instruction types.
- */
 
-/*
- * Union: decoded_instr
- * --------------------
- * Bit fields per instruction type
- */
-union decoded_instr {
-    struct mul_instr mul;
-    struct br_instr br;
-    struct dp_instr dp;
-    struct sdt_instr sdt;
-};
-
-/*
- * Struct: word
- * ------------
- * Byte-addressing of memory words
- */
-struct word {
-    uint32_t lsb: 8;
-    uint32_t b1: 8;
-    uint32_t b2: 8;
-    uint32_t msb: 8;
-};
-
-/*
- * Union: instruction
- * ------------------
- * This is the data type used internally to represent memory. It offers a
- * choice between the 3 representations described above - instructions, and
- * data as words or bytes
- */
-union instruction {
-    uint32_t bin;
-    struct word raw;
-    union decoded_instr decoded;
-};
 
 struct state {
     union instruction *memory;

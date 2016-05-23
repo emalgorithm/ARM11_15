@@ -46,7 +46,7 @@ struct mul_instr {
     uint32_t op2: 4;
     uint32_t _mul7: 1;
     uint32_t : 2;
-    uint32_t _mu4: 1;
+    uint32_t _mul4: 1;
     uint32_t op3: 4;
 };
 
@@ -96,6 +96,50 @@ struct sdt_instr {
     uint32_t base: 4;
     uint32_t src_dest: 4;
     uint32_t offset: 12;
+};
+
+/* Memory representation
+ * ---------------------
+ * The unit of memory is a union which provides access to the whole word as a
+ * 32-bit unsigned integer in big-endian, the 4 bytes that form a word, and an
+ * instruction union, which can be treated as one of the 4 instruction types.
+ */
+
+/*
+ * Union: decoded_instr
+ * --------------------
+ * Bit fields per instruction type
+ */
+union decoded_instr {
+    struct mul_instr mul;
+    struct br_instr br;
+    struct dp_instr dp;
+    struct sdt_instr sdt;
+};
+
+/*
+ * Struct: word
+ * ------------
+ * Byte-addressing of memory words
+ */
+struct word {
+    uint32_t lsb: 8;
+    uint32_t b1: 8;
+    uint32_t b2: 8;
+    uint32_t msb: 8;
+};
+
+/*
+ * Union: instruction
+ * ------------------
+ * This is the data type used internally to represent memory. It offers a
+ * choice between the 3 representations described above - instructions, and
+ * data as words or bytes
+ */
+union instruction {
+    uint32_t bin;
+    struct word raw;
+    union decoded_instr decoded;
 };
 
 /* API functions

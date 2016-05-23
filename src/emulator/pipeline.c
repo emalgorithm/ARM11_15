@@ -148,9 +148,40 @@ uint32_t em_get_pc(void) {
  *
  * If the fetched instruction is branch also sets is_branch to true
  */
+
+#define DP_MULT_ID 0
+#define SDT_ID 1
+#define BRANCH_ID 2
+
 static void (*decode(union instruction *fetched))(union instruction * ) {
     // TODO: Implement actual decoding
     return halt;
+
+    switch (fetched->decoded.dp._id) {
+
+    case DP_MULT_ID: {
+        if (fetched->decoded.dp.imm_op == 1) {
+            // return data processing
+        }
+
+        if (!fetched->decoded.mul._mul4) {
+            // return data processing
+        }
+
+        if (!fetched->decoded.mul._mul7) {
+            // return data processing
+        }
+
+        // return multiply
+        break;
+    }
+    case SDT_ID: break; // return sdt
+
+    case BRANCH_ID: break; // return branch
+
+    default: assert(false); // Invalid instruction
+    }
+
 }
 
 /* Dummy handler */
