@@ -17,12 +17,12 @@ void mul_exec(void* instruction) {
     instr = (struct mul_instr*) instruction;
 
     /* TODO: Add set-condition flag */
-    uint32_t m = get_register((*instr).op1);
-    uint32_t n = get_register((*instr).op1);
-    uint32_t s = get_register((*instr).op2);
+    uint32_t m = get_register((*instr).rm);
+    uint32_t n = get_register((*instr).rn);
+    uint32_t s = get_register((*instr).rs);
 
-    uint32_t result = ((*instr).imm_op) ? mul_accumulate(m, n, s)
-                                        : mul_normal(m, s);
+    uint32_t result = ((*instr).acc) ? mul_accumulate(m, n, s)
+                                     : mul_normal(m, s);
 
     set_register((*instr).dest, result);
 }
