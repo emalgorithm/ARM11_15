@@ -7,16 +7,21 @@
 
 #include "multiply.h"
 
+/* This might need to be defined somewhere else to reduce reduncancy.
+ * Maybe util/...? */
+#define SIGN_BIT 1 << 31
+
 static uint32_t mul_accumulate(uint32_t, uint32_t, uint32_t);
 static uint32_t mul_normal(uint32_t, uint32_t);
+static uint32_t check_zero(uint32_t);
+static uint32_t check_neg(uint32_t);
 
 /* Pre: (*instruction).cond evaluates to true */
 void mul_exec(void* instruction) {
-    /* TODO: finish off skeleton of function */
     struct mul_instr* instr;
     instr = (struct mul_instr*) instruction;
 
-    /* TODO: Add set-condition flag */
+    /* TODO: Add set-condition flag behaviour */
     uint32_t m = get_register((*instr).rm);
     uint32_t n = get_register((*instr).rn);
     uint32_t s = get_register((*instr).rs);
@@ -46,4 +51,22 @@ static uint32_t mul_accumulate(uint32_t m, uint32_t s, uint32_t n) {
  */
 static uint32_t mul_normal(uint32_t m, uint32_t s) {
     return m * s;
+}
+
+/*
+ * Function : check_zero
+ * Satisfies the update conditions for the flag Z.
+ * Returns the flag <-> result of multiply is zero.
+ */
+static uint32_t check_zero(uint32_t val) {
+    return (val) ? 0 : CPSR_Z;
+}
+
+/*
+ * Function : check_neg
+ * Satisfies the update conditions for the flag N.
+ * Returns the flag <-> result of multiply is zero.
+ */
+static uint32_t check_neg(uint32_t val) {
+    return (val & SIGN_BIT) ? CPSR_N : 0;
 }
