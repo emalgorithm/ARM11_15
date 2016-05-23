@@ -7,8 +7,8 @@
 
 #include "multiply.h"
 
-static uint32_t mul_accumulate();
-static uint32_t mul_normal();
+static uint32_t mul_accumulate(uint32_t, uint32_t, uint32_t);
+static uint32_t mul_normal(uint32_t, uint32_t);
 
 /* Pre: (*instruction).cond evaluates to true */
 void mul_exec(void* instruction) {
@@ -16,7 +16,13 @@ void mul_exec(void* instruction) {
     struct mul_instr* instr;
     instr = (struct mul_instr*) instruction;
 
-    uint32_t result = ((*instr).imm_op) ? mul_accumulate() : mul_normal();
+    /* TODO: Add set-condition flag */
+    uint32_t m = get_register((*instr).op1);
+    uint32_t n = get_register((*instr).op1);
+    uint32_t s = get_register((*instr).op2);
+
+    uint32_t result = ((*instr).imm_op) ? mul_accumulate(m, n, s)
+                                        : mul_normal(m, s);
 
     set_register((*instr).dest, result);
 }
@@ -24,7 +30,7 @@ void mul_exec(void* instruction) {
 /*
  * Function : mul_accumulate
  * -------------------------
- * Perform the arithmetic part of the multiply instruction.
+ * Perform the arithmetic part of the multiply instruction, accumulate variant.
  * Note: The result is casted to a 32bit integer (4 words). This function
  * should be sufficient for the specification of the instruction.
  */
@@ -32,6 +38,12 @@ static uint32_t mul_accumulate(uint32_t m, uint32_t s, uint32_t n) {
     return m * s + n;
 }
 
+/*
+ * Function : mul_normal
+ * -------------------------
+ * Perform the multiply instruction, non-accumulate variant.
+ * Same note applies as for mul_accumulate.
+ */
 static uint32_t mul_normal(uint32_t m, uint32_t s) {
     return m * s;
 }
