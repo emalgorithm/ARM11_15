@@ -6,6 +6,7 @@
 #define LSB 0x000000ff
 #define WORD_ADDRESS(address) address / WORD_SIZE
 #define ASSERT_ADDRESS(address) assert(address >= 0 && address < MEMORY_SIZE)
+#define ASSERT_WORD_ADDRESS(address) assert(address >= 0 && address < MEMORY_SIZE && address % 4 == 0)
 #define ASSERT_INDEX(index) assert(index >= 0 && index < NUM_OF_REGISTERS)
 
 
@@ -30,7 +31,7 @@ void initialize(void) {
  * returns the instruction starting at that address
  */
 union instruction *get_instr(uint32_t address) {
-    //TODO: assertion
+    ASSERT_WORD_ADDRESS(address);
 
     return &(arm11.memory[WORD_ADDRESS(address)]);
 }
@@ -63,7 +64,7 @@ uint8_t get_byte(uint32_t address) {
 
     uint32_t offset = (address % WORD_SIZE) * BYTE;
 
-    return get_bits(arm11.memory[WORD_ADDRESS(address)].bin, offset, BYTE);
+    return get_bits(arm11.memory[WORD_ADDRESS(address)].bin, offset + BYTE - 1, BYTE);
 }
 
 /*
@@ -73,7 +74,7 @@ uint8_t get_byte(uint32_t address) {
  * little endian
  */
 void set_word(uint32_t address, uint32_t value) {
-    ASSERT_ADDRESS(address);
+    ASSERT_WORD_ADDRESS(address);
 
     arm11.memory[WORD_ADDRESS(address)].bin = value;
 }
@@ -82,9 +83,10 @@ void set_word(uint32_t address, uint32_t value) {
  * This procedure takes an address in memory and
  * it returns the word (32-bit) starting at the
  * desired address after converting it to big endian
+ * PRE: the address need to be a multiple of 4
  */
 uint32_t get_word(uint32_t address) {
-    ASSERT_ADDRESS(address);
+    ASSERT_WORD_ADDRESS(address);
 
     return arm11.memory[WORD_ADDRESS(address)].bin;
 }
