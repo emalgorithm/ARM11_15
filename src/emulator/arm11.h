@@ -8,6 +8,19 @@
 #define NUM_OF_REGISTERS 17
 #define BYTE 8
 #define WORD_SIZE 4
+#define SIGN_BIT (1 << 31)
+
+/* CPSR flags
+ * ----------
+ * Used to check conditions for certain ARM instructions. The flags are stored
+ * in register 16. For the purposes of this project, we are only concerned with
+ * the upper 4 bits of the register.
+ */
+#define CPSR_REG 16
+#define CPSR_N (1 << 31)
+#define CPSR_Z (1 << 30)
+#define CPSR_C (1 << 29)
+#define CPSR_V (1 << 28)
 
 /* Instruction types
  * -----------------
