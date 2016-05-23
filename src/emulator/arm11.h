@@ -26,6 +26,8 @@
  * |-----------|------|---------|---------------------------------------------|
  * | set_cond  | 1    | 20      | If set indicates that CPSR should be updated|
  * |-----------|------|---------|---------------------------------------------|
+ * | _id       | 2    | 27-26   | Used for decoding only                      |
+ * |--------------------------------------------------------------------------|
  */
 
 /*
@@ -34,12 +36,16 @@
  * A bit field representation of the multiply instruction type.
  */
 struct mul_instr {
-    uint32_t cond : 4;
-    uint32_t imm_op: 1;
-    uint32_t set_cond : 1;
-    uint32_t op1 : 4;
-    uint32_t dest : 4;
-    uint32_t op2 : 12;
+    uint32_t cond: 4;
+    uint32_t _id: 2;
+    uint32_t : 4;
+    uint32_t acc: 1;
+    uint32_t set_cond: 1;
+    uint32_t dest: 4;
+    uint32_t op1: 4;
+    uint32_t op2: 4;
+    uint32_t _mul: 4
+    uint32_t op3: 4;
 };
 
 /*
@@ -49,6 +55,8 @@ struct mul_instr {
  */
 struct br_instr {
     uint32_t cond: 4;
+    uint32_t _id: 2;
+    uint32_t : 2;
     uint32_t offset: 24;
 };
 
@@ -59,6 +67,7 @@ struct br_instr {
  */
 struct dp_instr {
     uint32_t cond: 4;
+    uint32_t _id: 2;
     uint32_t imm_op: 1;
     uint32_t op_code: 4;
     uint32_t set_cond: 1;
@@ -76,9 +85,11 @@ struct dp_instr {
  */
 struct sdt_instr {
     uint32_t cond: 4;
+    uint32_t _id: 2;
     uint32_t imm_offset: 1;
     uint32_t index_bit: 1;
     uint32_t up : 1;
+    uint32_t : 2;
     uint32_t load_store: 1;
     uint32_t base: 4;
     uint32_t src_dest: 4;
