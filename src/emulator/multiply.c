@@ -29,6 +29,11 @@ void mul_exec(void* instruction) {
     uint32_t result = ((*instr).acc) ? mul_accumulate(m, n, s)
                                      : mul_normal(m, s);
 
+    if ((*instr).set_cond) {
+        uint32_t cpsr_change = check_zero(result) | check_neg(result);
+        set_register(CPSR_REG, cpsr_change);
+    }
+
     set_register((*instr).dest, result);
 }
 
