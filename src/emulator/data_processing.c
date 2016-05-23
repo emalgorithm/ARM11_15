@@ -10,9 +10,17 @@
 #include "data_processing.h"
 #include "arm11.h"
 
+static uint32_t get_op2 (struct dp_instr dp_instruction) {
+    if (dp_instruction.imm_op) {
+        return dp_instruction.op2;
+    } else {
+        return 0;
+    }
+}
+
 static void and_instr (struct dp_instr dp_instruction, bool write) {
     uint32_t op1_val = get_register(dp_instruction.op1);
-    uint32_t res = op1_val & dp_instruction.op2;
+    uint32_t res = op1_val & get_op2(dp_instruction);
     if (write) {
         set_register(dp_instruction.dest, res);  
     }  
@@ -20,7 +28,7 @@ static void and_instr (struct dp_instr dp_instruction, bool write) {
 
 static void eor_instr (struct dp_instr dp_instruction, bool write) {
     uint32_t op1_val = get_register(dp_instruction.op1);
-    uint32_t res = op1_val ^ dp_instruction.op2;
+    uint32_t res = op1_val ^ get_op2(dp_instruction);
     if (write) {
         set_register(dp_instruction.dest, res);  
     }  
@@ -28,7 +36,7 @@ static void eor_instr (struct dp_instr dp_instruction, bool write) {
 
 static void sub_instr (struct dp_instr dp_instruction, bool write) {
     uint32_t op1_val = get_register(dp_instruction.op1);
-    uint32_t res = op1_val - dp_instruction.op2;
+    uint32_t res = op1_val - get_op2(dp_instruction);
     if (write) {
         set_register(dp_instruction.dest, res);  
     }  
@@ -36,13 +44,13 @@ static void sub_instr (struct dp_instr dp_instruction, bool write) {
 
 static void rsb_instr (struct dp_instr dp_instruction, bool write) {
     uint32_t op1_val = get_register(dp_instruction.op1);
-    uint32_t res = dp_instruction.op2 - op1_val;
+    uint32_t res = get_op2(dp_instruction) - op1_val;
     set_register(dp_instruction.dest, res);
 }
 
 static void add_instr (struct dp_instr dp_instruction, bool write) {
     uint32_t op1_val = get_register(dp_instruction.op1);
-    uint32_t res = op1_val + dp_instruction.op2;
+    uint32_t res = op1_val + get_op2(dp_instruction);
     set_register(dp_instruction.dest, res);
 }
 
@@ -60,12 +68,12 @@ static void cmp_instr (struct dp_instr dp_instruction, bool write) {
 
 static void orr_instr (struct dp_instr dp_instruction, bool write) {
     uint32_t op1_val = get_register(dp_instruction.op1);
-    uint32_t res = op1_val | dp_instruction.op2;
+    uint32_t res = op1_val | get_op2(dp_instruction);
     set_register(dp_instruction.dest, res);
 }
 
 static void mov_instr (struct dp_instr dp_instruction, bool write) {
-    set_register(dp_instruction.dest, dp_instruction.op2);
+    set_register(dp_instruction.dest, get_op2(dp_instruction));
 }
 
 void dp_exec (void* instruction) {
@@ -77,7 +85,7 @@ void dp_exec (void* instruction) {
 	/*Declarations*/
 	
 	struct dp_instr dp_instruction;
-    
+	fun_ptr fun_ptr_array[9];    
     enum instr_op_code {AND, EOR, SUB, RSB, ADD, TST, TEQ, CMP, ORR, MOV};
 
 	// Downcast void* to struct dp_instr* AND dereferencing.	
@@ -90,16 +98,6 @@ void dp_exec (void* instruction) {
     //uint32_t op1 = dp_instruction.op1;
     //uint32_t dest = dp_instruction.dest;
     //uint32_t op2 = dp_instruction.op2;
-
-	/*Switch here for the two cases of Operand 2*/
-	// TODO
-	
-	/*Switch over the op_code*/
-    
-    //uint32_t op1_val = get_register(op1);
-    //uint32_t res = 0;
-    
-    fun_ptr fun_ptr_array[9];
     
     fun_ptr_array[0] = and_instr;     
     fun_ptr_array[1] = eor_instr;   
@@ -117,7 +115,7 @@ void dp_exec (void* instruction) {
 	//uint32_t res = (uint32_t) -1 + (uint32_t) 2;
 	//printf("%d %x %o\n", 10, (uint32_t) res, 10);
 	
-	/*
+	/* OLD SWITCH CODE
 	switch (op_code) {
 	    case AND:	        
 	        res = op1_val & op2;
