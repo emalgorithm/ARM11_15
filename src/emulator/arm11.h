@@ -44,15 +44,17 @@ struct mul_instr {
     uint32_t dest: 4;
     uint32_t op1: 4;
     uint32_t op2: 4;
-    uint32_t _mul: 4
+    uint32_t _mul7: 1;
+    uint32_t : 2;
+    uint32_t _mu4: 1;
     uint32_t op3: 4;
 };
 
 /*
- * Struct: br_instr
- * -----------------
- * A bit field representation of the branch instruction type.
- */
+* Struct: br_instr
+* -----------------
+* A bit field representation of the branch instruction type.
+*/
 struct br_instr {
     uint32_t cond: 4;
     uint32_t _id: 2;
@@ -61,10 +63,10 @@ struct br_instr {
 };
 
 /*
- * Struct: dp_instr
- * -----------------
- * A bit field representation of the data processing instruction type.
- */
+* Struct: dp_instr
+* -----------------
+* A bit field representation of the data processing instruction type.
+*/
 struct dp_instr {
     uint32_t cond: 4;
     uint32_t _id: 2;
@@ -77,12 +79,12 @@ struct dp_instr {
 };
 
 /*
- * Struct: sdt_instr
- * -----------------
- * A bit field representation of the single data transfer instruction type.
- * Fields:
- *          cond  a 4-bit condition code
- */
+* Struct: sdt_instr
+* -----------------
+* A bit field representation of the single data transfer instruction type.
+* Fields:
+*          cond  a 4-bit condition code
+*/
 struct sdt_instr {
     uint32_t cond: 4;
     uint32_t _id: 2;
@@ -97,121 +99,121 @@ struct sdt_instr {
 };
 
 /* API functions
- * -------------
- * Things to take into account when using the exposed interface:
- *
- *  + The address space of memory in the current implementation fits in 16 bits
- *    However, an address parameter is of type uint32_t which is consistent
- *    with the word size and makes it easier to extend the memory size or
- *    address other types of storage. An invalid address would probably cause
- *    an assertion to fail if there is no error-handling mechanism specified
- *
- *  + All general purpose registers can be accessed by index (inluding the
- *    special ones such as SP(13), LR(14), PC(15), CPSR(16)). There will be
- *    an extension to this interface exposing the special registers as separate
- *    functions and also giving read/write access to the flags in CPSR.
- */
+* -------------
+* Things to take into account when using the exposed interface:
+*
+*  + The address space of memory in the current implementation fits in 16 bits
+*    However, an address parameter is of type uint32_t which is consistent
+*    with the word size and makes it easier to extend the memory size or
+*    address other types of storage. An invalid address would probably cause
+*    an assertion to fail if there is no error-handling mechanism specified
+*
+*  + All general purpose registers can be accessed by index (inluding the
+*    special ones such as SP(13), LR(14), PC(15), CPSR(16)). There will be
+*    an extension to this interface exposing the special registers as separate
+*    functions and also giving read/write access to the flags in CPSR.
+*/
 
 /*
- * Function : initialize
- * Usage    : initialize()
- * -----------------------
- * This procedure must be called before using the following access procedures.
- * It alocates space for the memory and registers of the emulated
- * architecture on the heap and prepares it for use.
- */
+* Function : initialize
+* Usage    : initialize()
+* -----------------------
+* This procedure must be called before using the following access procedures.
+* It alocates space for the memory and registers of the emulated
+* architecture on the heap and prepares it for use.
+*/
 void initialize(void);
 
 /*
- * Function : get_instr
- * Usage    : get_instr(0x00ffaa224)
- * ---------------------------------
- * This function takes an address in memory and returns a pointer to the
- * instruction starting at that address. See the instruction union type.
- *
- * PRE:  address is a valid address of the byte-addressable memory
- *
- * POST: a decoded instruction is pointed to by the returned pointer
- */
+* Function : get_instr
+* Usage    : get_instr(0x00ffaa224)
+* ---------------------------------
+* This function takes an address in memory and returns a pointer to the
+* instruction starting at that address. See the instruction union type.
+*
+* PRE:  address is a valid address of the byte-addressable memory
+*
+* POST: a decoded instruction is pointed to by the returned pointer
+*/
 union instruction *get_instr(uint32_t address);
 
 /*
- * Function : set_register
- * Usage    : set_register(0x00ffaa224)
- * ------------------------------------
- * Set the contents of the register indentified by the given index
- *
- * PRE:  index is a valid register identifier
- *
- * POST: the contents of the register equal the given value
- *       no endiannes conversion is performed
- */
+* Function : set_register
+* Usage    : set_register(0x00ffaa224)
+* ------------------------------------
+* Set the contents of the register indentified by the given index
+*
+* PRE:  index is a valid register identifier
+*
+* POST: the contents of the register equal the given value
+*       no endiannes conversion is performed
+*/
 void set_register(uint32_t index, uint32_t value);
 
 /*
- * Function : get_register
- * Usage    : get_register(0x00ffaa224)
- * ------------------------------------
- * Get the contents of the register indentified by the given index
- *
- * PRE:  index is a valid register identifier
- *
- * POST: the contents of the register equal the returned value
- *       no endiannes conversion is performed
- */
+* Function : get_register
+* Usage    : get_register(0x00ffaa224)
+* ------------------------------------
+* Get the contents of the register indentified by the given index
+*
+* PRE:  index is a valid register identifier
+*
+* POST: the contents of the register equal the returned value
+*       no endiannes conversion is performed
+*/
 uint32_t get_register(uint32_t index);
 
 /*
- * Function : set_byte
- * Usage    : set_byte(0x0000aa00, 0xfa)
- * -------------------------------------
- * Write a single byte of memory at a given address
- *
- * PRE:  address is a valid address of the byte-addressable memory
- *
- * POST: the contents of memory at the given address equal the give value
- */
+* Function : set_byte
+* Usage    : set_byte(0x0000aa00, 0xfa)
+* -------------------------------------
+* Write a single byte of memory at a given address
+*
+* PRE:  address is a valid address of the byte-addressable memory
+*
+* POST: the contents of memory at the given address equal the give value
+*/
 void set_byte(uint32_t address, uint8_t value);
 
 /*
- * Function : get_byte
- * Usage    : get_byte(0xfa)
- * -------------------------
- * Read the contents of memory at a the given address
- *
- * PRE:  address is a valid address of the byte-addressable memory
- *
- * POST: the contents of memory at the given address equal the returned value
- */
+* Function : get_byte
+* Usage    : get_byte(0xfa)
+* -------------------------
+* Read the contents of memory at a the given address
+*
+* PRE:  address is a valid address of the byte-addressable memory
+*
+* POST: the contents of memory at the given address equal the returned value
+*/
 uint8_t get_byte(uint32_t address);
 
 /*
- * Function          : set_word
- *
- * Usage             : set_word(0x0000aa00, 0x00fa23ab)
- *
- * Address           : 0x0000aa00 0x0000aa01 0x0000aa02 0x0000aa03
- * State (POST)      : 0xab       0x23       0xfa       0x00
- * ----------------------------------------
- * This procedure takes an address in memory and a 32-bit big-endian value
- * and it writes the value at the desired address after converting it to
- * little-endian
- */
+* Function          : set_word
+*
+* Usage             : set_word(0x0000aa00, 0x00fa23ab)
+*
+* Address           : 0x0000aa00 0x0000aa01 0x0000aa02 0x0000aa03
+* State (POST)      : 0xab       0x23       0xfa       0x00
+* ----------------------------------------
+* This procedure takes an address in memory and a 32-bit big-endian value
+* and it writes the value at the desired address after converting it to
+* little-endian
+*/
 void set_word(uint32_t address, uint32_t value);
 
 /*
- * Function : get_word
- *
- * Usage    : get_word(0x0000aa00)
- *
- * Address  : 0x0000aa00 0x0000aa01 0x0000aa02 0x0000aa03
- * State    : 0xab       0x23       0xfa       0x00
- *
- * Returns  : 0x00fa23ab
- * ----------------------------------------
- * This function takes an address in memory andit returns the word at the
- * desired address after converting it to big endian
- */
+* Function : get_word
+*
+* Usage    : get_word(0x0000aa00)
+*
+* Address  : 0x0000aa00 0x0000aa01 0x0000aa02 0x0000aa03
+* State    : 0xab       0x23       0xfa       0x00
+*
+* Returns  : 0x00fa23ab
+* ----------------------------------------
+* This function takes an address in memory andit returns the word at the
+* desired address after converting it to big endian
+*/
 uint32_t get_word(uint32_t address);
 
 #endif
