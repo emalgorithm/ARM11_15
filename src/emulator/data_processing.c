@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include "data_processing.h"
 #include "arm11.h"
+#include "util/binutils.h"
 
 int FOUR_BITS = 0xF;
 int EIGHT_BITS = 0xFF;
@@ -16,8 +17,8 @@ int ROTATE_BIT = 8;
 int MAX_BITS = 32;
 
 static uint32_t get_op2 (struct dp_instr dp_instruction) {
-    uint32_t rotate = (dp_instruction.op2  & ( FOUR_BITS << ROTATE_BIT )) >> ROTATE_BIT;
-    uint32_t imm_val = dp_instruction.op2  & EIGHT_BITS;
+    uint32_t rotate = get_bits(dp_instruction.op2, 11, 4);
+    uint32_t imm_val = get_bits(dp_instruction.op2, 7, 8);
     if (dp_instruction.imm_op) {
         uint32_t left_shift = (int)((unsigned)imm_val >> rotate);
         uint32_t right_shift = imm_val << (MAX_BITS - rotate);
