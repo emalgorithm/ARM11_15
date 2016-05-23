@@ -1,3 +1,11 @@
+/* Module  : data_processing
+ *
+ * Usage   : A low-level module which processes instructions sent by the
+ *           pipeline. Sets registers and CPSR flags accordingly.
+ *
+ * Authors : Alberto Spina
+ */
+
 #include "data_processing.h"
 #include "arm11.h"
 
@@ -7,23 +15,26 @@ void dp_exec (void* instruction) {
 	/*Work In Progress*/
 
 	/*Declarations*/
+	
+	struct dp_instr dp_instruction;
     
     enum instr_op_code {AND, EOR, SUB, RSB, ADD, TST, TEQ, CMP, ORR, MOV};
 
-	/*Put Value at instruction in dp_instr*/
+	// Downcast void* to struct dp_instr* AND dereferencing.	
+	dp_instruction = *((struct dp_instr *) instruction);
 	
-	struct dp_instr dp_instruction = *((struct dp_instr *) instruction);
-
-	/*Switch here for the two cases of Operand 2*/
-	
-	/*Switch over the op_code*/
-	
-    //uint32_t imm_op = dp_instruction.imm_op;
+	//Instruction fields	
+	//uint32_t imm_op = dp_instruction.imm_op;
 	uint32_t op_code = dp_instruction.op_code;
     //uint32_t set_cond = dp_instruction.set_cond;
     uint32_t op1 = dp_instruction.op1;
     uint32_t dest = dp_instruction.dest;
     uint32_t op2 = dp_instruction.op2;
+
+	/*Switch here for the two cases of Operand 2*/
+	// TODO
+	
+	/*Switch over the op_code*/
     
     uint32_t op1_val = get_register(op1);
     uint32_t res = 0;
