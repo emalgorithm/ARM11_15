@@ -46,7 +46,7 @@ static uint32_t mul_accumulate(uint32_t m, uint32_t s, uint32_t n) {
 
 /*
  * Function : mul_normal
- * -------------------------
+ * ---------------------
  * Perform the multiply instruction, non-accumulate variant.
  * Same note applies as for mul_accumulate.
  */
@@ -56,6 +56,7 @@ static uint32_t mul_normal(uint32_t m, uint32_t s) {
 
 /*
  * Function : check_zero
+ * ---------------------
  * Satisfies the update conditions for the flag Z.
  * Returns the flag <-> result of multiply is zero.
  */
@@ -65,6 +66,7 @@ static uint32_t check_zero(uint32_t val) {
 
 /*
  * Function : check_neg
+ * --------------------
  * Satisfies the update conditions for the flag N.
  * Returns the flag <-> result of multiply is zero.
  */
