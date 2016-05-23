@@ -6,6 +6,7 @@
 
 #define MEMORY_SIZE (1 << 16)
 #define NUM_OF_REGISTERS 17
+#define SIGN_BIT (1 << 31)
 
 /* CPSR flags
  * ----------

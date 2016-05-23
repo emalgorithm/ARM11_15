@@ -7,10 +7,6 @@
 
 #include "multiply.h"
 
-/* This might need to be defined somewhere else to reduce reduncancy.
- * Maybe util/...? */
-#define SIGN_BIT 1 << 31
-
 static uint32_t mul_accumulate(uint32_t, uint32_t, uint32_t);
 static uint32_t mul_normal(uint32_t, uint32_t);
 static uint32_t check_zero(uint32_t);
