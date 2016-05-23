@@ -6,11 +6,71 @@
  * Authors : Alberto Spina
  */
 
+#include <stdbool.h>
 #include "data_processing.h"
 #include "arm11.h"
 
+static void and_instr (struct dp_instr dp_instruction, bool write) {
+    uint32_t op1_val = get_register(dp_instruction.op1);
+    uint32_t res = op1_val & dp_instruction.op2;
+    if (write) {
+        set_register(dp_instruction.dest, res);  
+    }  
+}
+
+static void eor_instr (struct dp_instr dp_instruction, bool write) {
+    uint32_t op1_val = get_register(dp_instruction.op1);
+    uint32_t res = op1_val ^ dp_instruction.op2;
+    if (write) {
+        set_register(dp_instruction.dest, res);  
+    }  
+}
+
+static void sub_instr (struct dp_instr dp_instruction, bool write) {
+    uint32_t op1_val = get_register(dp_instruction.op1);
+    uint32_t res = op1_val - dp_instruction.op2;
+    if (write) {
+        set_register(dp_instruction.dest, res);  
+    }  
+}
+
+static void rsb_instr (struct dp_instr dp_instruction, bool write) {
+    uint32_t op1_val = get_register(dp_instruction.op1);
+    uint32_t res = dp_instruction.op2 - op1_val;
+    set_register(dp_instruction.dest, res);
+}
+
+static void add_instr (struct dp_instr dp_instruction, bool write) {
+    uint32_t op1_val = get_register(dp_instruction.op1);
+    uint32_t res = op1_val + dp_instruction.op2;
+    set_register(dp_instruction.dest, res);
+}
+
+static void tst_instr (struct dp_instr dp_instruction, bool write) {
+    and_instr(dp_instruction, false);
+}
+
+static void teq_instr (struct dp_instr dp_instruction, bool write) {
+    eor_instr(dp_instruction, false);
+}
+
+static void cmp_instr (struct dp_instr dp_instruction, bool write) {
+    sub_instr(dp_instruction, false);
+}
+
+static void orr_instr (struct dp_instr dp_instruction, bool write) {
+    uint32_t op1_val = get_register(dp_instruction.op1);
+    uint32_t res = op1_val | dp_instruction.op2;
+    set_register(dp_instruction.dest, res);
+}
+
+static void mov_instr (struct dp_instr dp_instruction, bool write) {
+    set_register(dp_instruction.dest, dp_instruction.op2);
+}
 
 void dp_exec (void* instruction) {
+
+    typedef void (*fun_ptr)(struct dp_instr, bool);
 	
 	/*Work In Progress*/
 
@@ -25,42 +85,59 @@ void dp_exec (void* instruction) {
 	
 	//Instruction fields	
 	//uint32_t imm_op = dp_instruction.imm_op;
-	uint32_t op_code = dp_instruction.op_code;
+	//uint32_t op_code = dp_instruction.op_code;
     //uint32_t set_cond = dp_instruction.set_cond;
-    uint32_t op1 = dp_instruction.op1;
-    uint32_t dest = dp_instruction.dest;
-    uint32_t op2 = dp_instruction.op2;
+    //uint32_t op1 = dp_instruction.op1;
+    //uint32_t dest = dp_instruction.dest;
+    //uint32_t op2 = dp_instruction.op2;
 
 	/*Switch here for the two cases of Operand 2*/
 	// TODO
 	
 	/*Switch over the op_code*/
     
-    uint32_t op1_val = get_register(op1);
-    uint32_t res = 0;
+    //uint32_t op1_val = get_register(op1);
+    //uint32_t res = 0;
+    
+    fun_ptr fun_ptr_array[9];
+    
+    fun_ptr_array[0] = and_instr;     
+    fun_ptr_array[1] = eor_instr;   
+    fun_ptr_array[2] = sub_instr;  
+    fun_ptr_array[3] = rsb_instr;  
+    fun_ptr_array[4] = add_instr;  
+    fun_ptr_array[5] = tst_instr;  
+    fun_ptr_array[6] = teq_instr;  
+    fun_ptr_array[7] = cmp_instr;  
+    fun_ptr_array[8] = orr_instr;  
+    fun_ptr_array[9] = mov_instr;  
+    
+    fun_ptr_array[dp_instruction.op_code](dp_instruction, true);
 	
 	//uint32_t res = (uint32_t) -1 + (uint32_t) 2;
 	//printf("%d %x %o\n", 10, (uint32_t) res, 10);
 	
+	/*
 	switch (op_code) {
 	    case AND:	        
 	        res = op1_val & op2;
-	        /*printf("AND, OpCode: %d\n", op_code);	        
-	        printf("Op1_val: %d\n", op1_val);
-	        printf("Op2: %d\n", op2);
-	        printf("Res: %d\n", res); */
+	        set_register(dest, res);
 	        break;
         case EOR:
             res = op1_val ^ op2;
+            set_register(dest, res);
             break;
         case SUB:
             res = op1_val - op2;
+            set_register(dest, res);
             break;
         case RSB:
             res = op2 - op1_val;
+            set_register(dest, res);
             break;
         case ADD:
             res = op2 + op1_val;
+            set_register(dest, res);
             break;
         case TST:
             // Loop?
@@ -75,17 +152,33 @@ void dp_exec (void* instruction) {
             break;
         case ORR:
             res = op1_val | op2;
+            set_register(dest, res);
             break;
         case MOV:
             res = op2;
+            set_register(dest, res);
             break;
         default:
             printf("INVALID OPCODE!\n");
             break;
-	}
+	} */
 	
-	set_register(dest, res);
-
+	// Logical right shift	
+	//uint32_t bob = (unsigned)-1 >> 1;
+	//printf("%d %x\n", bob, (uint32_t) bob);
+	
+	// Arithmetic right shift
+	//uint32_t bob = -1 >> 1;
+	//printf("%d %x\n", bob, (uint32_t) bob);
+	
+	//Testing:
+	
+	// Debugging
+	/*printf("AND, OpCode: %d\n", op_code);	        
+	        printf("Op1_val: %d\n", op1_val);
+	        printf("Op2: %d\n", op2);
+	        printf("Res: %d\n", res); */
+	
 }
 
 
