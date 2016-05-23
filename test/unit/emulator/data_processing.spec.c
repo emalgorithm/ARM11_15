@@ -20,13 +20,13 @@ void setup() {
 
 void tear_down() {}
 
-static struct dp_instr* gen_instr () {
+static struct dp_instr* gen_instr (int op_code) {
 
     struct dp_instr *instruction;
     instruction = malloc(sizeof(struct dp_instr));
     
     instruction->imm_op = 1;
-    instruction->op_code = 0;
+    instruction->op_code = op_code;
     instruction->set_cond = 0;
     instruction->op1 = 0;
     instruction->dest = 1;
@@ -35,17 +35,17 @@ static struct dp_instr* gen_instr () {
     return instruction;
 }
 
-static void run_gen_instr () {
-    struct dp_instr *gen_instruction = gen_instr();
+static void run_gen_instr (int op_code) {
+    struct dp_instr *gen_instruction = gen_instr(op_code);
     dp_exec((void*) gen_instruction); 
 }
 
 static int test_and_imm() {
     /* 0100 AND 0110
      * = 0100 */
-    set_register(0, 8);
+    set_register(0, 4);
     
-    run_gen_instr();
+    run_gen_instr(0);
     
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content==4);
@@ -57,7 +57,7 @@ static int test_eor_imm() {
      * = 1010 */
     set_register(0, 12);
     
-    run_gen_instr();
+    run_gen_instr(1);
     
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content==10);
@@ -69,7 +69,7 @@ static int test_sub_imm() {
      * = 0100 */
     set_register(0, 10);
     
-    run_gen_instr();
+    run_gen_instr(2);
     
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content==4);
@@ -81,7 +81,7 @@ static int test_rsb_imm() {
      * = 0011 */
     set_register(0, 3);
     
-    run_gen_instr();
+    run_gen_instr(3);
     
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content==3);
@@ -93,7 +93,7 @@ static int test_add_imm() {
      * = 1000 */
     set_register(0, 2);
     
-    run_gen_instr();
+    run_gen_instr(4);
     
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content==8);
@@ -105,7 +105,7 @@ static int test_tst_imm() {
      * = 0100 -- RESULT NOT WRITTEN */
     set_register(0, 8);
     
-    run_gen_instr();
+    run_gen_instr(5);
     
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content==0);
@@ -117,7 +117,7 @@ static int test_teq_imm() {
      * = 1010 -- RESULT NOT WRITTEN */
     set_register(0, 12);
     
-    run_gen_instr();
+    run_gen_instr(6);
     
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content==0);
@@ -129,7 +129,7 @@ static int test_cmp_imm() {
      * = 0100 -- RESULT NOT WRITTEN */
     set_register(0, 10);
     
-    run_gen_instr();
+    run_gen_instr(7);
     
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content==0);
@@ -141,7 +141,7 @@ static int test_orr_imm() {
      * = 1110 */
     set_register(0, 12);
     
-    run_gen_instr();
+    run_gen_instr(8);
     
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content==14);
@@ -153,7 +153,7 @@ static int test_mov_imm() {
      * = 1010 */
     set_register(0, 0);
     
-    run_gen_instr();
+    run_gen_instr(9);
     
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content==6);
