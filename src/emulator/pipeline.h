@@ -11,6 +11,8 @@
 
 #include <stdint.h>
 
+#define PC_OFFSET 8
+
 /*
  * Enum : status
  * -------------
@@ -51,7 +53,7 @@ int emulate(uint32_t pc_address);
  * Sets the status to initial. If emulate is running, it will return after
  * completing the current cycle.
  */
-void reset();
+void em_reset();
 
 /*
  * Function : get_status
@@ -62,7 +64,7 @@ void reset();
  *      running iff emulate was called and has not returned
  *      terminated iff emulate was called and returned
  */
-enum status get_status();
+enum status em_get_status();
 
 /*
  * Function : get_pc
@@ -71,6 +73,6 @@ enum status get_status();
  * Provides read access to the program counter. Note that the program counter
  * is always exactly 8 bytes greater than the currently executed instruction
  */
-uint32_t get_pc(void);
+uint32_t em_get_pc(void);
 
 #endif
