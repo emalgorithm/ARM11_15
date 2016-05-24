@@ -18,7 +18,7 @@ static int test_normal() {
     set_register(5, 0x0000000f);
 
     union decoded_instr instr;
-    instr.mul.acc      = 1;
+    instr.mul.acc      = 0;
     instr.mul.rs       = 5;
     instr.mul.rd       = 10;
     instr.mul.set_cond = 1;
