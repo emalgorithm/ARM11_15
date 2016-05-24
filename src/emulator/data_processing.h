@@ -10,7 +10,8 @@
 #define DATA_PROCESSING_H
 
 #include <stdio.h>
+#include "arm11.h"
 
-void dp_exec(void*);
+void dp_exec(union decoded_instr*);
 
 #endif /*DATA_PROCESSING_H*/

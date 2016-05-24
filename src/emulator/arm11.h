@@ -31,7 +31,7 @@
  * |--------------------------------------------------------------------------|
  */
 
- /*
+ /*union of struct c
 * Struct: dp_instr
 * -----------------
 * A bit field representation of the data processing instruction type.

@@ -8,8 +8,6 @@ static char spec[] = "data_processing";
 
 int tests_run = 0;
 
-/*TODO: Add tests for setconditions*/
-
 void setup() {
     // arm11 state init
     initialize();
