@@ -21,7 +21,7 @@ void mul_exec(union decoded_instr* instr) {
     uint32_t n = get_register((*instr).mul.rn);
     uint32_t s = get_register((*instr).mul.rs);
 
-    uint32_t result = ((*instr).mul.acc) ? mul_accumulate(m, n, s)
+    uint32_t result = ((*instr).mul.acc) ? mul_accumulate(m, s, n)
                                          : mul_normal(m, s);
 
     if ((*instr).mul.set_cond) {
@@ -49,7 +49,8 @@ static void update_cpsr_flag(uint32_t result) {
  * should be sufficient for the specification of the instruction.
  */
 static uint32_t mul_accumulate(uint32_t m, uint32_t s, uint32_t n) {
-    return m * s + n;
+    uint32_t ms = mul_normal(m, s);
+    return ms + n;
 }
 
 /*
