@@ -1,0 +1,17 @@
+before_script:
+  - make --directory=src clean
+
+build:
+  script:
+    - make --directory=src emulate
+
+test:
+  script:
+    - make --directory=src test
+
+after_script:
+  - make --directory=src clean
+
+stages:
+  - build
+  - test
