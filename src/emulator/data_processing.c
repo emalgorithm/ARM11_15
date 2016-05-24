@@ -10,6 +10,7 @@
 #include "data_processing.h"
 #include "util/binutils.h"
 #include "util/cpsr_flags.h"
+#include "util/shift_reg.h"
 
 /*Declarations*/
 
@@ -22,20 +23,9 @@
 /*Typedefs for Function Pointers*/
 
 typedef void (*fun_ptr)(struct dp_instr * , bool);
-typedef uint32_t (*shift_fun_ptr)(uint32_t, uint32_t);
 typedef uint32_t (*op_exec_ptr)(uint32_t, uint32_t, uint32_t);
 
 enum operators {AND, EOR, SUB, RSB, ORR};
-
-void set_cflag_shift (uint32_t amount, uint32_t value, uint32_t index) {
-    if (amount >= 1) {
-        if (get_bit(value, index)) {
-            set_cflag;
-        } else {
-            clr_cflag;
-        }
-    }
-}
 
 void set_cflag_cond (uint32_t set_cond, bool condition) {
     if (set_cond) {
@@ -47,57 +37,16 @@ void set_cflag_cond (uint32_t set_cond, bool condition) {
     }
 }
 
-/* */
-uint32_t log_left_shift (uint32_t amount, uint32_t value) {
-    set_cflag_shift(amount, value, MAX_BITS - amount);
-    return value << amount;
-}
-uint32_t log_right_shift (uint32_t amount, uint32_t value) {
-    set_cflag_shift(amount, value, amount);
-    return (unsigned)value >> amount;
-}
-uint32_t arit_right_shift (uint32_t amount, uint32_t value) {
-    set_cflag_shift(amount, value, MAX_BITS - amount);
-    return value >> amount;
-}
-uint32_t rot_right (uint32_t amount, uint32_t value) {
-    set_cflag_shift(amount, value, MAX_BITS - amount);
-    uint32_t left_shift = (int)((unsigned)value >> amount);
-    uint32_t right_shift = value << (MAX_BITS - amount);
-    return left_shift | right_shift;
-}
-
 /**/
 static uint32_t get_op2 (struct dp_instr* dp_instruction) {
     if (dp_instruction->imm_op) {
         /*Operand2 is an Immediate Operand*/
         uint32_t rotate = get_bits(dp_instruction->op2, 11, 4);
         uint32_t imm_val = get_bits(dp_instruction->op2, 7, 8);
-        return rot_right(rotate, imm_val);
+        return rot_right(rotate, imm_val, dp_instruction->set_cond);
     } else {
         /*Operand2 is NOT an Immediate Operand*/
-        uint32_t rm_reg = get_bits(dp_instruction->op2, 3, 4);
-        uint32_t ctrl_bit = get_bits(dp_instruction->op2, 4, 1);
-        uint32_t shift_type = get_bits(dp_instruction->op2, 6, 2);
-        uint32_t rm_value = get_register(rm_reg);
-
-        shift_fun_ptr shift_fun_ptr_array[] = {
-            log_left_shift,
-            log_right_shift,
-            arit_right_shift,
-            rot_right
-        };
-
-        if (ctrl_bit) {
-            /*Shift is specified by a Register*/
-            uint32_t rs_reg = get_bits(dp_instruction->op2, 11, 4);
-            uint32_t rs_value = get_register(rs_reg);
-            return shift_fun_ptr_array[shift_type](rs_value, rm_value);
-        } else {
-            /*Shift by a constant amount*/
-            uint32_t integer = get_bits(dp_instruction->op2, 11, 5);
-            return shift_fun_ptr_array[shift_type](integer, rm_value);
-        }
+        return shift_reg(dp_instruction->op2, dp_instruction->set_cond);
     }
 }
 

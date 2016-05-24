@@ -1,3 +1,6 @@
+#ifndef CPSR_FALGS_H
+#define CPSR_FLAGS_H
+
 /***************************************************************************
  * FILE NAME: cpsr_flags.h                                                 *
  *                                                                         *
@@ -73,3 +76,5 @@
 
 /*Returns the V-bit of the CPSR FLAGS*/
 #define get_vflag get_flag(V_FLAG)
+
+#endif
