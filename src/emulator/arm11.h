@@ -66,7 +66,6 @@ struct dp_instr {
  * A bit field representation of the multiply instruction type.
  */
 struct mul_instr {
-<<<<<<< HEAD
     uint32_t rm       : 4;
     uint32_t _mul4    : 1;
     uint32_t          : 2;
@@ -79,15 +78,7 @@ struct mul_instr {
     uint32_t          : 4;
     uint32_t _id      : 2;
     uint32_t cond     : 4;
-=======
-    uint32_t cond : 4;
-    uint32_t acc: 1;
-    uint32_t set_cond : 1;
-    uint32_t dest : 4;
-    uint32_t rn : 4;
-    uint32_t rs : 4;
-    uint32_t rm : 4;
->>>>>>> 890097f69587d6db7d2aef2f161830435d93d673
+
 };
 
 /*
