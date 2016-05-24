@@ -19,16 +19,14 @@ static enum status current = initial;
 
 static uint32_t pc;
 
-static union decoded_instr *fetched, *decoded;
-
 static void (*handler)(union decoded_instr * );
 
-bool can_decode, can_execute, is_branch;
+static bool can_decode, can_execute, is_branch;
 
 /* End of Pipeline state*/
 
 /* Helper functions */
-static void (*decode(union decoded_instr * ))(union decoded_instr * );
+static void (*decode(union instruction * ))(union decoded_instr * );
 
 static void halt(union decoded_instr * );
 
@@ -58,10 +56,12 @@ static bool check_cond(uint32_t cond);
  *        execution to reach a termination instruction.
  */
 int emulate(uint32_t pc_address) {
-
     if (current != initial) {
         return 1;
     }
+
+    union instruction *fetched;
+    union decoded_instr *decoded;
 
     current = running;
     can_decode = can_execute = is_branch = false;
@@ -89,14 +89,14 @@ int emulate(uint32_t pc_address) {
              * no decoding should occur
              */
             handler = decode(fetched);
-            decoded = fetched;
+            decoded = &(fetched->decoded);
 
             // Enable execution after decoding
             can_execute = true;
         }
 
         // Fetch
-        fetched = &(get_instr(pc)->decoded);
+        fetched = get_instr(pc);
 
         // Update PC
         pc += WORD_SIZE;
@@ -161,26 +161,28 @@ enum instr_id {
     BRANCH_ID
 };
 
-static void (*decode(union decoded_instr *fetched))(union decoded_instr * ) {
+static void (*decode(union instruction *fetched))(union decoded_instr * ) {
     // TODO: Implement actual decoding
     return halt;
 
-    // TODO: Implement conditional execution
-    bool cond = check_cond(fetched->dp.cond);
+    if(fetched->bin == 0) {
+      return halt;
+    }
 
+    bool cond = check_cond(fetched->decoded.dp.cond);
     if (cond) {
-        switch (fetched->dp._id) {
+        switch (fetched->decoded.dp._id) {
 
         case DP_MULT_ID: {
-            if (fetched->dp.imm_op == 1) {
+            if (fetched->decoded.dp.imm_op == 1) {
                 // return data processing
             }
 
-            if (!fetched->mul._mul4) {
+            if (!fetched->decoded.mul._mul4) {
                 // return data processing
             }
 
-            if (!fetched->mul._mul7) {
+            if (!fetched->decoded.mul._mul7) {
                 // return data processing
             }
 
