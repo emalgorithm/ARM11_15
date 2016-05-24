@@ -73,7 +73,7 @@ int emulate(uint32_t pc_address) {
                 /* This must be a branch so the next cycle will skip execution
                  * and this cycle will skip decode
                  */
-                can_decode = can_execute = false;
+                can_decode = can_execute = is_branch = false;
             }
         }
 
@@ -160,29 +160,34 @@ static void (*decode(union instruction *fetched))(union instruction * ) {
     // TODO: Implement actual decoding
     return halt;
 
-    switch (fetched->decoded.dp._id) {
+    // TODO: Implement conditional execution
+    bool cond = check_cond(fetched->decoded.dp.cond);
 
-    case DP_MULT_ID: {
-        if (fetched->decoded.dp.imm_op == 1) {
-            // return data processing
+    if (cond) {
+        switch (fetched->decoded.dp._id) {
+
+        case DP_MULT_ID: {
+            if (fetched->decoded.dp.imm_op == 1) {
+                // return data processing
+            }
+
+            if (!fetched->decoded.mul._mul4) {
+                // return data processing
+            }
+
+            if (!fetched->decoded.mul._mul7) {
+                // return data processing
+            }
+
+            // return multiply
+            break;
         }
+        case SDT_ID: break; // return sdt
 
-        if (!fetched->decoded.mul._mul4) {
-            // return data processing
+        case BRANCH_ID: break; // return branch
+
+        default: assert(false); // Invalid instruction
         }
-
-        if (!fetched->decoded.mul._mul7) {
-            // return data processing
-        }
-
-        // return multiply
-        break;
-    }
-    case SDT_ID: break; // return sdt
-
-    case BRANCH_ID: break; // return branch
-
-    default: assert(false); // Invalid instruction
     }
 
 }
@@ -190,4 +195,8 @@ static void (*decode(union instruction *fetched))(union instruction * ) {
 /* Dummy handler */
 static void halt(union instruction *instr) {
     current = terminated;
+}
+
+static bool check_cond(uint32_t cond) {
+    // TODO: check cond with cpsr
 }
