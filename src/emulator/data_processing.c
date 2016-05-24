@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include "data_processing.h"
 #include "util/binutils.h"
+#include "util/cpsr_flags.h"
 
 /*Declarations*/
 
@@ -16,6 +17,7 @@
 #define EIGHT_BITS (0xFF)
 #define ROTATE_BIT (0x8)
 #define MAX_BITS (0x20)
+#define NFLAG_BIT (31)
 
 /*Typedefs for Function Pointers*/
 
@@ -58,11 +60,6 @@ static uint32_t get_op2 (struct dp_instr* dp_instruction) {
             arit_right_shift,
             rot_right};
 
-        /*shift_fun_ptr_array[0] = log_left_shift;
-        shift_fun_ptr_array[1] = log_right_shift;
-        shift_fun_ptr_array[2] = arit_right_shift;
-        shift_fun_ptr_array[3] = rot_right;*/
-
         if (ctrl_bit) {
             /*Shift is specified by a Register*/
             uint32_t rs_reg = get_bits(dp_instruction->op2, 11, 4);
@@ -76,40 +73,62 @@ static uint32_t get_op2 (struct dp_instr* dp_instruction) {
     }
 }
 
+static void write_res (struct dp_instr* dp_instruction, bool write, uint32_t res) {
+    if (write) {
+        set_register(dp_instruction->rd, res);
+    }
+    if (dp_instruction->set_cond) {
+        if (res == 0) {
+            set_zflag;
+        }
+        if (get_bit(res, NFLAG_BIT)) {
+            set_nflag;
+        } else {
+            clr_nflag;
+        }
+    }
+}
+
 /**/
 static void and_instr (struct dp_instr* dp_instruction, bool write) {
     uint32_t op1_val = get_register(dp_instruction->rn);
-    uint32_t res = op1_val & get_op2(dp_instruction);
-    if (write) {
-        set_register(dp_instruction->rd, res);
+    uint32_t op2_val = get_op2(dp_instruction);
+    uint32_t res = op1_val & op2_val;
+    write_res(dp_instruction, write, res);
+
+    if (dp_instruction->set_cond) {
+        if ((res < op1_val) && (res < op2_val)) {
+            // Integer overflow = result is SMALLER than both addends
+            set_cflag;
+        }
     }
 }
 
 static void eor_instr (struct dp_instr* dp_instruction, bool write) {
     uint32_t op1_val = get_register(dp_instruction->rn);
-    uint32_t res = op1_val ^ get_op2(dp_instruction);
-    if (write) {
-        set_register(dp_instruction->rd, res);
-    }
+    uint32_t op2_val = get_op2(dp_instruction);
+    uint32_t res = op1_val ^ op2_val;
+    write_res(dp_instruction, write, res);
 }
 
 static void sub_instr (struct dp_instr* dp_instruction, bool write) {
     uint32_t op1_val = get_register(dp_instruction->rn);
-    uint32_t res = op1_val - get_op2(dp_instruction);
-    if (write) {
-        set_register(dp_instruction->rd, res);
-    }
+    uint32_t op2_val = get_op2(dp_instruction);
+    uint32_t res = op1_val - op2_val;
+    write_res(dp_instruction, write, res);
 }
 
 static void rsb_instr (struct dp_instr* dp_instruction, bool write) {
     uint32_t op1_val = get_register(dp_instruction->rn);
-    uint32_t res = get_op2(dp_instruction) - op1_val;
+    uint32_t op2_val = get_op2(dp_instruction);
+    uint32_t res = op2_val - op1_val;
     set_register(dp_instruction->rd, res);
 }
 
 static void add_instr (struct dp_instr* dp_instruction, bool write) {
     uint32_t op1_val = get_register(dp_instruction->rn);
-    uint32_t res = op1_val + get_op2(dp_instruction);
+    uint32_t op2_val = get_op2(dp_instruction);
+    uint32_t res = op1_val + op2_val;
     set_register(dp_instruction->rd, res);
 }
 
@@ -130,12 +149,13 @@ static void cmp_instr (struct dp_instr* dp_instruction, bool write) {
 
 static void orr_instr (struct dp_instr* dp_instruction, bool write) {
     uint32_t op1_val = get_register(dp_instruction->rn);
-    uint32_t res = op1_val | get_op2(dp_instruction);
-    set_register(dp_instruction->rd, res);
+    uint32_t op2_val = get_op2(dp_instruction);
+    uint32_t res = op1_val | op2_val;
+    write_res(dp_instruction, write, res);
 }
 
 static void mov_instr (struct dp_instr* dp_instruction, bool write) {
-    set_register(dp_instruction->rd, get_op2(dp_instruction));
+    write_res(dp_instruction, write, get_op2(dp_instruction));
 }
 
 void dp_exec (union decoded_instr* instruction) {
