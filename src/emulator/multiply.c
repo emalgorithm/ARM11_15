@@ -30,7 +30,7 @@ void mul_exec(void* instruction) {
         update_cpsr_flag(result);
     }
 
-    set_register((*instr).dest, result);
+    set_register((*instr).rd, result);
 }
 
 /*
