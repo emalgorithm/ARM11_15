@@ -17,11 +17,16 @@
 
 /*Declarations*/
 
-#define FOUR_BITS (0xF)
-#define EIGHT_BITS (0xFF)
-#define ROTATE_BIT (0x8)
 #define MAX_BITS (0x20)
-#define NFLAG_BIT (31)
+#define RM_BIT (3)
+#define RM_LEN (4)
+#define CTRL_BIT (4)
+#define SHIFT_BIT (6)
+#define SHIFT_LEN (2)
+#define RS_BIT (11)
+#define RS_LEN (4)
+#define INT_BIT (11)
+#define INT_LEN (5)
 
 typedef uint32_t (*shift_fun_ptr)(uint32_t, uint32_t, uint32_t);
 
@@ -57,9 +62,9 @@ static uint32_t arit_right_shift (uint32_t amount, uint32_t value, uint32_t set_
 
 uint32_t shift_reg (uint32_t instruction, uint32_t set_cond) {
 
-    uint32_t rm_reg = get_bits(instruction, 3, 4);
-    uint32_t ctrl_bit = get_bits(instruction, 4, 1);
-    uint32_t shift_type = get_bits(instruction, 6, 2);
+    uint32_t rm_reg = get_bits(instruction, RM_BIT, RM_LEN);
+    uint32_t ctrl_bit = get_bit(instruction, CTRL_BIT);
+    uint32_t shift_type = get_bits(instruction, SHIFT_BIT, SHIFT_LEN);
     uint32_t rm_value = get_register(rm_reg);
 
     shift_fun_ptr shift_fun_ptr_array[] = {
@@ -71,12 +76,12 @@ uint32_t shift_reg (uint32_t instruction, uint32_t set_cond) {
 
     if (ctrl_bit) {
         /*Shift is specified by a Register*/
-        uint32_t rs_reg = get_bits(instruction, 11, 4);
+        uint32_t rs_reg = get_bits(instruction, RS_BIT, RS_LEN);
         uint32_t rs_value = get_register(rs_reg);
         return shift_fun_ptr_array[shift_type](rs_value, rm_value, set_cond);
     } else {
         /*Shift by a constant amount*/
-        uint32_t integer = get_bits(instruction, 11, 5);
+        uint32_t integer = get_bits(instruction, INT_BIT, INT_LEN);
         return shift_fun_ptr_array[shift_type](integer, rm_value, set_cond);
     }
 

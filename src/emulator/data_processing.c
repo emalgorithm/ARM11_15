@@ -16,9 +16,12 @@
 
 #define FOUR_BITS (0xF)
 #define EIGHT_BITS (0xFF)
-#define ROTATE_BIT (0x8)
 #define MAX_BITS (0x20)
 #define NFLAG_BIT (31)
+#define ROT_BIT (11)
+#define ROT_LEN (4)
+#define VAL_BIT (7)
+#define VAL_LEN (8)
 
 /*Typedefs for Function Pointers*/
 
@@ -41,8 +44,8 @@ void set_cflag_cond (uint32_t set_cond, bool condition) {
 static uint32_t get_op2 (struct dp_instr* dp_instruction) {
     if (dp_instruction->imm_op) {
         /*Operand2 is an Immediate Operand*/
-        uint32_t rotate = get_bits(dp_instruction->op2, 11, 4);
-        uint32_t imm_val = get_bits(dp_instruction->op2, 7, 8);
+        uint32_t rotate = get_bits(dp_instruction->op2, ROT_BIT, ROT_LEN);
+        uint32_t imm_val = get_bits(dp_instruction->op2, VAL_BIT, VAL_LEN);
         return rot_right(rotate, imm_val, dp_instruction->set_cond);
     } else {
         /*Operand2 is NOT an Immediate Operand*/
