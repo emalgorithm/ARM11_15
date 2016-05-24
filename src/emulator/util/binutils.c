@@ -26,15 +26,31 @@
  *      @param count    Numvalr of bits to take staring from pos
  *
  *      Constraints:
- *          pos - count >= 0
+ *          pos + 1 - count >= 0
  */
 uint32_t get_bits(uint32_t val, short pos, short count) {
-    assert(pos + 1 - count >= 0);
+    assert(pos - count >= -1);
     assert(pos >= 0 && pos < sizeof(uint32_t) * BYTE);
 
     /* Shift value so that rightmost wanted bit is in position 0
      * and then apply a mask of 1 on the region up to count */
     return ((val >> (pos + 1 - count)) & ~(~0 << count));
+}
+
+/* Get the one bit to the right starting at position (pos)
+ * in the value (val)
+ *      @param val      Value to val used when extracting bits
+ *      @param pos      Position to start extracting from [31;0]
+ *
+ *      Constraints:
+ *          pos >= 0
+ */
+uint32_t get_bit(uint32_t val, short pos) {
+    assert(pos >= 0 && pos < sizeof(uint32_t) * BYTE);
+
+    /* Shift value so that rightmost wanted bit is in position 0
+     * and then apply a mask of 1 on the region up to count */
+    return ((val >> pos) & 1);
 }
 
 /*
