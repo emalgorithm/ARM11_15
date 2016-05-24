@@ -53,14 +53,14 @@ static int test_reset() {
 }
 
 static int test_get_pc() {
-    set_word(0, 0x0000ffaa);
+    set_word(0, 0x0000ff00);
 
     emulate(0);
 
     /* halt instruction was executed and then 4 more was added to pc which
      * makes a total of 12 (given the 8-byte constant offset)
      */
-    mu_assert(em_get_pc() == (0x0000ffaa + PC_OFFSET + WORD_SIZE));
+    mu_assert(em_get_pc() == (0x0000ff00 + PC_OFFSET + WORD_SIZE));
 
     return 0;
 }
