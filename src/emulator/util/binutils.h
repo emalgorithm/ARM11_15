@@ -5,6 +5,8 @@
 
 uint32_t get_bits(uint32_t val, short pos, short count);
 
+uint32_t get_bit (uint32_t val, short pos);
+
 void set_byte_at(uint32_t *src, short pos, uint8_t byte);
 
 uint32_t toggle_endian(uint32_t val);
