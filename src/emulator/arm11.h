@@ -6,8 +6,24 @@
 
 #define MEMORY_SIZE (1 << 16)
 #define NUM_OF_REGISTERS 17
+<<<<<<< HEAD
 #define BYTE 8
 #define WORD_SIZE 4
+=======
+#define SIGN_BIT (1 << 31)
+
+/* CPSR flags
+ * ----------
+ * Used to check conditions for certain ARM instructions. The flags are stored
+ * in register 16. For the purposes of this project, we are only concerned with
+ * the upper 4 bits of the register.
+ */
+#define CPSR_REG 16
+#define CPSR_N (1 << 31)
+#define CPSR_Z (1 << 30)
+#define CPSR_C (1 << 29)
+#define CPSR_V (1 << 28)
+>>>>>>> 890097f69587d6db7d2aef2f161830435d93d673
 
 /* Instruction types
  * -----------------
@@ -52,6 +68,7 @@ struct dp_instr {
  * A bit field representation of the multiply instruction type.
  */
 struct mul_instr {
+<<<<<<< HEAD
     uint32_t rm       : 4;
     uint32_t _mul4    : 1;
     uint32_t          : 2;
@@ -64,6 +81,15 @@ struct mul_instr {
     uint32_t          : 4;
     uint32_t _id      : 2;
     uint32_t cond     : 4;
+=======
+    uint32_t cond : 4;
+    uint32_t acc: 1;
+    uint32_t set_cond : 1;
+    uint32_t dest : 4;
+    uint32_t rn : 4;
+    uint32_t rs : 4;
+    uint32_t rm : 4;
+>>>>>>> 890097f69587d6db7d2aef2f161830435d93d673
 };
 
 /*
