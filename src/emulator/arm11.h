@@ -10,7 +10,8 @@
 #define WORD_SIZE 4
 #define SIGN_BIT (1 << 31)
 
-/* CPSR flags
+// TODO: remove after CPSR utils are complete
+/* CPSR flags (temporary)
  * ----------
  * Used to check conditions for certain ARM instructions. The flags are stored
  * in register 16. For the purposes of this project, we are only concerned with
