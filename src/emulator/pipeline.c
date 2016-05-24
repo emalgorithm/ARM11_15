@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <assert.h>
 #include "arm11.h"
+#include "util/cpsr_flags.h"
 
 /* Pipeline state */
 
@@ -18,18 +19,20 @@ static enum status current = initial;
 
 static uint32_t pc;
 
-static union instruction *fetched, *decoded;
+static union decoded_instr *fetched, *decoded;
 
-static void (*handler)(union instruction * );
+static void (*handler)(union decoded_instr * );
 
 bool can_decode, can_execute, is_branch;
 
 /* End of Pipeline state*/
 
 /* Helper functions */
-static void (*decode(union instruction * ))(union instruction * );
+static void (*decode(union decoded_instr * ))(union decoded_instr * );
 
-static void halt(union instruction * );
+static void halt(union decoded_instr * );
+
+static void nop(union decoded_instr * );
 
 static bool check_cond(uint32_t cond);
 
@@ -93,7 +96,7 @@ int emulate(uint32_t pc_address) {
         }
 
         // Fetch
-        fetched = get_instr(pc);
+        fetched = &(get_instr(pc)->decoded);
 
         // Update PC
         pc += WORD_SIZE;
@@ -158,26 +161,26 @@ enum instr_id {
     BRANCH_ID
 };
 
-static void (*decode(union instruction *fetched))(union instruction * ) {
+static void (*decode(union decoded_instr *fetched))(union decoded_instr * ) {
     // TODO: Implement actual decoding
     return halt;
 
     // TODO: Implement conditional execution
-    bool cond = check_cond(fetched->decoded.dp.cond);
+    bool cond = check_cond(fetched->dp.cond);
 
     if (cond) {
-        switch (fetched->decoded.dp._id) {
+        switch (fetched->dp._id) {
 
         case DP_MULT_ID: {
-            if (fetched->decoded.dp.imm_op == 1) {
+            if (fetched->dp.imm_op == 1) {
                 // return data processing
             }
 
-            if (!fetched->decoded.mul._mul4) {
+            if (!fetched->mul._mul4) {
                 // return data processing
             }
 
-            if (!fetched->decoded.mul._mul7) {
+            if (!fetched->mul._mul7) {
                 // return data processing
             }
 
@@ -190,16 +193,44 @@ static void (*decode(union instruction *fetched))(union instruction * ) {
 
         default: assert(false); // Invalid instruction
         }
+    } else {
+      return nop;
     }
 
 }
 
-/* Dummy handler */
-static void halt(union instruction *instr) {
+/* Termination handler */
+static void halt(union decoded_instr *instr) {
     current = terminated;
 }
 
+/*
+ * A do nothing instruction used when condition fails
+ */
+static void nop(union decoded_instr *instr) {
+  return;
+}
+
+enum condition {
+  eq, // Z
+  ne, // !Z
+  ge, // N == V
+  lt, // N != V
+  gt, // !Z && N == V
+  le, // Z || N != V
+  al  // true
+};
+
 static bool check_cond(uint32_t cond) {
     // TODO: check cond with cpsr
-    return false;
+    switch(cond) {
+      case eq: return get_zflag;
+      case ne: return !get_zflag;
+      case ge: return get_nflag == get_vflag;
+      case lt: return get_nflag != get_vflag;
+      case gt: return !get_zflag && (get_nflag == get_vflag);
+      case le: return get_zflag || (get_nflag != get_vflag);
+      case al: return true;
+      default: assert(false);
+    }
 }
