@@ -13,6 +13,8 @@
 #include "arm11.h"
 #include "util/cpsr_flags.h"
 
+#define ASSERT_ADDRESS(address) assert(address >= 0 && address < MEMORY_SIZE)
+
 /* Pipeline state */
 
 static enum status current = initial;
@@ -143,6 +145,17 @@ enum status em_get_status() {
 uint32_t em_get_pc(void) {
     return pc;
 }
+
+/*
+ * Function : em_set_pc
+ * Usage    : set_pc(get_pc() + offset);
+ * -------------------------------------
+ * Set program counter (used when branching)
+ */
+ void em_set_pc(uint32_t new_pc) {
+     ASSERT_ADDRESS(new_pc);
+     pc = new_pc;
+ }
 
 /*
  * Function : decode
