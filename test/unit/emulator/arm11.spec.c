@@ -40,7 +40,6 @@ static int test_get_and_set_byte() {
 static int test_get_and_set_word() {
     uint32_t address = 0x00000004;
     uint32_t big_endian_value = 0x01234567;
-    uint32_t little_endian_value = 0x67452301;
 
     set_word(address, big_endian_value);
 
