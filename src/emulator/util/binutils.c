@@ -46,7 +46,6 @@ uint32_t get_bits(uint32_t val, short pos, short count) {
  *          pos >= 0
  */
 uint32_t get_bit(uint32_t val, short pos) {
-    assert(pos >= 0);
     assert(pos >= 0 && pos < sizeof(uint32_t) * BYTE);
 
     /* Shift value so that rightmost wanted bit is in position 0

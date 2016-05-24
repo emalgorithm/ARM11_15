@@ -57,10 +57,10 @@
 #define get_nflag get_bit(get_register(CPSR_FLAGS), N_FLAG)
 
 /*Returns the Z-bit of the CPSR FLAGS*/
-#define get_zflag get_bit(get_register(CPSR_FLAGS), N_FLAG)
+#define get_zflag get_bit(get_register(CPSR_FLAGS), Z_FLAG)
 
 /*Returns the C-bit of the CPSR FLAGS*/
-#define get_cflag get_bit(get_register(CPSR_FLAGS), N_FLAG)
+#define get_cflag get_bit(get_register(CPSR_FLAGS), C_FLAG)
 
 /*Returns the V-bit of the CPSR FLAGS*/
-#define get_vflag get_bit(get_register(CPSR_FLAGS), N_FLAG)
+#define get_vflag get_bit(get_register(CPSR_FLAGS), V_FLAG)
