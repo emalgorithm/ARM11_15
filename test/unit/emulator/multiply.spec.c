@@ -49,6 +49,44 @@ static int test_acc() {
     return 0;
 }
 
+static int test_cpsr() {
+    set_register(2, 0xfffffffd);
+    set_register(5, 0x7fffffff);
+    set_register(9, 0x0000001f);
+
+    union decoded_instr instr;
+    instr.mul.acc      = 1;
+    instr.mul.rs       = 5;
+    instr.mul.rd       = 10;
+    instr.mul.rn       = 9;
+    instr.mul.set_cond = 1;
+    instr.mul.rm       = 2;
+
+    mul_exec(&instr);
+    mu_assert(!get_zflag);
+    mu_assert(get_nflag);
+    return 0;
+}
+
+static int test_cpsr_zer() {
+    set_register(2, 0x00000003);
+    set_register(5, 0x0000001f);
+    set_register(9, 0xffffffa3);
+
+    union decoded_instr instr;
+    instr.mul.acc      = 1;
+    instr.mul.rs       = 5;
+    instr.mul.rd       = 10;
+    instr.mul.rn       = 9;
+    instr.mul.set_cond = 1;
+    instr.mul.rm       = 2;
+
+    mul_exec(&instr);
+    mu_assert(get_zflag);
+    mu_assert(!get_nflag);
+    return 0;
+}
+
 static int test_all() {
     printf("Running all tests for %s | ", spec);
 
@@ -58,6 +96,8 @@ static int test_all() {
 
     mu_run_test(test_normal);
     mu_run_test(test_acc);
+    mu_run_test(test_cpsr);
+    mu_run_test(test_cpsr_zer);
 
     return 0;
 }
