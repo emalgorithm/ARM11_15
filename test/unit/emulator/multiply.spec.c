@@ -14,8 +14,8 @@ void tear_down() {
 }
 
 static int test_normal() {
-    set_register(2, 0xffffffd);
-    set_register(5, 0x000000f);
+    set_register(2, 0xfffffffd);
+    set_register(5, 0x0000000f);
 
     union decoded_instr instr;
     instr.mul.acc      = 1;
