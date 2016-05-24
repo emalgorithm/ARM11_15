@@ -30,6 +30,25 @@ static int test_normal() {
     return 0;
 }
 
+static int test_acc() {
+    set_register(2, 0xfffffffd);
+    set_register(5, 0x0000000f);
+    set_register(9, 0x0000001f);
+
+    union decoded_instr instr;
+    instr.mul.acc      = 1;
+    instr.mul.rs       = 5;
+    instr.mul.rd       = 10;
+    instr.mul.rn       = 9;
+    instr.mul.set_cond = 1;
+    instr.mul.rm       = 2;
+
+    mul_exec(&instr);
+    uint32_t result = get_register(10);
+    mu_assert(result == 0xfffffff2);
+    return 0;
+}
+
 static int test_all() {
     printf("Running all tests for %s | ", spec);
 
@@ -38,6 +57,7 @@ static int test_all() {
      * If all pass 0 is returned. */
 
     mu_run_test(test_normal);
+    mu_run_test(test_acc);
 
     return 0;
 }
