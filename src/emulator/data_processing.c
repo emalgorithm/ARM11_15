@@ -23,9 +23,6 @@
 typedef void (*fun_ptr)(struct dp_instr, bool);
 typedef uint32_t (*shift_fun_ptr)(uint32_t, uint32_t);
 
-fun_ptr fun_ptr_array[9];
-shift_fun_ptr shift_fun_ptr_array[3];
-
 /* */
 uint32_t log_left_shift (uint32_t amount, uint32_t value) {
     return value << amount;
@@ -56,10 +53,16 @@ static uint32_t get_op2 (struct dp_instr dp_instruction) {
         uint32_t shift_type = get_bits(dp_instruction.op2, 6, 2);
         uint32_t rm_value = get_register(rm_reg);
 
-        shift_fun_ptr_array[0] = log_left_shift;
+        shift_fun_ptr shift_fun_ptr_array[] = {
+            log_left_shift,
+            log_right_shift,
+            arit_right_shift,
+            rot_right};
+
+        /*shift_fun_ptr_array[0] = log_left_shift;
         shift_fun_ptr_array[1] = log_right_shift;
         shift_fun_ptr_array[2] = arit_right_shift;
-        shift_fun_ptr_array[3] = rot_right;
+        shift_fun_ptr_array[3] = rot_right;*/
 
         if (ctrl_bit) {
             /*Shift is specified by a Register*/
@@ -142,18 +145,19 @@ void dp_exec (void* instruction) {
 
 	// Downcast void* to struct dp_instr* AND dereferencing.
     struct dp_instr dp_instruction;
-	dp_instruction = *((struct dp_instr *) instruction);
+	  dp_instruction = *((struct dp_instr *) instruction);
 
-    fun_ptr_array[0] = and_instr;
-    fun_ptr_array[1] = eor_instr;
-    fun_ptr_array[2] = sub_instr;
-    fun_ptr_array[3] = rsb_instr;
-    fun_ptr_array[4] = add_instr;
-    fun_ptr_array[5] = tst_instr;
-    fun_ptr_array[6] = teq_instr;
-    fun_ptr_array[7] = cmp_instr;
-    fun_ptr_array[8] = orr_instr;
-    fun_ptr_array[9] = mov_instr;
+    fun_ptr fun_ptr_array[] = {
+        and_instr,
+        eor_instr,
+        sub_instr,
+        rsb_instr,
+        add_instr,
+        tst_instr,
+        teq_instr,
+        cmp_instr,
+        orr_instr,
+        mov_instr};
 
     fun_ptr_array[dp_instruction.op_code](dp_instruction, true);
 }
