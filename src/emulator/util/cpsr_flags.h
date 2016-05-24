@@ -1,4 +1,4 @@
-#ifndef CPSR_FALGS_H
+#ifndef CPSR_FLAGS_H
 #define CPSR_FLAGS_H
 
 /***************************************************************************

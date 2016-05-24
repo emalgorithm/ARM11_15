@@ -111,7 +111,7 @@ static void exec_instr (struct dp_instr* dp_instruction, bool write, enum operat
 
 /**/
 static void and_instr (struct dp_instr* dp_instruction, bool write) {
-    exec_instr (dp_instruction, write, AND);
+    exec_instr(dp_instruction, write, AND);
 }
 
 static void eor_instr (struct dp_instr* dp_instruction, bool write) {

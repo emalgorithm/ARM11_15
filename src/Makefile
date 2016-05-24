@@ -1,7 +1,7 @@
 # Variables used by implicit rules
 # See https://www.gnu.org/software/make/manual/make.html#Implicit-Variables
 CC      = gcc
-CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
+CFLAGS  = -Wall -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
 
 # Object files grouped by directory
 EMULATOR_OBJ := $(patsubst %.c, %.o, $(shell find emulator/ -type f -name '*.c'))
@@ -33,7 +33,7 @@ test: $(TESTS)
 
 # Remove all object files and executables
 clean:
-	rm -f $(shell find ../ -type f -name '*.o') # remove all object files
-	rm -f $(TESTS)                              # remove test executables
-	rm -f assemble                              # remove assemble executable
-	rm -f emulate                               # remove emulate executable
+	rm -f $(shell find ../ -type f -name '*.o')    # remove all object files
+	rm -f $(TESTS)                                 # remove test executables
+	rm -f assemble                                 # remove assemble executable
+	rm -f emulate                                  # remove emulate executable

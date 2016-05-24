@@ -85,5 +85,4 @@ uint32_t shift_reg (uint32_t instruction, uint32_t set_cond) {
         return shift_fun_ptr_array[shift_type](integer, rm_value, set_cond);
     }
 
-
 }
