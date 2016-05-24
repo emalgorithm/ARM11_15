@@ -5,6 +5,6 @@
 #include <stdint.h>
 #include "arm11.h"
 
-void mul_exec(void*);
+void mul_exec(union decoded_instr*);
 
 #endif

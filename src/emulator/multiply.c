@@ -15,22 +15,20 @@ static uint32_t check_zero(uint32_t);
 static uint32_t check_neg(uint32_t);
 
 /* Pre: (*instruction).cond evaluates to true */
-void mul_exec(void* instruction) {
-    struct mul_instr* instr;
-    instr = (struct mul_instr*) instruction;
+void mul_exec(union decoded_instr* instr) {
+    /* Declare struct mul* instead? */
+    uint32_t m = get_register((*instr).mul.rm);
+    uint32_t n = get_register((*instr).mul.rn);
+    uint32_t s = get_register((*instr).mul.rs);
 
-    uint32_t m = get_register((*instr).rm);
-    uint32_t n = get_register((*instr).rn);
-    uint32_t s = get_register((*instr).rs);
+    uint32_t result = ((*instr).mul.acc) ? mul_accumulate(m, n, s)
+                                         : mul_normal(m, s);
 
-    uint32_t result = ((*instr).acc) ? mul_accumulate(m, n, s)
-                                     : mul_normal(m, s);
-
-    if ((*instr).set_cond) {
+    if ((*instr).mul.set_cond) {
         update_cpsr_flag(result);
     }
 
-    set_register((*instr).rd, result);
+    set_register((*instr).mul.rd, result);
 }
 
 /*
