@@ -29,7 +29,7 @@ test: $(TESTS)
 # See https://www.gnu.org/software/make/manual/make.html#Pattern-Intro
 # and https://www.gnu.org/software/make/manual/make.html#Automatic-Variables
 %.spec %.spec.o: %.spec.c $(EMULATOR_OBJ) $(ASSEMBLER_OBJ)
-	$(CC) $(CCFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
 
 # Remove all object files and executables
 clean:
