@@ -13,7 +13,9 @@ void setup() {
 void tear_down() {}
 
 static int test_read_memory() {
-    char* filename[] = {"../test/unit/emulator/bne01"};
+    char* filename[] = {"executable_name",
+                        "../test/unit/emulator/bne01"
+                       };
 
     read_memory(filename);
 
@@ -31,10 +33,10 @@ static int test_read_memory() {
 static int test_all() {
     printf("Running all tests for %s | ", spec);
 
-     /* Test run in this order until one fails or all pass.
-     * The position of the failed one is returned and printed.
-     * If all pass 0 is returned.
-     */
+    /* Test run in this order until one fails or all pass.
+    * The position of the failed one is returned and printed.
+    * If all pass 0 is returned.
+    */
 
 
     mu_run_test(test_read_memory);

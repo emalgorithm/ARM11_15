@@ -5,7 +5,7 @@
 void read_memory(char** argv) {
     uint8_t buffer[WORD_SIZE];
     FILE *input_file;
-    input_file = fopen(argv[0], "rb");  // r for read, b for binary
+    input_file = fopen(argv[1], "rb");  // r for read, b for binary
 
     uint32_t address = 0;
 
