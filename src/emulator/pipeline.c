@@ -31,6 +31,8 @@ static void (*decode(union instruction * ))(union instruction * );
 
 static void halt(union instruction * );
 
+static bool check_cond(uint32_t cond);
+
 /*
  * Function : emulate
  * Usage    : emulate(0x00000000)
@@ -199,4 +201,5 @@ static void halt(union instruction *instr) {
 
 static bool check_cond(uint32_t cond) {
     // TODO: check cond with cpsr
+    return false;
 }
