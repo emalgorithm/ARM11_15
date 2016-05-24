@@ -23,35 +23,35 @@
 
 /*Sets the N-bit of the CPSR FLAGS*/
 #define set_nflag set_register(CPSR_FLAGS, get_register(CPSR_FLAGS) \
-    |= (1 << N_FLAG))
+    | (1 << N_FLAG))
 
 /*Sets the Z-bit of the CPSR FLAGS*/
 #define set_zflag set_register(CPSR_FLAGS, get_register(CPSR_FLAGS) \
-   |= (1 << Z_FLAG))
+    | (1 << Z_FLAG))
 
 /*Sets the C-bit of the CPSR FLAGS*/
 #define set_cflag set_register(CPSR_FLAGS, get_register(CPSR_FLAGS) \
-    |= (1 << C_FLAG))
+    | (1 << C_FLAG))
 
 /*Sets the V-bit of the CPSR FLAGS*/
 #define set_vflag set_register(CPSR_FLAGS, get_register(CPSR_FLAGS) \
-    |= (1 << V_FLAG))
+    | (1 << V_FLAG))
 
 /*Clears the N-bit of the CPSR FLAGS*/
 #define clr_nflag set_register(CPSR_FLAGS, get_register(CPSR_FLAGS) \
-    &= (0 << N_FLAG))
+    & ~(1 << N_FLAG))
 
 /*Clears the Z-bit of the CPSR FLAGS*/
 #define clr_zflag set_register(CPSR_FLAGS, get_register(CPSR_FLAGS) \
-    &= (0 << Z_FLAG))
+    & ~(1 << Z_FLAG))
 
 /*Clears the C-bit of the CPSR FLAGS*/
 #define clr_cflag set_register(CPSR_FLAGS, get_register(CPSR_FLAGS) \
-    &= (0 << C_FLAG))
+    & ~(1 << C_FLAG))
 
 /*Clears the V-bit of the CPSR FLAGS*/
 #define clr_vflag set_register(CPSR_FLAGS, get_register(CPSR_FLAGS) \
-    &= (0 << V_FLAG))
+    & ~(1 << V_FLAG))
 
 /*Returns the N-bit of the CPSR FLAGS*/
 #define get_nflag get_bit(get_register(CPSR_FLAGS), N_FLAG)
