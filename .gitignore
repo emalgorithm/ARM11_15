@@ -42,3 +42,7 @@ assemble
 
 #ignore unit test executables
 *.spec
+
+#ignore some of Alberto's files
+*.h.gch
+*.exe
