@@ -28,8 +28,8 @@ static struct dp_instr* gen_instr (int op_code) {
     instruction->imm_op = 1;
     instruction->op_code = op_code;
     instruction->set_cond = 0;
-    instruction->op1 = 0;
-    instruction->dest = 1;
+    instruction->rn = 0;
+    instruction->rd = 1;
     instruction->op2 = 6;
 
     return instruction;

@@ -79,39 +79,39 @@ static uint32_t get_op2 (struct dp_instr dp_instruction) {
 
 /**/
 static void and_instr (struct dp_instr dp_instruction, bool write) {
-    uint32_t op1_val = get_register(dp_instruction.op1);
+    uint32_t op1_val = get_register(dp_instruction.rn);
     uint32_t res = op1_val & get_op2(dp_instruction);
     if (write) {
-        set_register(dp_instruction.dest, res);
+        set_register(dp_instruction.rd, res);
     }
 }
 
 static void eor_instr (struct dp_instr dp_instruction, bool write) {
-    uint32_t op1_val = get_register(dp_instruction.op1);
+    uint32_t op1_val = get_register(dp_instruction.rn);
     uint32_t res = op1_val ^ get_op2(dp_instruction);
     if (write) {
-        set_register(dp_instruction.dest, res);
+        set_register(dp_instruction.rd, res);
     }
 }
 
 static void sub_instr (struct dp_instr dp_instruction, bool write) {
-    uint32_t op1_val = get_register(dp_instruction.op1);
+    uint32_t op1_val = get_register(dp_instruction.rn);
     uint32_t res = op1_val - get_op2(dp_instruction);
     if (write) {
-        set_register(dp_instruction.dest, res);
+        set_register(dp_instruction.rd, res);
     }
 }
 
 static void rsb_instr (struct dp_instr dp_instruction, bool write) {
-    uint32_t op1_val = get_register(dp_instruction.op1);
+    uint32_t op1_val = get_register(dp_instruction.rn);
     uint32_t res = get_op2(dp_instruction) - op1_val;
-    set_register(dp_instruction.dest, res);
+    set_register(dp_instruction.rd, res);
 }
 
 static void add_instr (struct dp_instr dp_instruction, bool write) {
-    uint32_t op1_val = get_register(dp_instruction.op1);
+    uint32_t op1_val = get_register(dp_instruction.rn);
     uint32_t res = op1_val + get_op2(dp_instruction);
-    set_register(dp_instruction.dest, res);
+    set_register(dp_instruction.rd, res);
 }
 
 static void tst_instr (struct dp_instr dp_instruction, bool write) {
@@ -130,13 +130,13 @@ static void cmp_instr (struct dp_instr dp_instruction, bool write) {
 }
 
 static void orr_instr (struct dp_instr dp_instruction, bool write) {
-    uint32_t op1_val = get_register(dp_instruction.op1);
+    uint32_t op1_val = get_register(dp_instruction.rn);
     uint32_t res = op1_val | get_op2(dp_instruction);
-    set_register(dp_instruction.dest, res);
+    set_register(dp_instruction.rd, res);
 }
 
 static void mov_instr (struct dp_instr dp_instruction, bool write) {
-    set_register(dp_instruction.dest, get_op2(dp_instruction));
+    set_register(dp_instruction.rd, get_op2(dp_instruction));
 }
 
 void dp_exec (void* instruction) {
