@@ -6,7 +6,7 @@
 
 static bool check_out_of_boundary(uint32_t address) {
     if(!(address < MEMORY_SIZE)) {
-        printf("Error: Out of bounds memory access at address 0x%x\n", address);
+        printf("Error: Out of bounds memory access at address 0x%08x\n", address);
         return false;
     }
 
