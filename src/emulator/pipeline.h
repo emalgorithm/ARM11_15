@@ -48,7 +48,7 @@ enum status {
 int emulate(uint32_t pc_address);
 
 /*
- * Function : reset
+ * Function : em_reset
  * ----------------
  * Sets the status to initial. If emulate is running, it will return after
  * completing the current cycle.
@@ -56,8 +56,8 @@ int emulate(uint32_t pc_address);
 void em_reset();
 
 /*
- * Function : get_status
- * Usage    : status emu_status = get_status()
+ * Function : em_get_status
+ * Usage    : status em_status = em_get_status()
  * ---------------------------------
  * Returns one of initial, running, or terminated
  *      initial iff emulate has not been called
@@ -67,12 +67,28 @@ void em_reset();
 enum status em_get_status();
 
 /*
- * Function : get_pc
- * Usage    : uint32_t pc = get_pc()
+ * Function : em_get_pc
+ * Usage    : uint32_t pc = em_get_pc()
  * ---------------------------------
  * Provides read access to the program counter. Note that the program counter
  * is always exactly 8 bytes greater than the currently executed instruction
  */
 uint32_t em_get_pc(void);
+
+/*
+ * Function : em_set_pc
+ * Usage    : set_pc(get_pc() + offset);
+ * -------------------------------------
+ * Set program counter (used when branching)
+ */
+void em_set_pc(uint32_t new_pc);
+
+/*
+ * Function : em_acc_pc
+ * Usage    : em_acc_pc(offset);
+ * -------------------------------------
+ * Accumulate program counter (used when branching)
+ */
+void em_acc_pc(uint32_t offset);
 
 #endif

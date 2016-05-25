@@ -35,6 +35,7 @@ assemble
 *.vrb
 *.nav
 *.toc
+*.dSYM
 
 #IntelliJ Folder
 .idea/

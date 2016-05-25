@@ -1,7 +1,7 @@
 # Variables used by implicit rules
 # See https://www.gnu.org/software/make/manual/make.html#Implicit-Variables
 CC      = gcc
-CFLAGS  = -Wall -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
+CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
 
 # Object files grouped by directory
 EMULATOR_OBJ := $(patsubst %.c, %.o, $(shell find emulator/ -type f -name '*.c'))

@@ -10,38 +10,27 @@
 static uint32_t mul_accumulate(uint32_t, uint32_t, uint32_t);
 static uint32_t mul_normal(uint32_t, uint32_t);
 
-static void update_cpsr_flag(uint32_t result);
-static uint32_t check_zero(uint32_t);
-static uint32_t check_neg(uint32_t);
+static void update_zflag(uint32_t);
+static void update_nflag(uint32_t);
 
 /* Pre: (*instruction).cond evaluates to true */
-void mul_exec(void* instruction) {
-    struct mul_instr* instr;
-    instr = (struct mul_instr*) instruction;
+void mul_exec(union decoded_instr* instr) {
+    /* Declare struct mul* instead? */
+    uint32_t m = get_register((*instr).mul.rm);
+    uint32_t n = get_register((*instr).mul.rn);
+    uint32_t s = get_register((*instr).mul.rs);
 
-    uint32_t m = get_register((*instr).rm);
-    uint32_t n = get_register((*instr).rn);
-    uint32_t s = get_register((*instr).rs);
+    uint32_t result = ((*instr).mul.acc) ? mul_accumulate(m, s, n)
+                                         : mul_normal(m, s);
 
-    uint32_t result = ((*instr).acc) ? mul_accumulate(m, n, s)
-                                     : mul_normal(m, s);
-
-    if ((*instr).set_cond) {
-        update_cpsr_flag(result);
+    if ((*instr).mul.set_cond) {
+        update_zflag(result);
+        update_nflag(result);
     }
 
-    set_register((*instr).rd, result);
+    set_register((*instr).mul.rd, result);
 }
 
-/*
- * Procedure : update_cpsr_flag
- * ----------------------------
- * Handle instruction behaviour to do with setting flags.
- */
-static void update_cpsr_flag(uint32_t result) {
-    uint32_t cpsr_change = check_zero(result) | check_neg(result);
-    set_register(CPSR_REG, cpsr_change);
-}
 
 /*
  * Function : mul_accumulate
@@ -51,7 +40,8 @@ static void update_cpsr_flag(uint32_t result) {
  * should be sufficient for the specification of the instruction.
  */
 static uint32_t mul_accumulate(uint32_t m, uint32_t s, uint32_t n) {
-    return m * s + n;
+    uint32_t ms = mul_normal(m, s);
+    return ms + n;
 }
 
 /*
@@ -65,21 +55,22 @@ static uint32_t mul_normal(uint32_t m, uint32_t s) {
 }
 
 /*
- * Function : check_zero
- * ---------------------
- * Satisfies the update conditions for the flag Z.
- * Returns the flag <-> result of multiply is zero.
+ * Procedures : update_zflag, update_nflag
+ * ---------------------------------------
+ * Handle instruction behaviour to do with setting the zero and negative flags.
  */
-static uint32_t check_zero(uint32_t val) {
-    return (val) ? 0 : CPSR_Z;
+static void update_zflag(uint32_t val) {
+    if (val == 0) {
+        set_zflag;
+    } else {
+        clr_zflag;
+    }
 }
 
-/*
- * Function : check_neg
- * --------------------
- * Satisfies the update conditions for the flag N.
- * Returns the flag <-> result of multiply is zero.
- */
-static uint32_t check_neg(uint32_t val) {
-    return (val & SIGN_BIT) ? CPSR_N : 0;
+static void update_nflag(uint32_t val) {
+    if (val & 1 << (WORD_SIZE * BYTE - 1)) {
+        set_nflag;
+    } else {
+        clr_nflag;
+    }
 }
