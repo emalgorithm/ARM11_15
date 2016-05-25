@@ -30,7 +30,7 @@ static void store_into_mem(uint32_t src_reg_index, uint32_t mem_address) {
 void sdt_exec(union decoded_instr *decoded) {
     struct sdt_instr *sdt = &(decoded->sdt);
 
-    assert(sdt->rn != PC_INDEX);
+    assert(sdt->rd != PC_INDEX);
 
     uint32_t offset = sdt->offset;
     uint32_t mem_address = get_register(sdt->rn);
