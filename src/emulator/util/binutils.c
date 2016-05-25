@@ -23,7 +23,7 @@
  * in the value (val)
  *      @param val      Value to val used when extracting bits
  *      @param pos      Position to start extracting from [31;0]
- *      @param count    Numvalr of bits to take staring from pos
+ *      @param count    Numvalr of bits to take starting from pos
  *
  *      Constraints:
  *          pos + 1 - count >= 0

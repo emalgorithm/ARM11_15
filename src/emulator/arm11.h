@@ -249,6 +249,20 @@ uint8_t get_byte(uint32_t address);
 void set_word(uint32_t address, uint32_t value);
 
 /*
+* Function          : set_word_aligned
+*
+* Usage             : set_word_aligned(0x0000aa00, 0x00fa23ab)
+*
+* Address           : 0x0000aa00 0x0000aa01 0x0000aa02 0x0000aa03
+* State (POST)      : 0xab       0x23       0xfa       0x00
+* ----------------------------------------
+* This procedure takes an aligned address in memory and a 32-bit big-endian value
+* and it writes the value at the desired address after converting it to
+* little-endian
+*/
+void set_word_aligned(uint32_t address, uint32_t value);
+
+/*
 * Function : get_word
 *
 * Usage    : get_word(0x0000aa00)
@@ -262,5 +276,20 @@ void set_word(uint32_t address, uint32_t value);
 * desired address after converting it to big endian
 */
 uint32_t get_word(uint32_t address);
+
+/*
+* Function : get_word_aligned
+*
+* Usage    : get_word_aligned(0x0000aa00)
+*
+* Address  : 0x0000aa00 0x0000aa01 0x0000aa02 0x0000aa03
+* State    : 0xab       0x23       0xfa       0x00
+*
+* Returns  : 0x00fa23ab
+* ----------------------------------------
+* This function takes an aligned address in memory andit returns the word at the
+* desired address after converting it to big endian
+*/
+uint32_t get_word_aligned(uint32_t address);
 
 #endif

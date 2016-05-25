@@ -38,17 +38,40 @@ static int test_get_and_set_byte() {
 }
 
 static int test_get_and_set_word() {
+
+    uint32_t first_address = 0x00000000;
+    uint32_t second_address = 0x00000004;
+    uint32_t address = 0x00000002;
+
+    uint32_t first_big_endian_value = 0x01234567;
+    uint32_t second_big_endian_value = 0x89abcdef;
+    uint32_t big_endian_value = 0xcdef0123;
+
+    set_word(first_address, first_big_endian_value);
+    set_word(second_address, second_big_endian_value);
+
+    mu_assert(get_byte(address) == 0x23);
+    mu_assert(get_byte(address + 1) == 0x01);
+    mu_assert(get_byte(address + 2) == 0xef);
+    mu_assert(get_byte(address + 3) == 0xcd);
+
+    mu_assert(get_word(address) == big_endian_value);
+
+    return 0;
+}
+
+static int test_get_and_set_word_aligned() {
     uint32_t address = 0x00000004;
     uint32_t big_endian_value = 0x01234567;
 
-    set_word(address, big_endian_value);
+    set_word_aligned(address, big_endian_value);
 
     mu_assert(get_byte(address) == 0x67);
     mu_assert(get_byte(address + 1) == 0x45);
     mu_assert(get_byte(address + 2) == 0x23);
     mu_assert(get_byte(address + 3) == 0x01);
 
-    mu_assert(get_word(address) == big_endian_value);
+    mu_assert(get_word_aligned(address) == big_endian_value);
 
     return 0;
 }
@@ -171,6 +194,7 @@ static int test_all() {
     mu_run_test(test_initialize);
     mu_run_test(test_get_and_set_byte);
     mu_run_test(test_get_and_set_word);
+    mu_run_test(test_get_and_set_word_aligned);
     mu_run_test(test_get_and_set_register);
     mu_run_test(test_get_instr_dp);
     mu_run_test(test_get_instr_mul);
