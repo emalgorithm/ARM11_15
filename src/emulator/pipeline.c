@@ -12,14 +12,16 @@
 #include <assert.h>
 #include "arm11.h"
 #include "util/cpsr_flags.h"
+#include "branch.h"
+#include "data_processing.h"
+#include "multiply.h"
+#include "sdt.h"
 
 #define ASSERT_ADDRESS(address) assert(address >= 0 && address < MEMORY_SIZE)
 
 /* Pipeline state */
 
 static enum status current = initial;
-
-static uint32_t pc;
 
 static void (*handler)(union decoded_instr * );
 
@@ -59,7 +61,7 @@ static bool check_cond(uint32_t cond);
  */
 int emulate(uint32_t pc_address) {
     if (current != initial) {
-        return 1;
+        return EXIT_FAILURE;
     }
 
     union instruction *fetched;
@@ -68,7 +70,7 @@ int emulate(uint32_t pc_address) {
     current = running;
     can_decode = can_execute = is_branch = false;
 
-    pc = get_word(pc_address);
+    em_set_pc(get_word(pc_address));
 
     while (current == running) {
 
@@ -98,10 +100,10 @@ int emulate(uint32_t pc_address) {
         }
 
         // Fetch
-        fetched = get_instr(pc);
+        fetched = get_instr(em_get_pc());
 
         // Update PC
-        pc += WORD_SIZE;
+        em_acc_pc(WORD_SIZE);
 
         // Enable decode on next cycle after branch (or initially)
         if (!can_execute) {
@@ -109,7 +111,7 @@ int emulate(uint32_t pc_address) {
         }
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 /*
@@ -143,18 +145,28 @@ enum status em_get_status() {
  * is always exactly 8 bytes greater than the currently executed instruction
  */
 uint32_t em_get_pc(void) {
-    return pc;
+    return get_register(PC_INDEX);
 }
 
 /*
  * Function : em_set_pc
- * Usage    : set_pc(get_pc() + offset);
+ * Usage    : em_set_pc(em_get_pc() + offset);
  * -------------------------------------
  * Set program counter (used when branching)
  */
  void em_set_pc(uint32_t new_pc) {
      ASSERT_ADDRESS(new_pc);
-     pc = new_pc;
+     set_register(PC_INDEX, new_pc);
+ }
+
+ /*
+  * Function : em_acc_pc
+  * Usage    : em_acc_pc(offset);
+  * -------------------------------------
+  * Accumulate program counter (used when branching)
+  */
+ void em_acc_pc(uint32_t offset) {
+     set_register(PC_INDEX, get_register(PC_INDEX) + offset);
  }
 
 /*
@@ -188,25 +200,32 @@ static void (*decode(union instruction *fetched))(union decoded_instr * ) {
 
         case DP_MULT_ID: {
             if (fetched->decoded.dp.imm_op == 1) {
-                // return data processing
+                return dp_exec;
             }
 
             if (!fetched->decoded.mul._mul4) {
-                // return data processing
+                return dp_exec;
             }
 
             if (!fetched->decoded.mul._mul7) {
-                // return data processing
+                return dp_exec;
             }
 
-            // return multiply
-            break;
+            return mul_exec;
         }
-        case SDT_ID: break; // return sdt
 
-        case BRANCH_ID: break; // return branch
+        case SDT_ID: {
+          return sdt_exec;
+        }
 
-        default: assert(false); // Invalid instruction
+        case BRANCH_ID: {
+          is_branch = true;
+          return br_exec;
+        }
+
+        default: {
+          assert(false); // Invalid instruction
+        }
         }
     } else {
       return nop;

@@ -14,7 +14,7 @@ void br_exec(union decoded_instr *instruction) {
     offset = offset << OFFSET_SHIFT;
     sign_extend(&offset, OFFSET_SIZE - 1 + OFFSET_SHIFT);
 
-    em_set_pc((int32_t)em_get_pc() + offset);
+    em_acc_pc(offset);
 }
 
 static void sign_extend(int32_t *val, short sign_pos) {

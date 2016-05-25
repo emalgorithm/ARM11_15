@@ -81,6 +81,14 @@ uint32_t em_get_pc(void);
  * -------------------------------------
  * Set program counter (used when branching)
  */
- void em_set_pc(uint32_t new_pc);
+void em_set_pc(uint32_t new_pc);
+
+/*
+ * Function : em_acc_pc
+ * Usage    : em_acc_pc(offset);
+ * -------------------------------------
+ * Accumulate program counter (used when branching)
+ */
+void em_acc_pc(uint32_t offset);
 
 #endif
