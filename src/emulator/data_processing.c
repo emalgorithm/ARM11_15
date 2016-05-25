@@ -28,7 +28,7 @@
 typedef void (*fun_ptr)(struct dp_instr * , bool);
 typedef uint32_t (*op_exec_ptr)(uint32_t, uint32_t, uint32_t);
 
-enum operators {AND, EOR, SUB, RSB, ORR};
+enum operators {AND, EOR, SUB, RSB, ADD, ORR};
 
 void set_cflag_cond (uint32_t set_cond, bool condition) {
     if (set_cond) {
@@ -38,6 +38,10 @@ void set_cflag_cond (uint32_t set_cond, bool condition) {
             clr_cflag;
         }
     }
+}
+
+static uint32_t complement (uint32_t val) {
+  return ~(val - 1);
 }
 
 /**/
@@ -58,7 +62,7 @@ static void write_res (struct dp_instr* dp_instruction, bool write, uint32_t res
         set_register(dp_instruction->rd, res);
     }
     if (dp_instruction->set_cond) {
-        if (res == 0) {
+        if (!res) {
             set_zflag;
         }
         if (get_bit(res, NFLAG_BIT)) {
@@ -77,16 +81,22 @@ static uint32_t eor_op (uint32_t left, uint32_t right, uint32_t set_cond) {
     return left ^ right;
 }
 
+static uint32_t add_op (uint32_t left, uint32_t right, uint32_t set_cond) {
+    // Subraction produces a borrow if term 2 is less than term 1
+    uint32_t res = left + right;
+    // Integer overflow = result is SMALLER than both addends
+    set_cflag_cond(set_cond, (res < left) && (res < right));
+    return res;
+}
+
 static uint32_t sub_op (uint32_t left, uint32_t right, uint32_t set_cond) {
     // Subraction produces a borrow if term 2 is less than term 1
-    set_cflag_cond(set_cond, left < right);
-    return left - right;
+    return (add_op(left, complement(right), set_cond));
 }
 
 static uint32_t rsb_op (uint32_t left, uint32_t right, uint32_t set_cond) {
     // Subraction produces a borrow if term 2 is less than term 1
-    set_cflag_cond(set_cond, right < left);
-    return right - left;
+    return sub_op (right, left, set_cond);
 }
 
 static uint32_t orr_op (uint32_t left, uint32_t right, uint32_t set_cond) {
@@ -100,6 +110,7 @@ static void exec_instr (struct dp_instr* dp_instruction, bool write, enum operat
         eor_op,
         sub_op,
         rsb_op,
+        add_op,
         orr_op
     };
 
@@ -127,13 +138,7 @@ static void rsb_instr (struct dp_instr* dp_instruction, bool write) {
 }
 
 static void add_instr (struct dp_instr* dp_instruction, bool write) {
-    uint32_t op1_val = get_register(dp_instruction->rn);
-    uint32_t op2_val = get_op2(dp_instruction);
-    uint32_t res = op1_val + op2_val;
-    write_res(dp_instruction, write, res);
-
-    // Integer overflow = result is SMALLER than both addends
-    set_cflag_cond(dp_instruction->set_cond, (res < op1_val) && (res < op2_val));
+    exec_instr (dp_instruction, write, ADD);
 }
 
 static void tst_instr (struct dp_instr* dp_instruction, bool write) {
