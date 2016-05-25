@@ -307,7 +307,7 @@ static int test_sub_reg_wr_fl_1() {
     dp_exec((void*) gen_instruction);
 
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content == 0x40000000 &&  get_nflag == 0);
+    mu_assert(reg_content == 0xC0000000 &&  get_nflag == 1 && get_cflag == 0);
     return 0;
 }
 
