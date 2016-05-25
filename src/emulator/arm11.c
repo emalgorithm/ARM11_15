@@ -6,7 +6,6 @@
 #define LSB 0x000000ff
 #define WORD_ADDRESS(address) address / WORD_SIZE
 #define ASSERT_ADDRESS(address) assert(address >= 0 && address < MEMORY_SIZE)
-#define ASSERT_WORD_ADDRESS(address) assert(address >= 0 && address < MEMORY_SIZE)
 #define ASSERT_WORD_ADDRESS_ALIGNED(address) assert(address >= 0 && address < MEMORY_SIZE && address % WORD_SIZE == 0)
 #define ASSERT_INDEX(index) assert(index >= 0 && index < NUM_OF_REGISTERS)
 
@@ -32,7 +31,7 @@ void initialize(void) {
  * returns the instruction starting at that address
  */
 union instruction *get_instr(uint32_t address) {
-    ASSERT_WORD_ADDRESS(address);
+    ASSERT_ADDRESS(address);
 
     return &(arm11.memory[WORD_ADDRESS(address)]);
 }
@@ -75,7 +74,7 @@ uint8_t get_byte(uint32_t address) {
  * little endian
  */
 void set_word(uint32_t address, uint32_t value) {
-    ASSERT_WORD_ADDRESS(address);
+    ASSERT_ADDRESS(address);
 
     set_byte(address, get_bits(value, BYTE - 1, BYTE));
     set_byte(address + 1, get_bits(value, 2 * BYTE - 1, BYTE));
@@ -101,7 +100,7 @@ void set_word_aligned(uint32_t address, uint32_t value) {
  * desired address after converting it to big endian
  */
 uint32_t get_word(uint32_t address) {
-    ASSERT_WORD_ADDRESS(address);
+    ASSERT_ADDRESS(address);
 
     uint32_t word  = get_byte(address);
     word |= (get_byte(address + 1) << BYTE);

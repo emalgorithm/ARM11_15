@@ -4,6 +4,15 @@
 #include "sdt.h"
 #include "util/shift_reg.h"
 
+static bool check_out_of_boundary(uint32_t address) {
+    if(!(address < MEMORY_SIZE)) {
+        printf("Error: Out of bounds memory access at address 0x%x\n", address);
+        return false;
+    }
+
+    return true;
+}
+
 
 static uint32_t get_scaled_mem_address(uint32_t mem_address, uint32_t offset, bool up) {
     uint32_t scaled_mem_address = mem_address;
@@ -46,6 +55,10 @@ void sdt_exec(union decoded_instr *decoded) {
         mem_address = get_scaled_mem_address(mem_address, offset, sdt->up);
     }
 
+    if (!check_out_of_boundary(mem_address)) {
+        return;
+    }
+
     if (sdt->load_store) {
         load_from_mem(sdt->rd, mem_address);
     } else {
@@ -57,6 +70,11 @@ void sdt_exec(union decoded_instr *decoded) {
      */
     if (!sdt->index_bit) {
         mem_address = get_scaled_mem_address(mem_address, offset, sdt->up);
+
+        if (!check_out_of_boundary(mem_address)) {
+            return;
+        }
+
         set_register(sdt->rn, mem_address);
     }
 }
