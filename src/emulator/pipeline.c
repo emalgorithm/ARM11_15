@@ -114,7 +114,7 @@ int emulate(uint32_t pc_address) {
 
     // Discard last increment
     em_acc_pc(-WORD_SIZE);
-    
+
     return EXIT_SUCCESS;
 }
 
@@ -269,6 +269,6 @@ static bool check_cond(uint32_t cond) {
       case gt: return !get_zflag && (get_nflag == get_vflag);
       case le: return get_zflag || (get_nflag != get_vflag);
       case al: return true;
-      default: assert(false);
+      default: return false;
     }
 }
