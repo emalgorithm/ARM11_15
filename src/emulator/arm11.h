@@ -9,6 +9,8 @@
 #define BYTE 8
 #define WORD_SIZE 4
 #define SIGN_BIT (1 << 31)
+#define PC_INDEX 15
+#define CPSR_INDEX 16
 
 /* Instruction types
  * -----------------

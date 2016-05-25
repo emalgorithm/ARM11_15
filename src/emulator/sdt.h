@@ -4,6 +4,6 @@
 #include <stdint.h>
 #include "arm11.h"
 
-void sdt_exect(union decoded_instr *);
+void sdt_exec(union decoded_instr *);
 
 #endif

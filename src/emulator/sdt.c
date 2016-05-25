@@ -1,6 +1,9 @@
 #include <stdbool.h>
+#include <stdio.h>
+#include <assert.h>
 #include "sdt.h"
 #include "util/shift_reg.h"
+
 
 static uint32_t get_scaled_mem_address(uint32_t mem_address, uint32_t offset, bool up) {
     uint32_t scaled_mem_address = mem_address;
@@ -24,8 +27,11 @@ static void store_into_mem(uint32_t src_reg_index, uint32_t mem_address) {
     set_word(mem_address, value);
 }
 
-void sdt_exect(union decoded_instr *decoded) {
+void sdt_exec(union decoded_instr *decoded) {
     struct sdt_instr *sdt = &(decoded->sdt);
+
+    assert(sdt->rn != PC_INDEX);
+
     uint32_t offset = sdt->offset;
     uint32_t mem_address = get_register(sdt->rn);
 
@@ -51,6 +57,6 @@ void sdt_exect(union decoded_instr *decoded) {
      */
     if (!sdt->index_bit) {
         mem_address = get_scaled_mem_address(mem_address, offset, sdt->up);
-        sdt->rn = mem_address;
+        set_register(sdt->rn, mem_address);
     }
 }
