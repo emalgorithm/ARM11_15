@@ -60,6 +60,8 @@ static void write_res (struct dp_instr* dp_instruction, bool write, uint32_t res
     if (dp_instruction->set_cond) {
         if (!res) {
             set_zflag;
+        } else {
+            clr_zflag;
         }
         if (get_bit(res, NFLAG_BIT)) {
             set_nflag;
