@@ -89,12 +89,12 @@ static uint32_t add_op (uint32_t left, uint32_t right, uint32_t set_cond) {
 }
 
 static uint32_t sub_op (uint32_t left, uint32_t right, uint32_t set_cond) {
-    // Subraction produces a borrow if term 2 is less than term 1
+    // Call addition with the 2's complement of the second term
     return (add_op(left, complement(right), set_cond));
 }
 
 static uint32_t rsb_op (uint32_t left, uint32_t right, uint32_t set_cond) {
-    // Subraction produces a borrow if term 2 is less than term 1
+    // Call subtraction with terms inverted
     return sub_op (right, left, set_cond);
 }
 
@@ -102,6 +102,7 @@ static uint32_t orr_op (uint32_t left, uint32_t right, uint32_t set_cond) {
     return left | right;
 }
 
+/*Executes the operation specified by each instruction*/
 static void exec_instr (struct dp_instr* dp_instruction, bool write, enum operators operator) {
 
     op_exec_ptr op_exec_ptr_array[] = {
@@ -184,5 +185,6 @@ void dp_exec (union decoded_instr* instruction) {
         mov_instr
     };
 
+    // Call function corrisponding to index (= OpCode)
     fun_ptr_array[dp_instruction->op_code](dp_instruction, true);
 }

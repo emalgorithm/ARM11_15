@@ -19,7 +19,7 @@
  * This procedure takes a pointer to a union decoded_instr* and executes the
  * command as if it were of type struct dp_instr*
  *
- * The OpCode must be of Type:
+ * The Instruction must be of the following form:
  *
  * |----|--|-|------|-|--|--|--------|
  * |COND|00|I|OPCODE|S|RN|RD|OPERAND2|
@@ -48,7 +48,7 @@
  * |------|---|
  * |Rotate|Imm|
  * |------|---|
- * 
+ *
  * Rotate : 4bits, integer specifying a right rtation of Imm
  * Imm    : 8bits, immediate value, zero-extended to 32-bits
  *
