@@ -622,7 +622,7 @@ static int test_orr_imm_wr() {
 
 // MOV TESTS
 //39
-static int test_mov_imm_nr() {
+static int test_mov_imm_nr_1() {
     /* 0x0 MOV 0x6 = 0x6 */
     set_register(0, 0x0);
 
@@ -710,6 +710,28 @@ static int test_shift_fl_orr() {
   return 0;
 }
 
+//44
+static int test_mov_imm_nr_2() {
+    /* Generic shift checking with carry flags*/
+    set_register(0, 0x0);
+
+    struct dp_instr *instruction;
+    instruction = malloc(sizeof(struct dp_instr));
+
+    instruction->imm_op = 1;
+    instruction->op_code = 13;
+    instruction->set_cond = 1;
+    instruction->rn = 0;
+    instruction->rd = 1;
+    instruction->op2 = 1;
+
+    dp_exec((void*) instruction);
+
+    uint32_t reg_content = get_register(1);
+    mu_assert(reg_content == 0x1);
+
+    return 0;
+}
 
 
 static int test_all() {
@@ -796,7 +818,7 @@ static int test_all() {
     //38
     mu_run_test(test_orr_imm_wr);
     //39
-    mu_run_test(test_mov_imm_nr);
+    mu_run_test(test_mov_imm_nr_1);
     //40
     mu_run_test(test_mov_imm_wr);
     //41
@@ -805,6 +827,8 @@ static int test_all() {
     mu_run_test(test_mov_imm_nr_fl_2);
     //43
     mu_run_test(test_shift_fl_orr);
+    //44
+    mu_run_test(test_mov_imm_nr_2);
 
     return 0;
 }
