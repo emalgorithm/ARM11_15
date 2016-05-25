@@ -19,12 +19,12 @@ static int test_read_memory() {
 
     read_memory(filename);
 
-    mu_assert(get_word(0) == 0x0110a0e3);
-    mu_assert(get_word(4) == 0x0120a0e3);
-    mu_assert(get_word(8) == 0x020051e1);
-    mu_assert(get_word(12) == 0x0000001a);
-    mu_assert(get_word(16) == 0x0330a0e3);
-    mu_assert(get_word(20) == 0x0440a0e3);
+    mu_assert(get_word(0) == 0xe3a01001);
+    mu_assert(get_word(4) == 0xe3a02001);
+    mu_assert(get_word(8) == 0xe1510002);
+    mu_assert(get_word(12) == 0x1a000000);
+    mu_assert(get_word(16) == 0xe3a03003);
+    mu_assert(get_word(20) == 0xe3a04004);
 
     return 0;
 }

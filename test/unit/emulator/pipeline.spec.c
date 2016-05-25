@@ -52,19 +52,6 @@ static int test_reset() {
     return 0;
 }
 
-static int test_get_pc() {
-    set_word(0, 0x0000ff00);
-
-    emulate(0);
-
-    /* halt instruction was executed and then 4 more was added to pc which
-     * makes a total of 12 (given the 8-byte constant offset)
-     */
-    mu_assert(em_get_pc() == (0x0000ff00 + PC_OFFSET + WORD_SIZE));
-
-    return 0;
-}
-
 static int test_set_pc() {
     em_set_pc(0x0000ff00);
 
@@ -84,7 +71,6 @@ static int test_all() {
     mu_run_test(test_emulate_empty_mem);
     mu_run_test(test_emulate_conseq_run);
     mu_run_test(test_reset);
-    mu_run_test(test_get_pc);
     mu_run_test(test_set_pc);
 
     return 0;

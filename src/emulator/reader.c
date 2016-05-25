@@ -12,10 +12,10 @@ void read_memory(char** argv) {
     while(!feof(input_file)) {
         fread(buffer, sizeof(buffer), 1, input_file);
 
-        uint32_t instr = buffer[WORD_SIZE - 1];
+        uint32_t instr = buffer[0];
 
-        for (int i = WORD_SIZE - 2; i >= 0; i--) {
-            instr |= (((uint32_t)buffer[i]) << (BYTE * (WORD_SIZE - 1 - i)));
+        for (int i = 1; i < WORD_SIZE; i++) {
+            instr |= (((uint32_t)buffer[i]) << (BYTE * (i)));
         }
 
         set_word(address, instr);
