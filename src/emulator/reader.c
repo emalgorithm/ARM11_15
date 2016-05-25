@@ -9,8 +9,12 @@ void read_memory(char** argv) {
 
     uint32_t address = 0;
 
-    while(!feof(input_file)) {
+    for (;;) {
         fread(buffer, sizeof(buffer), 1, input_file);
+
+        if(feof(input_file)) {
+            break;
+        }
 
         uint32_t instr = buffer[0];
 
