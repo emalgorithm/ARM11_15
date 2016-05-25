@@ -60,6 +60,8 @@ static void write_res (struct dp_instr* dp_instruction, bool write, uint32_t res
     if (dp_instruction->set_cond) {
         if (!res) {
             set_zflag;
+        } else {
+            clr_zflag;
         }
         if (get_bit(res, NFLAG_BIT)) {
             set_nflag;
@@ -85,7 +87,9 @@ static uint32_t add_op (uint32_t left, uint32_t right, uint32_t set_cond) {
 }
 
 static uint32_t complement (uint32_t val) {
-  return (add_op(~val, 1, 1));
+    //2's Complement = Invert and ADD 1.
+    //Performs operation with add_op, in order to set flags properly.
+    return (add_op(~val, 1, 1));
 }
 
 static uint32_t sub_op (uint32_t left, uint32_t right, uint32_t set_cond) {
