@@ -634,8 +634,34 @@ static int test_mov_imm_wr() {
     return 0;
 }
 
-// SHIFT TESTS WITH FLAGS
 //40
+static int test_mov_imm_nr_fl_1() {
+    /* 0x0 MOV 0x6 = 0x6 */
+    set_register(0, 0x0);
+
+    run_gen_instr(9);
+
+    uint32_t reg_content = get_register(1);
+    mu_assert(reg_content == 0x6 && get_cflag == 0 && get_nflag == 0 && get_zflag == 0);
+    return 0;
+}
+
+//41
+static int test_mov_imm_nr_fl_2() {
+    /* 0x0 MOV 0x6 = 0x6 */
+    set_register(0, 0x0);
+
+    struct dp_instr *gen_instruction = gen_instr(9);
+    gen_instruction->op2 = 0x0;
+    dp_exec((void*) gen_instruction);
+
+    uint32_t reg_content = get_register(1);
+    mu_assert(reg_content == 0x0 && get_cflag == 0 && get_nflag == 0 && get_zflag == 1);
+    return 0;
+}
+
+// SHIFT TESTS WITH FLAGS
+//42
 static int test_shift_fl_orr() {
   /* Generic shift checking with carry flags*/
   set_register(0, 0xFFFFFFF0);
@@ -758,6 +784,10 @@ static int test_all() {
     //39
     mu_run_test(test_mov_imm_wr);
     //40
+    mu_run_test(test_mov_imm_nr_fl_1);
+    //41
+    mu_run_test(test_mov_imm_nr_fl_2);
+    //42
     mu_run_test(test_shift_fl_orr);
 
     return 0;
