@@ -16,6 +16,7 @@
 #include "data_processing.h"
 #include "multiply.h"
 #include "sdt.h"
+#include "printer.h"
 
 #define ASSERT_ADDRESS(address) assert(address >= 0 && address < MEMORY_SIZE)
 
@@ -70,7 +71,7 @@ int emulate(uint32_t pc_address) {
     current = running;
     can_decode = can_execute = is_branch = false;
 
-    em_set_pc(get_word(pc_address));
+    em_set_pc(pc_address);
 
     while (current == running) {
 
