@@ -52,9 +52,14 @@ static uint32_t log_right_shift (uint32_t amount, uint32_t value, uint32_t set_c
 }
 static uint32_t arit_right_shift (uint32_t amount, uint32_t value, uint32_t set_cond) {
     set_cflag_shift(amount, value, amount - 1, set_cond);
-    return value >> amount;
+    // If negative
+    if (get_bit(value, 31)) {
+        return value >> amount | ~(log_right_shift(amount, ~0x0, 0));
+    } else {
+        return value >> amount;
+    }
 }
- uint32_t rot_right (uint32_t amount, uint32_t value, uint32_t set_cond) {
+uint32_t rot_right (uint32_t amount, uint32_t value, uint32_t set_cond) {
     set_cflag_shift(amount, value, amount - 1, set_cond);
     uint32_t left_shift = (int)((unsigned)value >> amount);
     uint32_t right_shift = value << (MAX_BITS - amount);

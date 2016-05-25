@@ -227,12 +227,12 @@ static int test_eor_reg_wr_fl() {
 //12
 static int test_sub_imm_nr_1() {
     /* 0xA SUB 0x6 = 0x4 */
-    set_register(0, 10);
+    set_register(0, 0xA);
 
     run_gen_instr(2);
 
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content == 4);
+    mu_assert(reg_content == 0x4);
     return 0;
 }
 
@@ -307,13 +307,13 @@ static int test_sub_reg_wr_fl_1() {
     dp_exec((void*) gen_instruction);
 
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content == 0x40000000 &&  get_nflag == 0);
+    mu_assert(reg_content == 0xC0000000 &&  get_nflag == 1 && get_cflag == 0);
     return 0;
 }
 
 //18
 static int test_sub_reg_wr_fl_2() {
-    /* 0x20000000 SUB 0x20000001 = 0xFFFFFFF WITH CARRY */
+    /* 0x20000000 SUB 0x20000001 = 0xFFFFFFF WITH NO CARRY */
     set_register(0, 0x20000000);
     set_register(2, 0x40000002);
 
@@ -323,12 +323,26 @@ static int test_sub_reg_wr_fl_2() {
     dp_exec((void*) gen_instruction);
 
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content == 0xFFFFFFFF && get_cflag == 1 && get_nflag == 1);
+    mu_assert(reg_content == 0xFFFFFFFF && get_cflag == 0 && get_nflag == 1);
+    return 0;
+}
+
+//19
+static int test_sub_imm_nr_fl() {
+    /* 0x8 SUB 0x3 = 0x5 */
+    set_register(0, 0x1);
+
+    struct dp_instr *gen_instruction = gen_instr(2);
+    gen_instruction->op2 = 0x1;
+    dp_exec((void*) gen_instruction);
+
+    uint32_t reg_content = get_register(1);
+    mu_assert(reg_content == 0x0 && get_cflag == 1);
     return 0;
 }
 
 // RSB TESTS
-//19
+//20
 static int test_rsb_imm_nr_1() {
     /* 0x3 RSB 0x6 = 0x3 */
     set_register(0, 0x3);
@@ -340,7 +354,7 @@ static int test_rsb_imm_nr_1() {
     return 0;
 }
 
-//20
+//21
 static int test_rsb_imm_nr_2() {
     /* 0xA RSB 0x6 = 0xFFFFFFFC
      * 10 RSB 6 = -4 */
@@ -353,7 +367,7 @@ static int test_rsb_imm_nr_2() {
     return 0;
 }
 
-//21
+//22
 static int test_rsb_imm_wr_1() {
     /* 0x20C = 0x0C Rotated 0x2 = 0x3
      * 0x8 RSP 0x3 = 0xFFFFFFFB */
@@ -368,7 +382,7 @@ static int test_rsb_imm_wr_1() {
     return 0;
 }
 
-//22
+//23
 static int test_rsb_imm_wr_2() {
     /* 0x408 = 0x08 Rotated 0x4 = 0x80000000
      * 0x70000000 RSB 0x80000000 = 0x10000000 */
@@ -383,7 +397,7 @@ static int test_rsb_imm_wr_2() {
     return 0;
 }
 
-//23
+//24
 static int test_rsb_reg_nr_fl() {
     /* 0x20000000 SUB 0x20000001 = 0xFFFFFFF WITH CARRY */
     set_register(0, 0x20000000);
@@ -399,7 +413,7 @@ static int test_rsb_reg_nr_fl() {
     return 0;
 }
 
-//24
+//25
 static int test_rsb_reg_wr_fl() {
     /* 0x20000001 RSB 0x20000000 = 0xFFFFFFF WITH CARRY */
     set_register(0, 0x20000001);
@@ -411,12 +425,12 @@ static int test_rsb_reg_wr_fl() {
     dp_exec((void*) gen_instruction);
 
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content == 0xFFFFFFFF && get_cflag == 1);
+    mu_assert(reg_content == 0xFFFFFFFF && get_cflag == 0);
     return 0;
 }
 
 // ADD TESTS
-//25
+//26
 static int test_add_imm_nr() {
     /* 0x2 ADD 0x6 = 0x8 */
     set_register(0, 0x2);
@@ -428,7 +442,7 @@ static int test_add_imm_nr() {
     return 0;
 }
 
-//26
+//27
 static int test_add_imm_wr_1() {
     /* 0x10E = 0x0E Rotated 0x1 = 0x7
      * 0x8 RSP 0x7 = 0xF */
@@ -443,7 +457,7 @@ static int test_add_imm_wr_1() {
     return 0;
 }
 
-//27
+//28
 static int test_add_imm_wr_2() {
     /* 0x30C = 0x0C Rotated 0x3 = 0x80000001
      * 0x70000000 RSB 0x80000000 = 0xF0000000 */
@@ -458,7 +472,7 @@ static int test_add_imm_wr_2() {
     return 0;
 }
 
-//28
+//29
 static int test_add_imm_nr_fl_1() {
   set_register(0, 0x0);
 
@@ -471,7 +485,7 @@ static int test_add_imm_nr_fl_1() {
   return 0;
 }
 
-//29
+//30
 static int test_add_imm_nr_fl_2() {
   /* Overflow with result 0x0 */
   set_register(0, 0xFFFFFFFF);
@@ -486,20 +500,20 @@ static int test_add_imm_nr_fl_2() {
 }
 
 // TST TESTS
-//30
+//31
 static int test_tst_imm_nr() {
     /* 0x8 AND 0x6 = 0x4 -- RESULT NOT WRITTEN */
     set_register(0, 0x8);
     set_register(1, 0xF);
 
-    run_gen_instr(5);
+    run_gen_instr(8);
 
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content == 0xF);
     return 0;
 }
 
-//31
+//32
 static int test_tst_imm_wr() {
     /* 0x408 = 0x08 Rotated 0x4 = 0x80000000
      * 0x80000000 TST 0x80000000 = 0x80000000
@@ -507,7 +521,7 @@ static int test_tst_imm_wr() {
     set_register(0, 0x80000000);
     set_register(1, 0xF);
 
-    struct dp_instr *gen_instruction = gen_instr(5);
+    struct dp_instr *gen_instruction = gen_instr(8);
     gen_instruction->op2 = 0x408;
     dp_exec((void*) gen_instruction);
 
@@ -517,20 +531,20 @@ static int test_tst_imm_wr() {
 }
 
 // TEQ TESTS
-//32
+//33
 static int test_teq_imm_nr() {
     /* 0xC TEQ 0x6 = 0XA -- RESULT NOT WRITTEN */
     set_register(0, 0xC);
     set_register(1, 0xF);
 
-    run_gen_instr(6);
+    run_gen_instr(9);
 
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content == 0xF);
     return 0;
 }
 
-//33
+//34
 static int test_teq_imm_wr() {
     /* 0x408 = 0x08 Rotated 0x4 = 0x80000000
      * 0x70000000 TEQ 0x80000000 = 0xF0000000
@@ -538,7 +552,7 @@ static int test_teq_imm_wr() {
     set_register(0, 0x70000000);
     set_register(1, 0xABCD);
 
-    struct dp_instr *gen_instruction = gen_instr(6);
+    struct dp_instr *gen_instruction = gen_instr(9);
     gen_instruction->op2 = 0x408;
     dp_exec((void*) gen_instruction);
 
@@ -548,20 +562,20 @@ static int test_teq_imm_wr() {
 }
 
 // CMP TESTS
-//34
+//35
 static int test_cmp_imm_nr() {
     /* 0xA CMP 0x6 = 0x4 -- RESULT NOT WRITTEN */
     set_register(0, 10);
     set_register(1, 0xF);
 
-    run_gen_instr(7);
+    run_gen_instr(10);
 
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content == 0xF);
     return 0;
 }
 
-//35
+//36
 static int test_cmp_imm_wr() {
     /* 0x404 = 0x04 Rotated 0x4 = 0x40000000
      * 0x70000000 CMP 0x40000000 = 0x30000000
@@ -569,7 +583,7 @@ static int test_cmp_imm_wr() {
     set_register(0, 0x70000000);
     set_register(1, 0xABCD);
 
-    struct dp_instr *gen_instruction = gen_instr(7);
+    struct dp_instr *gen_instruction = gen_instr(10);
     gen_instruction->op2 = 0x404;
     dp_exec((void*) gen_instruction);
 
@@ -579,25 +593,25 @@ static int test_cmp_imm_wr() {
 }
 
 // ORR TESTS
-//36
+//37
 static int test_orr_imm_nr() {
     /* 0xC OR 0x6 = 0xE */
     set_register(0, 0xC);
 
-    run_gen_instr(8);
+    run_gen_instr(12);
 
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content == 0xE);
     return 0;
 }
 
-//37
+//38
 static int test_orr_imm_wr() {
     /* 0x22C = 0x2C Rotated 0x2 = 0xB
      * 0x8 ORR 0xB = 0xB */
     set_register(0, 0x8);
 
-    struct dp_instr *gen_instruction = gen_instr(8);
+    struct dp_instr *gen_instruction = gen_instr(12);
     gen_instruction->op2 = 0x22C;
     dp_exec((void*) gen_instruction);
 
@@ -607,25 +621,25 @@ static int test_orr_imm_wr() {
 }
 
 // MOV TESTS
-//38
+//39
 static int test_mov_imm_nr() {
     /* 0x0 MOV 0x6 = 0x6 */
     set_register(0, 0x0);
 
-    run_gen_instr(9);
+    run_gen_instr(13);
 
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content == 0x6);
     return 0;
 }
 
-//39
+//40
 static int test_mov_imm_wr() {
     /* 0x22C = 0x2C Rotated 0x2 = 0xB
      * 0xF ORR 0xB = 0xB */
     set_register(0, 0xF);
 
-    struct dp_instr *gen_instruction = gen_instr(9);
+    struct dp_instr *gen_instruction = gen_instr(13);
     gen_instruction->op2 = 0x22C;
     dp_exec((void*) gen_instruction);
 
@@ -634,24 +648,24 @@ static int test_mov_imm_wr() {
     return 0;
 }
 
-//40
+//41
 static int test_mov_imm_nr_fl_1() {
     /* 0x0 MOV 0x6 = 0x6 */
     set_register(0, 0x0);
 
-    run_gen_instr(9);
+    run_gen_instr(13);
 
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content == 0x6 && get_cflag == 0 && get_nflag == 0 && get_zflag == 0);
     return 0;
 }
 
-//41
+//42
 static int test_mov_imm_nr_fl_2() {
     /* 0x0 MOV 0x6 = 0x6 */
     set_register(0, 0x0);
 
-    struct dp_instr *gen_instruction = gen_instr(9);
+    struct dp_instr *gen_instruction = gen_instr(13);
     gen_instruction->op2 = 0x0;
     dp_exec((void*) gen_instruction);
 
@@ -661,14 +675,14 @@ static int test_mov_imm_nr_fl_2() {
 }
 
 // SHIFT TESTS WITH FLAGS
-//42
+//43
 static int test_shift_fl_orr() {
   /* Generic shift checking with carry flags*/
   set_register(0, 0xFFFFFFF0);
   set_register(3, 0x4);
   set_register(2, 0x000000F0);
 
-  struct dp_instr *gen_instruction = gen_instr(8);
+  struct dp_instr *gen_instruction = gen_instr(12);
   gen_instruction->op2 = 0x332;
   gen_instruction->imm_op = 0;
   dp_exec((void*) gen_instruction);
@@ -742,52 +756,54 @@ static int test_all() {
     //18
     mu_run_test(test_sub_reg_wr_fl_2);
     //19
-    mu_run_test(test_rsb_imm_nr_1);
+    mu_run_test(test_sub_imm_nr_fl);
     //20
-    mu_run_test(test_rsb_imm_nr_2);
+    mu_run_test(test_rsb_imm_nr_1);
     //21
-    mu_run_test(test_rsb_imm_wr_1);
+    mu_run_test(test_rsb_imm_nr_2);
     //22
-    mu_run_test(test_rsb_imm_wr_2);
+    mu_run_test(test_rsb_imm_wr_1);
     //23
-    mu_run_test(test_rsb_reg_nr_fl);
+    mu_run_test(test_rsb_imm_wr_2);
     //24
-    mu_run_test(test_rsb_reg_wr_fl);
+    mu_run_test(test_rsb_reg_nr_fl);
     //25
-    mu_run_test(test_add_imm_nr);
+    mu_run_test(test_rsb_reg_wr_fl);
     //26
-    mu_run_test(test_add_imm_wr_1);
+    mu_run_test(test_add_imm_nr);
     //27
-    mu_run_test(test_add_imm_wr_2);
+    mu_run_test(test_add_imm_wr_1);
     //28
-    mu_run_test(test_add_imm_nr_fl_1);
+    mu_run_test(test_add_imm_wr_2);
     //29
-    mu_run_test(test_add_imm_nr_fl_2);
+    mu_run_test(test_add_imm_nr_fl_1);
     //30
-    mu_run_test(test_tst_imm_nr);
+    mu_run_test(test_add_imm_nr_fl_2);
     //31
-    mu_run_test(test_tst_imm_wr);
+    mu_run_test(test_tst_imm_nr);
     //32
-    mu_run_test(test_teq_imm_nr);
+    mu_run_test(test_tst_imm_wr);
     //33
-    mu_run_test(test_teq_imm_wr);
+    mu_run_test(test_teq_imm_nr);
     //34
-    mu_run_test(test_cmp_imm_nr);
+    mu_run_test(test_teq_imm_wr);
     //35
-    mu_run_test(test_cmp_imm_wr);
+    mu_run_test(test_cmp_imm_nr);
     //36
-    mu_run_test(test_orr_imm_nr);
+    mu_run_test(test_cmp_imm_wr);
     //37
-    mu_run_test(test_orr_imm_wr);
+    mu_run_test(test_orr_imm_nr);
     //38
-    mu_run_test(test_mov_imm_nr);
+    mu_run_test(test_orr_imm_wr);
     //39
-    mu_run_test(test_mov_imm_wr);
+    mu_run_test(test_mov_imm_nr);
     //40
-    mu_run_test(test_mov_imm_nr_fl_1);
+    mu_run_test(test_mov_imm_wr);
     //41
-    mu_run_test(test_mov_imm_nr_fl_2);
+    mu_run_test(test_mov_imm_nr_fl_1);
     //42
+    mu_run_test(test_mov_imm_nr_fl_2);
+    //43
     mu_run_test(test_shift_fl_orr);
 
     return 0;
