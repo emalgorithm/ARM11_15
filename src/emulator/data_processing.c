@@ -40,17 +40,13 @@ void set_cflag_cond (uint32_t set_cond, bool condition) {
     }
 }
 
-static uint32_t complement (uint32_t val) {
-  return ~(val - 1);
-}
-
 /**/
 static uint32_t get_op2 (struct dp_instr* dp_instruction) {
     if (dp_instruction->imm_op) {
         /*Operand2 is an Immediate Operand*/
         uint32_t rotate = get_bits(dp_instruction->op2, ROT_BIT, ROT_LEN);
         uint32_t imm_val = get_bits(dp_instruction->op2, VAL_BIT, VAL_LEN);
-        return rot_right(rotate, imm_val, dp_instruction->set_cond);
+        return rot_right(rotate*2, imm_val, dp_instruction->set_cond);
     } else {
         /*Operand2 is NOT an Immediate Operand*/
         return shift_reg(dp_instruction->op2, dp_instruction->set_cond);
@@ -84,8 +80,12 @@ static uint32_t eor_op (uint32_t left, uint32_t right, uint32_t set_cond) {
 static uint32_t add_op (uint32_t left, uint32_t right, uint32_t set_cond) {
     uint32_t res = left + right;
     // Integer overflow = result is SMALLER than both addends
-    set_cflag_cond(set_cond, (res < left) && (res < right));
+    set_cflag_cond(set_cond, (res <= left) && (res <= right));
     return res;
+}
+
+static uint32_t complement (uint32_t val) {
+  return (add_op(~val, 1, 1));
 }
 
 static uint32_t sub_op (uint32_t left, uint32_t right, uint32_t set_cond) {
