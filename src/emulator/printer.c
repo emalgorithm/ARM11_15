@@ -29,7 +29,7 @@ void print_memory(void) {
 }
 
 static void print_word(uint32_t address) {
-    uint32_t value = get_word(address);
+    uint32_t value = toggle_endian(get_word(address));
     if(value) {
         printf("%x: %x\n", address, value);
     }
