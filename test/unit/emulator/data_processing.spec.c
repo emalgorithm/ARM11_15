@@ -609,7 +609,7 @@ static int test_cmp_imm_wr_2() {
 }
 
 // ORR TESTS
-//37
+//38
 static int test_orr_imm_nr() {
     /* 0xC OR 0x6 = 0xE */
     set_register(0, 0xC);
@@ -621,7 +621,7 @@ static int test_orr_imm_nr() {
     return 0;
 }
 
-//38
+//39
 static int test_orr_imm_wr() {
     /* 0x22C = 0x2C Rotated 0x2 = 0xB
      * 0x8 ORR 0xB = 0xB */
@@ -637,7 +637,7 @@ static int test_orr_imm_wr() {
 }
 
 // MOV TESTS
-//39
+//40
 static int test_mov_imm_nr_1() {
     /* 0x0 MOV 0x6 = 0x6 */
     set_register(0, 0x0);
@@ -649,7 +649,7 @@ static int test_mov_imm_nr_1() {
     return 0;
 }
 
-//40
+//41
 static int test_mov_imm_wr() {
     /* 0x22C = 0x2C Rotated 0x2 = 0xB
      * 0xF ORR 0xB = 0xB */
@@ -664,7 +664,7 @@ static int test_mov_imm_wr() {
     return 0;
 }
 
-//41
+//42
 static int test_mov_imm_nr_fl_1() {
     /* 0x0 MOV 0x6 = 0x6 */
     set_register(0, 0x0);
@@ -676,7 +676,7 @@ static int test_mov_imm_nr_fl_1() {
     return 0;
 }
 
-//42
+//43
 static int test_mov_imm_nr_fl_2() {
     /* 0x0 MOV 0x6 = 0x6 */
     set_register(0, 0x0);
@@ -691,7 +691,7 @@ static int test_mov_imm_nr_fl_2() {
 }
 
 // SHIFT TESTS WITH FLAGS
-//43
+//44
 static int test_shift_fl_orr() {
   /* Generic shift checking with carry flags*/
   set_register(0, 0xFFFFFFF0);
@@ -726,7 +726,7 @@ static int test_shift_fl_orr() {
   return 0;
 }
 
-//44
+//45
 static int test_mov_imm_nr_2() {
     /* Generic shift checking with carry flags*/
     set_register(0, 0x0);
@@ -831,21 +831,21 @@ static int test_all() {
     mu_run_test(test_cmp_imm_wr_1);
     //37
     mu_run_test(test_cmp_imm_wr_2);
-    //37
-    mu_run_test(test_orr_imm_nr);
     //38
-    mu_run_test(test_orr_imm_wr);
+    mu_run_test(test_orr_imm_nr);
     //39
-    mu_run_test(test_mov_imm_nr_1);
+    mu_run_test(test_orr_imm_wr);
     //40
-    mu_run_test(test_mov_imm_wr);
+    mu_run_test(test_mov_imm_nr_1);
     //41
-    mu_run_test(test_mov_imm_nr_fl_1);
+    mu_run_test(test_mov_imm_wr);
     //42
-    mu_run_test(test_mov_imm_nr_fl_2);
+    mu_run_test(test_mov_imm_nr_fl_1);
     //43
-    mu_run_test(test_shift_fl_orr);
+    mu_run_test(test_mov_imm_nr_fl_2);
     //44
+    mu_run_test(test_shift_fl_orr);
+    //45
     mu_run_test(test_mov_imm_nr_2);
 
     return 0;
