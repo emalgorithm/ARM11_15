@@ -11,6 +11,7 @@
  * 24/05/2016    Alberto Spina         Initial version                     *
  ***************************************************************************/
 
+#include <stdio.h>
 #include "shift_reg.h"
 #include "binutils.h"
 #include "cpsr_flags.h"
@@ -46,15 +47,15 @@ static uint32_t log_left_shift (uint32_t amount, uint32_t value, uint32_t set_co
     return value << amount;
 }
 static uint32_t log_right_shift (uint32_t amount, uint32_t value, uint32_t set_cond) {
-    set_cflag_shift(amount, value, amount, set_cond);
+    set_cflag_shift(amount, value, amount - 1, set_cond);
     return (unsigned)value >> amount;
 }
 static uint32_t arit_right_shift (uint32_t amount, uint32_t value, uint32_t set_cond) {
-    set_cflag_shift(amount, value, MAX_BITS - amount, set_cond);
+    set_cflag_shift(amount, value, amount - 1, set_cond);
     return value >> amount;
 }
  uint32_t rot_right (uint32_t amount, uint32_t value, uint32_t set_cond) {
-    set_cflag_shift(amount, value, MAX_BITS - amount, set_cond);
+    set_cflag_shift(amount, value, amount - 1, set_cond);
     uint32_t left_shift = (int)((unsigned)value >> amount);
     uint32_t right_shift = value << (MAX_BITS - amount);
     return left_shift | right_shift;
@@ -73,6 +74,11 @@ uint32_t shift_reg (uint32_t instruction, uint32_t set_cond) {
         arit_right_shift,
         rot_right
     };
+    /* DEBUG
+    printf("--");
+    printf("%d ", rm_reg);
+    printf("%d ", rm_value);
+    printf("%d ", shift_type); */
 
     if (ctrl_bit) {
         /*Shift is specified by a Register*/
