@@ -178,9 +178,13 @@ void dp_exec (union decoded_instr* instruction) {
         sub_instr,
         rsb_instr,
         add_instr,
+        NULL,
+        NULL,
+        NULL,
         tst_instr,
         teq_instr,
         cmp_instr,
+        NULL,
         orr_instr,
         mov_instr
     };
