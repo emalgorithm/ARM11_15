@@ -112,6 +112,9 @@ int emulate(uint32_t pc_address) {
         }
     }
 
+    // Discard last increment
+    em_acc_pc(-WORD_SIZE);
+    
     return EXIT_SUCCESS;
 }
 
