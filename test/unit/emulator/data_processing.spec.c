@@ -77,7 +77,7 @@ static int test_and_imm_wr_1() {
     set_register(0, 0x6);
 
     struct dp_instr *gen_instruction = gen_instr(0);
-    gen_instruction->op2 = 0x20C;
+    gen_instruction->op2 = 0x10C;
     dp_exec((void*) gen_instruction);
 
     uint32_t reg_content = get_register(1);
@@ -92,7 +92,7 @@ static int test_and_imm_wr_2() {
     set_register(0, 0x80000000);
 
     struct dp_instr *gen_instruction = gen_instr(0);
-    gen_instruction->op2 = 0x408;
+    gen_instruction->op2 = 0x208;
     dp_exec((void*) gen_instruction);
 
     uint32_t reg_content = get_register(1);
@@ -166,7 +166,7 @@ static int test_eor_imm_wr_1() {
     set_register(0, 0x8);
 
     struct dp_instr *gen_instruction = gen_instr(1);
-    gen_instruction->op2 = 0x20C;
+    gen_instruction->op2 = 0x10C;
     dp_exec((void*) gen_instruction);
 
     uint32_t reg_content = get_register(1);
@@ -181,7 +181,7 @@ static int test_eor_imm_wr_2() {
     set_register(0, 0x70000000);
 
     struct dp_instr *gen_instruction = gen_instr(1);
-    gen_instruction->op2 = 0x408;
+    gen_instruction->op2 = 0x208;
     dp_exec((void*) gen_instruction);
 
     uint32_t reg_content = get_register(1);
@@ -256,7 +256,7 @@ static int test_sub_imm_wr_1() {
     set_register(0, 0x8);
 
     struct dp_instr *gen_instruction = gen_instr(2);
-    gen_instruction->op2 = 0x20C;
+    gen_instruction->op2 = 0x10C;
     dp_exec((void*) gen_instruction);
 
     uint32_t reg_content = get_register(1);
@@ -271,7 +271,7 @@ static int test_sub_imm_wr_2() {
     set_register(0, 0x70000000);
 
     struct dp_instr *gen_instruction = gen_instr(2);
-    gen_instruction->op2 = 0x404;
+    gen_instruction->op2 = 0x204;
     dp_exec((void*) gen_instruction);
 
     uint32_t reg_content = get_register(1);
@@ -374,7 +374,7 @@ static int test_rsb_imm_wr_1() {
     set_register(0, 0x8);
 
     struct dp_instr *gen_instruction = gen_instr(3);
-    gen_instruction->op2 = 0x20C;
+    gen_instruction->op2 = 0x10C;
     dp_exec((void*) gen_instruction);
 
     uint32_t reg_content = get_register(1);
@@ -389,7 +389,7 @@ static int test_rsb_imm_wr_2() {
     set_register(0, 0x70000000);
 
     struct dp_instr *gen_instruction = gen_instr(3);
-    gen_instruction->op2 = 0x408;
+    gen_instruction->op2 = 0x208;
     dp_exec((void*) gen_instruction);
 
     uint32_t reg_content = get_register(1);
@@ -449,11 +449,11 @@ static int test_add_imm_wr_1() {
     set_register(0, 0x8);
 
     struct dp_instr *gen_instruction = gen_instr(4);
-    gen_instruction->op2 = 0x10E;
+    gen_instruction->op2 = 0x10C;
     dp_exec((void*) gen_instruction);
 
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content == 0xF);
+    mu_assert(reg_content == 0xB);
     return 0;
 }
 
@@ -464,11 +464,11 @@ static int test_add_imm_wr_2() {
     set_register(0, 0x70000000);
 
     struct dp_instr *gen_instruction = gen_instr(4);
-    gen_instruction->op2 = 0x30C;
+    gen_instruction->op2 = 0x208;
     dp_exec((void*) gen_instruction);
 
     uint32_t reg_content = get_register(1);
-    mu_assert(reg_content == 0xF0000001);
+    mu_assert(reg_content == 0xF0000000);
     return 0;
 }
 
@@ -576,7 +576,7 @@ static int test_cmp_imm_nr() {
 }
 
 //36
-static int test_cmp_imm_wr() {
+static int test_cmp_imm_wr_1() {
     /* 0x404 = 0x04 Rotated 0x4 = 0x40000000
      * 0x70000000 CMP 0x40000000 = 0x30000000
      * -- RESULT NOT WRITTEN */
@@ -589,6 +589,22 @@ static int test_cmp_imm_wr() {
 
     uint32_t reg_content = get_register(1);
     mu_assert(reg_content == 0xABCD);
+    return 0;
+}
+
+//37
+static int test_cmp_imm_wr_2() {
+    /* 0x404 = 0x04 Rotated 0x4 = 0x40000000
+     * 0x70000000 CMP 0x40000000 = 0x30000000
+     * -- RESULT NOT WRITTEN */
+    set_register(0, 0x0);
+
+    struct dp_instr *gen_instruction = gen_instr(10);
+    gen_instruction->op2 = 0x0;
+    dp_exec((void*) gen_instruction);
+
+    uint32_t reg_content = get_register(1);
+    mu_assert(reg_content == 0x0 && get_cflag == 1);
     return 0;
 }
 
@@ -612,7 +628,7 @@ static int test_orr_imm_wr() {
     set_register(0, 0x8);
 
     struct dp_instr *gen_instruction = gen_instr(12);
-    gen_instruction->op2 = 0x22C;
+    gen_instruction->op2 = 0x12C;
     dp_exec((void*) gen_instruction);
 
     uint32_t reg_content = get_register(1);
@@ -640,7 +656,7 @@ static int test_mov_imm_wr() {
     set_register(0, 0xF);
 
     struct dp_instr *gen_instruction = gen_instr(13);
-    gen_instruction->op2 = 0x22C;
+    gen_instruction->op2 = 0x12C;
     dp_exec((void*) gen_instruction);
 
     uint32_t reg_content = get_register(1);
@@ -812,7 +828,9 @@ static int test_all() {
     //35
     mu_run_test(test_cmp_imm_nr);
     //36
-    mu_run_test(test_cmp_imm_wr);
+    mu_run_test(test_cmp_imm_wr_1);
+    //37
+    mu_run_test(test_cmp_imm_wr_2);
     //37
     mu_run_test(test_orr_imm_nr);
     //38
