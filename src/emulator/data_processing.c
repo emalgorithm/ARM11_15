@@ -82,7 +82,6 @@ static uint32_t eor_op (uint32_t left, uint32_t right, uint32_t set_cond) {
 }
 
 static uint32_t add_op (uint32_t left, uint32_t right, uint32_t set_cond) {
-    // Subraction produces a borrow if term 2 is less than term 1
     uint32_t res = left + right;
     // Integer overflow = result is SMALLER than both addends
     set_cflag_cond(set_cond, (res < left) && (res < right));
