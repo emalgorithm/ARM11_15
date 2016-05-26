@@ -33,7 +33,7 @@
  * |--------------------------------------------------------------------------|
  */
 
- /*union of struct c
+/*union of struct c
 * Struct: dp_instr
 * -----------------
 * A bit field representation of the data processing instruction type.
@@ -170,6 +170,13 @@ union instruction {
 * architecture on the heap and prepares it for use.
 */
 void initialize(void);
+
+/*
+ * Function : destroy
+ * ------------------
+ * Must be called when the arm11 state can be deallocated
+ */
+void destroy(void);
 
 /*
 * Function : get_instr
