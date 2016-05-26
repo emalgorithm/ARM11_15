@@ -12,7 +12,7 @@ void read_memory(char** argv) {
     for (;;) {
         fread(buffer, sizeof(buffer), 1, input_file);
 
-        if(feof(input_file)) {
+        if (feof(input_file)) {
             break;
         }
 
@@ -26,4 +26,6 @@ void read_memory(char** argv) {
 
         address += 4;
     }
+
+    fclose(input_file);
 }
