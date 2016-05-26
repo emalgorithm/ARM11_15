@@ -30,6 +30,8 @@ typedef uint32_t (*op_exec_ptr)(uint32_t, uint32_t, uint32_t);
 
 enum operators {AND, EOR, SUB, RSB, ADD, ORR};
 
+/* If FLAGS can be set, and the given condition is reached, 
+ * then the C FLAG is set*/
 void set_cflag_cond (uint32_t set_cond, bool condition) {
     if (set_cond) {
         if (condition) {
@@ -40,24 +42,28 @@ void set_cflag_cond (uint32_t set_cond, bool condition) {
     }
 }
 
-/**/
+/* Returns a uint32_t with the value of Op2 after rotations/shifts */
 static uint32_t get_op2 (struct dp_instr* dp_instruction) {
     if (dp_instruction->imm_op) {
-        /*Operand2 is an Immediate Operand*/
+        // Operand2 is an Immediate Operand
+        // Gets the rotation value and performs the said rotation over Imm
         uint32_t rotate = get_bits(dp_instruction->op2, ROT_BIT, ROT_LEN);
         uint32_t imm_val = get_bits(dp_instruction->op2, VAL_BIT, VAL_LEN);
         return rot_right(rotate*2, imm_val, dp_instruction->set_cond);
     } else {
-        /*Operand2 is NOT an Immediate Operand*/
+        // Operand2 is NOT an Immediate Operand
+        // Op2 is thus a shifted instruction
         return shift_reg(dp_instruction->op2, dp_instruction->set_cond);
     }
 }
 
 static void write_res (struct dp_instr* dp_instruction, bool write, uint32_t res) {
     if (write) {
+        // Write res to Register ONLY IF write is enabled
         set_register(dp_instruction->rd, res);
     }
     if (dp_instruction->set_cond) {
+        // If setting flags is enabled
         if (!res) {
             set_zflag;
         } else {
@@ -72,10 +78,12 @@ static void write_res (struct dp_instr* dp_instruction, bool write, uint32_t res
 }
 
 static uint32_t and_op (uint32_t left, uint32_t right, uint32_t set_cond) {
+    // Bitwise AND
     return left & right;
 }
 
 static uint32_t eor_op (uint32_t left, uint32_t right, uint32_t set_cond) {
+    // Bitwise XOR
     return left ^ right;
 }
 
@@ -103,12 +111,14 @@ static uint32_t rsb_op (uint32_t left, uint32_t right, uint32_t set_cond) {
 }
 
 static uint32_t orr_op (uint32_t left, uint32_t right, uint32_t set_cond) {
+    // Bitwise OR
     return left | right;
 }
 
-/*Executes the operation specified by each instruction*/
+/*Executes the operation specified by functions of type "_instr"*/
 static void exec_instr (struct dp_instr* dp_instruction, bool write, enum operators operator) {
 
+    // Function pointer array for the functions specifying the operations
     op_exec_ptr op_exec_ptr_array[] = {
         and_op,
         eor_op,
@@ -118,30 +128,41 @@ static void exec_instr (struct dp_instr* dp_instruction, bool write, enum operat
         orr_op
     };
 
+    // Value stored as content of the source Register (Rn)
     uint32_t op1_val = get_register(dp_instruction->rn);
+    // Optain the uint32_t representation of the value stored as Op2
     uint32_t op2_val = get_op2(dp_instruction);
+    // Call the "_op" functions to calculate the result given the operator
     uint32_t res = op_exec_ptr_array[operator](op1_val, op2_val, dp_instruction->set_cond);
+    // Write the result to registers
     write_res(dp_instruction, write, res);
 }
 
-/**/
+/* Functions of type "_instr" are called according to their OpCode within
+ * dp_exec.
+ */
 static void and_instr (struct dp_instr* dp_instruction, bool write) {
+    // Execute instruction with enum AND
     exec_instr(dp_instruction, write, AND);
 }
 
 static void eor_instr (struct dp_instr* dp_instruction, bool write) {
+    // Execute instruction with enum EOR
     exec_instr (dp_instruction, write, EOR);
 }
 
 static void sub_instr (struct dp_instr* dp_instruction, bool write) {
+    // Execute instruction with enum SUB
     exec_instr (dp_instruction, write, SUB);
 }
 
 static void rsb_instr (struct dp_instr* dp_instruction, bool write) {
+    // Execute instruction with enum RSB
     exec_instr (dp_instruction, write, RSB);
 }
 
 static void add_instr (struct dp_instr* dp_instruction, bool write) {
+    // Execute instruction with enum ADD
     exec_instr (dp_instruction, write, ADD);
 }
 
@@ -161,20 +182,26 @@ static void cmp_instr (struct dp_instr* dp_instruction, bool write) {
 }
 
 static void orr_instr (struct dp_instr* dp_instruction, bool write) {
+    // Execute instruction with enum ORR
     exec_instr (dp_instruction, write, ORR);
 }
 
 static void mov_instr (struct dp_instr* dp_instruction, bool write) {
+    // Directly write the content of Operand2 to the given dest Register
     write_res(dp_instruction, write, get_op2(dp_instruction));
 }
 
 void dp_exec (union decoded_instr* instruction) {
 
-    enum instr_op_code {AND, EOR, SUB, RSB, ADD, TST, TEQ, CMP, ORR, MOV};
-
 	// Downcast void* to struct dp_instr* AND dereferencing.
     struct dp_instr* dp_instruction;
 	dp_instruction = &instruction->dp;
+
+    /* Function Pointer Array, given an OpCode as an index, points to the
+     * right function.
+     * As not all OpCodes are supported, NULL pointers were introduced at the
+     * indexes of the non-supported OpCodes.
+     */
 
     fun_ptr fun_ptr_array[] = {
         and_instr,
