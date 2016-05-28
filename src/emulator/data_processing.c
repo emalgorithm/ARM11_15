@@ -30,7 +30,7 @@ typedef uint32_t (*op_exec_ptr)(uint32_t, uint32_t, uint32_t);
 
 enum operators {AND, EOR, SUB, RSB, ADD, ORR};
 
-/* If FLAGS can be set, and the given condition is reached, 
+/* If FLAGS can be set, and the given condition is reached,
  * then the C FLAG is set*/
 void set_cflag_cond (uint32_t set_cond, bool condition) {
     if (set_cond) {
