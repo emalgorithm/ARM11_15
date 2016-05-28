@@ -38,7 +38,7 @@ static int test_lsl_nfl() {
     return 0;
 }
 //3
-static int test_lsr_fl() {
+static int test_lsr_fl_1() {
 
     set_register(0, 0xF);
     uint32_t instr = 0x120;
@@ -47,7 +47,7 @@ static int test_lsr_fl() {
     return 0;
 }
 //4
-static int test_lsr_nfl() {
+static int test_lsr_nfl_1() {
 
     set_register(0, 0xF);
     uint32_t instr = 0x120;
@@ -109,6 +109,24 @@ static int test_ror_nfl() {
     mu_assert(res == 0xE0000003 && get_cflag == 0);
     return 0;
 }
+//11
+static int test_lsr_fl_2() {
+
+    set_register(0, ~0x0);
+    uint32_t instr = 0x220;
+    uint32_t res = shift_reg(instr, 1);
+    mu_assert(res == 0xFFFFFFF && get_cflag == 1);
+    return 0;
+}
+//12
+static int test_lsr_nfl_2() {
+
+    set_register(0, ~0x0);
+    uint32_t instr = 0x220;
+    uint32_t res = shift_reg(instr, 0);
+    mu_assert(res == 0xFFFFFFF && get_cflag == 0);
+    return 0;
+}
 
 static int test_all() {
     printf("Running all tests for %s | ", spec);
@@ -122,9 +140,9 @@ static int test_all() {
     //2
     mu_run_test(test_lsl_nfl);
     //3
-    mu_run_test(test_lsr_fl);
+    mu_run_test(test_lsr_fl_1);
     //4
-    mu_run_test(test_lsr_nfl);
+    mu_run_test(test_lsr_nfl_1);
     //5
     mu_run_test(test_asr_fl_1);
     //6
@@ -137,6 +155,10 @@ static int test_all() {
     mu_run_test(test_ror_fl);
     //10
     mu_run_test(test_ror_nfl);
+    //11
+    mu_run_test(test_lsr_fl_2);
+    //12
+    mu_run_test(test_lsr_nfl_2);
 
     return 0;
 }
