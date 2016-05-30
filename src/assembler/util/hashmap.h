@@ -21,12 +21,6 @@
 typedef void *any_t;
 
 /*
- * PFany is a pointer to a function that can take two any_t arguments
- * and return an integer. Returns status code..
- */
-typedef int (*PFany)(any_t, any_t);
-
-/*
  * map_t is a pointer to an internally maintained data structure.
  * Clients of this package do not need to know how hashmaps are
  * represented.  They see and manipulate only map_t's.
@@ -44,9 +38,9 @@ extern map_t hashmap_new();
 extern int hashmap_put(map_t in, char* key, any_t value);
 
 /*
- * Get an element from the hashmap. Return MAP_OK or MAP_MISSING.
+ * Get an element from the hashmap. Return NULL if the element is not present.
  */
-extern int hashmap_get(map_t in, char* key, any_t *arg);
+extern any_t hashmap_get(map_t in, char* key);
 
 /*
  * Remove an element from the hashmap. Return MAP_OK or MAP_MISSING.

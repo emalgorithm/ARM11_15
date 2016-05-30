@@ -4,7 +4,6 @@
 #include "hashmap.h"
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 
 #define INITIAL_SIZE (256)
@@ -288,7 +287,7 @@ int hashmap_put(map_t in, char* key, any_t value){
 /*
  * Get your pointer out of the hashmap with a key
  */
-int hashmap_get(map_t in, char* key, any_t *arg){
+any_t hashmap_get(map_t in, char* key){
     int curr;
     int i;
     hashmap_map* m;
@@ -304,19 +303,16 @@ int hashmap_get(map_t in, char* key, any_t *arg){
         int in_use = m->data[curr].in_use;
         if (in_use == 1){
             if (strcmp(m->data[curr].key, key)==0){
-                *arg = (m->data[curr].data);
-//                printf("inside get: str: %s, value: %d\n", key, *((int*)*arg));
-                return MAP_OK;
+                return (m->data[curr].data);
             }
         }
 
         curr = (curr + 1) % m->table_size;
     }
 
-    *arg = NULL;
 
     /* Not found */
-    return MAP_MISSING;
+    return NULL;
 }
 
 /*

@@ -46,7 +46,7 @@ static int test_hashmap() {
         strcpy(str, "hello");
         str[0] = i;
         int *v;
-        hashmap_get(mymap, str, (void **)&(v));
+        v = hashmap_get(mymap, str);
         mu_assert(*v == i);
     }
 
@@ -54,10 +54,10 @@ static int test_hashmap() {
     char s[20];
     strcpy(s, "ello");
     int *v;
-    int error = hashmap_get(mymap, s, (void**)(&v));
+    v = hashmap_get(mymap, s);
 
     /* Make sure the value was not found */
-    mu_assert(error == MAP_MISSING);
+    mu_assert(v == NULL);
 
     //Deallocate memory
     for (int i = 'a'; i < 'z'; i++) {
