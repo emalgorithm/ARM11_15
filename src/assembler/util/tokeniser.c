@@ -196,3 +196,6 @@ char *tokcond(char *token) {
     return NULL;
 }
 
+int hastok() {
+    return 1;
+}

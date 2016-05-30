@@ -94,3 +94,10 @@ void tokaddr(enum addressingMode * mode);
  * Returns the condition part of an instruction token (al if no token)
  */
 char *tokcond(char *token);
+
+/*
+ * Function : tokcond
+ * ------------------
+ * Returns true if the file has tokens left.
+ */
+int hastok();
