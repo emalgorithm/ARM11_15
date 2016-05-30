@@ -37,17 +37,18 @@ enum cond_enum {
     AL
 };
 
-typedef void (*proc_pt)(enum instr_enum);
+typedef void (*proc_pt)(enum instr_enum, union decoded_instr*);
 
-void proc_dp_instr (enum instr_enum);
-void proc_mul_instr (enum instr_enum);
-void proc_sdt_instr (enum instr_enum);
-void proc_br_instr (enum instr_enum);
-void proc_lsl_instr (enum instr_enum);
+void proc_dp_instr (enum instr_enum, union decoded_instr*);
+void proc_mul_instr (enum instr_enum, union decoded_instr*);
+void proc_sdt_instr (enum instr_enum, union decoded_instr*);
+void proc_br_instr (enum instr_enum, union decoded_instr*);
+void proc_lsl_instr (enum instr_enum, union decoded_instr*);
 
 void sec_pass_run (const char*);
 
 proc_pt proc_arr[16];
+uint32_t op_code_arr[10];
 
 void generate_maps () {
     instr_map = hashmap_new();
@@ -99,32 +100,48 @@ void generate_arrays () {
         proc_lsl_instr, //LSL
     };
 
+    uint32_t temp_op_code_arr[] = {
+        4, //ADD
+        2, //SUB
+        3, //RSB
+        0, //AND
+        1, //EOR
+        12, //ORR
+        13, //MOV
+        8, //TST
+        9, //TEQ
+        10 //CMP
+    };
+
     memcpy(proc_arr, temp_proc_arr, sizeof proc_arr);
+    memcpy(op_code_arr, temp_op_code_arr, sizeof op_code_arr);
 }
 
-void proc_dp_instr(enum instr_enum dp_enum) {
+void proc_dp_instr(enum instr_enum dp_enum, union decoded_instr* instruction) {
+    struct dp_instr* dp_instr = &instruction->dp;
 
+    dp_instr->op_code = op_code_arr[dp_enum];
 }
 
-void proc_mul_instr(enum instr_enum mul_enum) {
-
-}
-
-void proc_sdt_instr(enum instr_enum sdt_enum) {
-
-}
-
-void proc_br_instr(enum instr_enum br_enum) {
+void proc_mul_instr(enum instr_enum mul_enum, union decoded_instr* instruction) {
 
 }
 
-void proc_lsl_instr(enum instr_enum lsl_enum) {
+void proc_sdt_instr(enum instr_enum sdt_enum, union decoded_instr* instruction) {
+
+}
+
+void proc_br_instr(enum instr_enum br_enum, union decoded_instr* instruction) {
+
+}
+
+void proc_lsl_instr(enum instr_enum lsl_enum, union decoded_instr* instruction) {
 
 }
 
 void sec_pass_run (const char* path) {
 
-    //union decoded_instr instruction;
+    union decoded_instr* instruction = NULL;
 
     generate_maps();
     generate_arrays();
@@ -136,7 +153,7 @@ void sec_pass_run (const char* path) {
         char* next = toknext();
         enum instr_enum instr_enum = (enum instr_enum) hashmap_get(instr_map, next);
 
-        proc_arr[instr_enum](instr_enum);
+        proc_arr[instr_enum](instr_enum, instruction);
 
     }
 
