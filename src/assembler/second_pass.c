@@ -1,3 +1,6 @@
+#include <assert.h>
+#include <string.h>
+
 #include "second_pass.h"
 #include "../emulator/arm11.h"
 #include "util/hashmap.h"
@@ -42,24 +45,9 @@ void proc_sdt_instr (enum instr_enum);
 void proc_br_instr (enum instr_enum);
 void proc_lsl_instr (enum instr_enum);
 
-proc_pt proc_arr[] = {
-        proc_dp_instr, //ADD
-        proc_dp_instr, //SUB
-        proc_dp_instr, //RSB
-        proc_dp_instr, //AND
-        proc_dp_instr, //EOR
-        proc_dp_instr, //ORR
-        proc_dp_instr, //MOV
-        proc_dp_instr, //TST
-        proc_dp_instr, //TEQ
-        proc_dp_instr, //CMP
-        proc_mul_instr, //MUL
-        proc_mul_instr, //MLA
-        proc_sdt_instr, //LDR
-        proc_sdt_instr, //STR
-        proc_br_instr, //B
-        proc_lsl_instr, //LSL
-};
+void sec_pass_run (const char*);
+
+proc_pt proc_arr[16];
 
 void generate_maps () {
     instr_map = hashmap_new();
@@ -92,7 +80,26 @@ void generate_maps () {
 }
 
 void generate_arrays () {
+    proc_pt temp_proc_arr[] = {
+        proc_dp_instr, //ADD
+        proc_dp_instr, //SUB
+        proc_dp_instr, //RSB
+        proc_dp_instr, //AND
+        proc_dp_instr, //EOR
+        proc_dp_instr, //ORR
+        proc_dp_instr, //MOV
+        proc_dp_instr, //TST
+        proc_dp_instr, //TEQ
+        proc_dp_instr, //CMP
+        proc_mul_instr, //MUL
+        proc_mul_instr, //MLA
+        proc_sdt_instr, //LDR
+        proc_sdt_instr, //STR
+        proc_br_instr, //B
+        proc_lsl_instr, //LSL
+    };
 
+    memcpy(proc_arr, temp_proc_arr, sizeof proc_arr);
 }
 
 void proc_dp_instr(enum instr_enum dp_enum) {
@@ -126,7 +133,10 @@ void sec_pass_run (const char* path) {
     tokinit (path);
 
     while (hastok()) {
-        //char* next = toknext();
+        char* next = toknext();
+        enum instr_enum instr_enum = (enum instr_enum) hashmap_get(instr_map, next);
+
+        proc_arr[instr_enum](instr_enum);
 
     }
 
