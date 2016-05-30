@@ -20,6 +20,7 @@
 *.o
 emulate
 assemble
+CMakeLists.txt
 
 #ignore junk files from compiling Haskell code
 *.hi
