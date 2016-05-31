@@ -12,8 +12,25 @@ func_map_t dp_rn_map;
 func_map_t dp_op2_map;
 
 map_t opcode_map;
-map_t s_bit_map;
+map_t shift_map;
 map_t cond_map;
+
+struct op2_imm {
+    uint32_t imm : 8;
+    uint32_t rot : 4;
+};
+
+struct op2_reg {
+    uint32_t rm        : 4;
+    uint32_t bit4      : 1;
+    uint32_t sh_ty     : 2;
+    uint32_t shift_val : 5;
+};
+
+union op2_gen {
+    struct op2_reg reg_op;
+    struct op2_imm imm_op;
+};
 
 typedef void (*proc_pt)(char*, union decoded_instr*);
 
@@ -28,6 +45,8 @@ void dp_set_not_rd (char*, union decoded_instr*);
 void dp_set_rn (char*, union decoded_instr*);
 void dp_set_not_rn (char*, union decoded_instr*);
 
+void dp_set_op2 (char*, union decoded_instr*);
+
 void sec_pass_run (const char*);
 
 void generate_maps () {
@@ -36,7 +55,7 @@ void generate_maps () {
     dp_rn_map = hashmap_new();
 
     opcode_map = hashmap_new();
-    s_bit_map = hashmap_new();
+    shift_map = hashmap_new();
     cond_map = hashmap_new();
 
     func_hashmap_put (instr_map, "add", proc_dp_instr);
@@ -100,27 +119,15 @@ void generate_maps () {
     func_hashmap_put (dp_rn_map, "teq", dp_set_rn);
     func_hashmap_put (dp_rn_map, "cmp", dp_set_rn);
 
-    int ADD_S_BIT = 0;
-    int SUB_S_BIT = 0;
-    int RSB_S_BIT = 0;
-    int AND_S_BIT = 0;
-    int EOR_S_BIT = 0;
-    int ORR_S_BIT = 0;
-    int MOV_S_BIT = 0;
-    int TST_S_BIT = 1;
-    int TEQ_S_BIT = 1;
-    int CMP_S_BIT = 1;
+    int LSL_VAL = 0;
+    int LSR_VAL = 1;
+    int ASR_VAL = 2;
+    int ROR_VAL = 3;
 
-    hashmap_put (s_bit_map, "add", (void *) &ADD_S_BIT);
-    hashmap_put (s_bit_map, "sub", (void *) &SUB_S_BIT);
-    hashmap_put (s_bit_map, "rsb", (void *) &RSB_S_BIT);
-    hashmap_put (s_bit_map, "and", (void *) &AND_S_BIT);
-    hashmap_put (s_bit_map, "eor", (void *) &EOR_S_BIT);
-    hashmap_put (s_bit_map, "orr", (void *) &ORR_S_BIT);
-    hashmap_put (s_bit_map, "mov", (void *) &MOV_S_BIT);
-    hashmap_put (s_bit_map, "tst", (void *) &TST_S_BIT);
-    hashmap_put (s_bit_map, "teq", (void *) &TEQ_S_BIT);
-    hashmap_put (s_bit_map, "cmp", (void *) &CMP_S_BIT);
+    hashmap_put (shift_map, "lsl", (void *) &LSL_VAL);
+    hashmap_put (shift_map, "lsr", (void *) &LSR_VAL);
+    hashmap_put (shift_map, "asr", (void *) &ASR_VAL);
+    hashmap_put (shift_map, "ror", (void *) &ROR_VAL);
 
     /*
     hashmap_put (cond_map, "eq", (void *) EQ);
@@ -144,7 +151,7 @@ void proc_dp_instr(char* dp_char, union decoded_instr* instruction) {
     dp_instr->cond = 0x0;
 
     // Set S Field
-    dp_instr->op_code = *((int *) hashmap_get(s_bit_map, dp_char));
+    //dp_instr->op_code = *((int *) hashmap_get(s_bit_map, dp_char));
 
     // Set OpCode
     dp_instr->op_code = *((int *) hashmap_get(opcode_map, dp_char));
@@ -188,7 +195,7 @@ void dp_set_not_rd(char* dp_char, union decoded_instr* instruction) {
     dp_instr->rd = 0x0;
 
     // Continue
-    func_hashmap_get(dp_rn_map, dp_char)(dp_char, instruction);
+    dp_set_op2(dp_char, instruction);
 }
 
 void dp_set_rn(char* dp_char, union decoded_instr* instruction) {
@@ -208,7 +215,57 @@ void dp_set_not_rn(char* dp_char, union decoded_instr* instruction) {
     dp_instr->rn = 0x0;
 
     // Continue
-    func_hashmap_get(dp_op2_map, dp_char)(dp_char, instruction);
+    dp_set_op2(dp_char, instruction);
+}
+
+// ------------------------------------------------------------------
+
+void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
+    struct dp_instr* dp_instr = &instruction->dp;
+
+    union op2_gen* op2 = calloc(1, sizeof(union op2_gen));
+
+    enum operandType* op_type = NULL;
+
+    tokop(op_type);
+
+    switch (*op_type) {
+
+        case IMMEDIATE: ;
+            // Union is of type op2_imm
+            struct op2_imm* op2_imm = &op2->imm_op;
+            // Set I Bit
+            dp_instr->imm_op = 0x1;
+            // Improper Call to tokimm. Must try rotation.
+            op2_imm->imm = tokimm();
+            op2_imm->rot = 0x0;
+            break;
+        case SHIFT_REG: ;
+            // Union is of type op2_reg
+            struct op2_reg* op2_reg = &op2->reg_op;
+            // Not set I Bit
+            dp_instr->imm_op = 0x0;
+            // Set Rm
+            op2_reg->rm = tokreg();
+
+            enum operandType* sh_op_type = NULL;
+
+            op2_reg->sh_ty = * ((int *)hashmap_get(shift_map, tokshift(sh_op_type)));
+
+            switch (*sh_op_type) {
+                case IMMEDIATE: ;
+                    op2_reg->bit4 = 0;
+                    op2_reg->shift_val = tokimm();
+                    break;
+                case SHIFT_REG: ;
+                    op2_reg->bit4 = 1;
+                    // Rotate left register to have empty bit7
+                    op2_reg->shift_val = tokreg() << 1;
+                    break;
+            }
+            break;
+    }
+    dp_instr->op2 = *((int *) op2);
 }
 
 // ------------------------------------------------------------------
