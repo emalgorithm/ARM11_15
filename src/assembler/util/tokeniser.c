@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 #include <assert.h>
 #include "tokeniser.h"
@@ -22,13 +23,22 @@
 
 static FILE *src = NULL;
 
+static char line[BUFFER_SIZE];
 
-char line[BUFFER_SIZE];
+static char *token = NULL;
 
-char *token = NULL;
+static uint32_t address = 0;
 
 static char *next() {
     return strtok(NULL, DELIMITERS);
+}
+
+static bool lastchar(const char *str, char c) {
+    return str && *str && str[strlen(str) - 1] == c;
+}
+
+static void clrnewline(char* str) {
+    str[strcspn(str, "\r\n")] = 0;
 }
 
 /*
@@ -195,4 +205,52 @@ void tokaddr(enum addressingMode *mode) {
 char *tokcond(char *token) {
     return NULL;
 }
+
+/*
+ * Function : toklabel
+ * -------------------
+ * This function should only be used during the first pass for collecting
+ * labels. Calling other tokeniser functions will corrupt the address counter.
+ *
+ * Returns the address of the next label in the source file and assigns its
+ * name as the value of the provided pointer. The pointer be able to hold the
+ * largest label possible to avoid memory errors. The returned address is the
+ * address of the instruction directly after the label given that the first
+ * instruction in the file is at address 0.
+ */
+uint32_t toklabel(char *label) {
+    assert(src != NULL);
+    assert(!feof(src));
+
+    for (;;) {
+        // Take next line
+        if (fgets(line, BUFFER_SIZE, src) == NULL) {
+            // End of file
+            tokdestroy();
+            return -1;
+        }
+
+        // Take first token of line
+        token = strtok(line, DELIMITERS);
+
+        // Skip empty lines and comments
+        if (strchr(token, ';') || *token == '\n') {
+            continue;
+        }
+
+        // Check for label
+        clrnewline(token);
+        if (lastchar(token, ':')) {
+            // Remove colon from token
+            token[strlen(token) - 1] = 0;
+            // Copy to other pointer
+            strcpy(label, token);
+            return address;
+        }
+
+        // Must be an instruction so increase address
+        address += 4;
+    }
+}
+
 
