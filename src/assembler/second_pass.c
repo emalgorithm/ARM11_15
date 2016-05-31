@@ -266,6 +266,8 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
             break;
     }
     dp_instr->op2 = *((int *) op2);
+
+    // Write to file
 }
 
 // ------------------------------------------------------------------
