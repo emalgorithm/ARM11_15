@@ -37,17 +37,17 @@ extern map_t hashmap_new();
 /*
  * Add an element to the hashmap. Return MAP_OK or MAP_OMEM.
  */
-extern int hashmap_put(map_t in, char* key, any_t value);
+extern int hashmap_put(map_t in, const char* key, any_t value);
 
 /*
  * Get an element from the hashmap. Return NULL if the element is not present.
  */
-extern any_t hashmap_get(map_t in, char* key);
+extern any_t hashmap_get(map_t in, const char* key);
 
 /*
  * Remove an element from the hashmap. Return MAP_OK or MAP_MISSING.
  */
-extern int hashmap_remove(map_t in, char* key);
+extern int hashmap_remove(map_t in, const char* key);
 
 /*
  * Free the hashmap

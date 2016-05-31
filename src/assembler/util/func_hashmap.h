@@ -39,17 +39,17 @@ extern func_map_t func_hashmap_new();
 /*
  * Add an element to the hashmap. Return MAP_OK or MAP_OMEM.
  */
-extern int func_hashmap_put(func_map_t in, char* key, func_t value);
+extern int func_hashmap_put(func_map_t in, const char* key, func_t value);
 
 /*
  * Get an element from the hashmap. Return NULL if the element is not present.
  */
-extern func_t func_hashmap_get(func_map_t in, char* key);
+extern func_t func_hashmap_get(func_map_t in, const char* key);
 
 /*
  * Remove an element from the hashmap. Return MAP_OK or MAP_MISSING.
  */
-extern int func_hashmap_remove(func_map_t in, char* key);
+extern int func_hashmap_remove(func_map_t in, const char* key);
 
 /*
  * Free the hashmap

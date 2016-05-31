@@ -11,7 +11,7 @@
 
 /* We need to keep keys and values */
 typedef struct _hashmap_element{
-    char* key;
+    const char *key;
     int in_use;
     any_t data;
 } hashmap_element;
@@ -163,7 +163,7 @@ unsigned long crc32(const unsigned char *s, unsigned int len)
 /*
  * Hashing function for a string
  */
-unsigned int hashmap_hash_int(hashmap_map * m, char* keystring){
+unsigned int hashmap_hash_int(hashmap_map * m, const char* keystring){
 
     unsigned long key = crc32((unsigned char*)(keystring), strlen(keystring));
 
@@ -187,7 +187,7 @@ unsigned int hashmap_hash_int(hashmap_map * m, char* keystring){
  * Return the integer of the location in data
  * to store the point to the item, or MAP_FULL.
  */
-int hashmap_hash(map_t in, char* key){
+int hashmap_hash(map_t in, const char* key){
     int curr;
     int i;
 
@@ -257,7 +257,7 @@ int hashmap_rehash(map_t in){
 /*
  * Add a pointer to the hashmap with some key
  */
-int hashmap_put(map_t in, char* key, any_t value){
+int hashmap_put(map_t in, const char* key, any_t value){
     int index;
     hashmap_map* m;
 
@@ -287,7 +287,7 @@ int hashmap_put(map_t in, char* key, any_t value){
 /*
  * Get your pointer out of the hashmap with a key
  */
-any_t hashmap_get(map_t in, char* key){
+any_t hashmap_get(map_t in, const char* key){
     int curr;
     int i;
     hashmap_map* m;
@@ -318,7 +318,7 @@ any_t hashmap_get(map_t in, char* key){
 /*
  * Remove an element with that key from the map
  */
-int hashmap_remove(map_t in, char* key){
+int hashmap_remove(map_t in, const char* key){
     int i;
     int curr;
     hashmap_map* m;
