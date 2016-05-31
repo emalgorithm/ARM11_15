@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "../../minunit.h"
@@ -39,6 +40,24 @@ static int test_next_after_lbl() {
     return 0;
 }
 
+static int test_label() {
+    char *label = malloc(512);
+
+    int address = toklabel(label);
+    mu_assert(address == 4);
+    mu_assert(strcmp(label, "l1") == 0);
+
+    address = toklabel(label);
+    mu_assert(address == 4);
+    mu_assert(strcmp(label, "l2") == 0);
+
+    address = toklabel(label);
+    mu_assert(address == 8);
+    mu_assert(strcmp(label, "l3") == 0);
+
+    return 0;
+}
+
 static int test_all() {
     printf("Running all tests for %s | ", spec);
 
@@ -49,6 +68,7 @@ static int test_all() {
     mu_run_test(test_next);
     mu_run_test(test_nextreg);
     mu_run_test(test_next_after_lbl);
+    mu_run_test(test_label);
 
     return 0;
 }
