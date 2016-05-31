@@ -4,7 +4,7 @@
 #include "second_pass.h"
 #include "../emulator/arm11.h"
 #include "util/hashmap.h"
-//#include "util/func_hashmap.h"
+#include "util/func_hashmap.h"
 
 func_map_t instr_map;
 func_map_t opcode_map;
@@ -25,33 +25,44 @@ void generate_maps () {
     opcode_map = hashmap_new();
     cond_map = hashmap_new();
 
-    func_hashmap_put (instr_map, "add", (void *) proc_dp_instr);
-    func_hashmap_put (instr_map, "sub", (void *) proc_dp_instr);
-    func_hashmap_put (instr_map, "rsb", (void *) proc_dp_instr);
-    func_hashmap_put (instr_map, "and", (void *) proc_dp_instr);
-    func_hashmap_put (instr_map, "eor", (void *) proc_dp_instr);
-    func_hashmap_put (instr_map, "orr", (void *) proc_dp_instr);
-    func_hashmap_put (instr_map, "mov", (void *) proc_dp_instr);
-    func_hashmap_put (instr_map, "tst", (void *) proc_dp_instr);
-    func_hashmap_put (instr_map, "teq", (void *) proc_dp_instr);
-    func_hashmap_put (instr_map, "cmp", (void *) proc_dp_instr);
-    func_hashmap_put (instr_map, "mul", (void *) proc_mul_instr);
-    func_hashmap_put (instr_map, "mla", (void *) proc_mul_instr);
-    func_hashmap_put (instr_map, "ldr", (void *) proc_sdt_instr);
-    func_hashmap_put (instr_map, "str", (void *) proc_sdt_instr);
-    func_hashmap_put (instr_map, "b", (void *) proc_br_instr);
-    func_hashmap_put (instr_map, "lsl", (void *) proc_lsl_instr);
+    func_hashmap_put (instr_map, "add", proc_dp_instr);
+    func_hashmap_put (instr_map, "sub", proc_dp_instr);
+    func_hashmap_put (instr_map, "rsb", proc_dp_instr);
+    func_hashmap_put (instr_map, "and", proc_dp_instr);
+    func_hashmap_put (instr_map, "eor", proc_dp_instr);
+    func_hashmap_put (instr_map, "orr", proc_dp_instr);
+    func_hashmap_put (instr_map, "mov", proc_dp_instr);
+    func_hashmap_put (instr_map, "tst", proc_dp_instr);
+    func_hashmap_put (instr_map, "teq", proc_dp_instr);
+    func_hashmap_put (instr_map, "cmp", proc_dp_instr);
+    func_hashmap_put (instr_map, "mul", proc_mul_instr);
+    func_hashmap_put (instr_map, "mla", proc_mul_instr);
+    func_hashmap_put (instr_map, "ldr", proc_sdt_instr);
+    func_hashmap_put (instr_map, "str", proc_sdt_instr);
+    func_hashmap_put (instr_map, "b", proc_br_instr);
+    func_hashmap_put (instr_map, "lsl", proc_lsl_instr);
 
-    hashmap_put (opcode_map, "add", (void *) &(4));
-    hashmap_put (opcode_map, "sub", (void *) &2);
-    hashmap_put (opcode_map, "rsb", (void *) &3);
-    hashmap_put (opcode_map, "and", (void *) &0);
-    hashmap_put (opcode_map, "eor", (void *) &1);
-    hashmap_put (opcode_map, "orr", (void *) &12);
-    hashmap_put (opcode_map, "mov", (void *) &13);
-    hashmap_put (opcode_map, "tst", (void *) &8);
-    hashmap_put (opcode_map, "teq", (void *) &9);
-    hashmap_put (opcode_map, "cmp", (void *) &10);
+    int ADD_OPCODE = 4;
+    int SUB_OPCODE = 2;
+    int RSB_OPCODE = 3;
+    int AND_OPCODE = 0;
+    int EOR_OPCODE = 1;
+    int ORR_OPCODE = 12;
+    int MOV_OPCODE = 13;
+    int TST_OPCODE = 8;
+    int TEQ_OPCODE = 9;
+    int CMP_OPCODE = 10;
+
+    hashmap_put (opcode_map, "add", (void *) &ADD_OPCODE);
+    hashmap_put (opcode_map, "sub", (void *) &SUB_OPCODE);
+    hashmap_put (opcode_map, "rsb", (void *) &RSB_OPCODE);
+    hashmap_put (opcode_map, "and", (void *) &AND_OPCODE);
+    hashmap_put (opcode_map, "eor", (void *) &EOR_OPCODE);
+    hashmap_put (opcode_map, "orr", (void *) &ORR_OPCODE);
+    hashmap_put (opcode_map, "mov", (void *) &MOV_OPCODE);
+    hashmap_put (opcode_map, "tst", (void *) &TST_OPCODE);
+    hashmap_put (opcode_map, "teq", (void *) &TEQ_OPCODE);
+    hashmap_put (opcode_map, "cmp", (void *) &CMP_OPCODE);
 
     /*
     hashmap_put (cond_map, "eq", (void *) EQ);
@@ -67,6 +78,8 @@ void generate_maps () {
 
 void proc_dp_instr(char* dp_char, union decoded_instr* instruction) {
     struct dp_instr* dp_instr = &instruction->dp;
+
+    dp_instr->op_code = *((int *) hashmap_get(opcode_map, dp_char));
 }
 
 void proc_mul_instr(char* mul_char, union decoded_instr* instruction) {
@@ -90,7 +103,6 @@ void sec_pass_run (const char* path) {
     union decoded_instr* instruction;
 
     generate_maps();
-    generate_arrays();
 
     // Iinitialise tokeniser
     tokinit (path);
@@ -98,7 +110,7 @@ void sec_pass_run (const char* path) {
     while (hastok()) {
         instruction = calloc(1, sizeof(union decoded_instr));
         char* next = toknext();
-        func_hashmap_get(instr_map, next)(next, union);
+        func_hashmap_get(instr_map, next)(next, instruction);
 
         // Free up memory
 
