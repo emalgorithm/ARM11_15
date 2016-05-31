@@ -5,6 +5,8 @@
  * Authors : Tencho Tenev
  */
 
+#include <stdint.h>
+
 /*
  * Function : tokinit
  * ---------------------
@@ -94,3 +96,18 @@ void tokaddr(enum addressingMode * mode);
  * Returns the condition part of an instruction token (al if no token)
  */
 char *tokcond(char *token);
+
+
+/*
+ * Function : toklabel
+ * -------------------
+ * This function should only be used during the first pass for collecting
+ * labels. Calling other tokeniser functions will corrupt the address counter.
+ *
+ * Returns the address of the next label in the source file and assigns its
+ * name as the value of the provided pointer. The pointer be able to hold the
+ * largest label possible to avoid memory errors. The returned address is the
+ * address of the instruction directly after the label given that the first
+ * instruction in the file is at address 0.
+ */
+uint32_t toklabel(char *label);
