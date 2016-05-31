@@ -55,6 +55,8 @@ static int test_label() {
     mu_assert(address == 8);
     mu_assert(strcmp(label, "l3") == 0);
 
+    free(label);
+
     return 0;
 }
 
