@@ -6,6 +6,7 @@
  */
 
 #include <stdint.h>
+#include <stdbool.h>
 
 /*
  * Function : tokinit
@@ -42,10 +43,15 @@ char *toknext();
  */
 int tokreg();
 
+/* TODO */
+int toksignedreg(bool *positive);
 
-enum operandType {
-    IMMEDIATE,
-    SHIFT_REG
+
+enum operand_type {
+    NONE,      // 0 offset
+    IMMEDIATE, // I = 0
+    ADDRESS,   // I ? 0
+    SHIFT_REG  // I = 1
 };
 
 /*
@@ -56,7 +62,7 @@ enum operandType {
  *
  * An assertion will fail if the next token does not match an operand syntax.
  */
-void tokop(enum operandType *type);
+void tokop(enum operand_type *type);
 
 /*
  * Function : tokimm
@@ -74,21 +80,34 @@ long int tokimm();
  * -------------------
  * Return the name of a shift and set the type
  */
-char *tokshift(enum operandType * type);
+char *tokshift(enum operand_type *type);
 
-enum addressingMode {
-    MOV,
-    OFFSET,
-    PRE,
-    POST
+/*
+ * Usage: This information is sufficient to set the I and P bits of SDT
+ */
+enum addressing_mode {
+    MOV, // Special
+    OFFSET, // I = 0, P = 1
+    PRE,    // P = 1
+    POST    // P = 0
 };
 
 /*
  * Function : tokaddr
  * ------------------
- * Sets the type of addressing mode
+ * Sets the type of addressing mode, operand type and returns base
+ *
+ * Addressing modes are MOV, PRE, and POST (use this to set the P bit or
+ * translate the instruction as MOV)
+ *
+ * Operand types are ADDRESS, IMMEDIATE, NONE, and SHIFT_REG (use this to set
+ * the I bit). In SHIFT_REG case examine the sign char for the shifted register
+ * to set the UP bit if no sign + is used
+ *
+ * The return value is a constant address in case the operand type is ADDRESS
+ * or a register index in all other cases
  */
-void tokaddr(enum addressingMode * mode);
+long tokaddr(enum addressing_mode *mode, enum operand_type *operand);
 
 /*
  * Function : tokcond

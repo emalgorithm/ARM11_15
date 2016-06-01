@@ -6,6 +6,7 @@
  */
 
 #include <stdlib.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -19,7 +20,9 @@
 // A line of assembler is at most 511 characters
 #define BUFFER_SIZE 512
 #define LABEL_COMMENT ";:"
-#define DELIMITERS ", "
+#define DELIMITERS ", ["
+
+#define PC 15
 
 static FILE *src = NULL;
 
@@ -39,6 +42,32 @@ static bool lastchar(const char *str, char c) {
 
 static void clrnewline(char* str) {
     str[strcspn(str, "\r\n")] = 0;
+}
+
+static int _tokreg(char *regtoken, bool *positive) {
+    assert(regtoken != NULL);
+
+    // Check sign
+    if (positive) {
+        if (*regtoken == '-') {
+            ++regtoken;
+            *positive = false;
+        } else {
+            *positive = true;
+        }
+    }
+
+    // Handle PC name
+    if (strcmp(regtoken, "PC") == 0 || strcmp(regtoken, "PC]") == 0) {
+        return PC;
+    }
+
+    // Skip [ and r
+    while (!isdigit(*regtoken)) {
+        ++regtoken;
+    }
+
+    return atoi(regtoken);
 }
 
 /*
@@ -118,15 +147,11 @@ char *toknext() {
  * An assertion will fail if the next token is not a register.
  */
 int tokreg() {
-    assert(src != NULL);
+    return _tokreg(next(), NULL);
+}
 
-    token = next();
-
-    assert(*token == 'r');
-
-    token++; // Skip r character
-
-    return atoi(token);
+int toksignedreg(bool *positive) {
+    return _tokreg(token, positive);
 }
 
 /*
@@ -140,13 +165,16 @@ int tokreg() {
  *
  * An assertion will fail if the next token does not match an operand syntax.
  */
-void tokop(enum operandType *type) {
+void tokop(enum operand_type *type) {
     assert(token != NULL);
     assert(type != NULL);
 
     token = next();
 
-    if (*token == '#') {
+    if (!token || *token == '\n' || *token == ';') {
+        // There is no operand
+        *type = NONE;
+    } else if (*token == '#') {
         *type = IMMEDIATE;
     } else {
         *type = SHIFT_REG;
@@ -176,9 +204,10 @@ long int tokimm() {
  * -------------------
  * Return the name of a shift and set the type
  */
-char *tokshift(enum operandType *type) {
-    assert(token != NULL);
+char *tokshift(enum operand_type *type) {
     assert(type != NULL);
+
+    token = next();
 
     char *shift = malloc(strlen(token) + 1);
     strcpy(shift, token);
@@ -192,9 +221,49 @@ char *tokshift(enum operandType *type) {
 /*
  * Function : tokaddr
  * ------------------
- * Sets the type of addressing mode
+ * Sets the type of addressing mode, operand type and base
+ *
+ * Addressing modes are MOV, PRE, and POST (use this to set the P bit or
+ * translate the instruction as MOV)
+ *
+ * Operand types are ADDRESS, IMMEDIATE, NONE, and SHIFT_REG (use this to set
+ * the I bit). In SHIFT_REG case examine the sign char for the shifted register
+ * to set the UP bit if no sign + is used
+ *
+ * base_addr is a constant address in case the operand type is ADDRESS
+ * or a register index in all other cases
  */
-void tokaddr(enum addressingMode *mode) {
+long tokaddr(enum addressing_mode *mode, enum operand_type *operand) {
+    assert(src != NULL);
+
+    long base_addr;
+    token = next();
+
+    if (*token == '=') {
+        // Numeric constant address
+        *operand = ADDRESS;
+
+        ++token; // Skip = character
+        base_addr = strtol(token, NULL, 0);
+
+        *mode = (base_addr <= 0xff) ? MOV : PRE;
+        return base_addr;
+
+        /* MOV offset is retrieved with tokimm
+         * PRE offset should be calculated and stored in memory
+         *   offset = last address - (current address + 8)
+         * The address to store is last address
+         */
+    }
+
+    // Post or pre indexing - token is Rn] or Rn
+    bool ispost = lastchar(token, ']');
+    base_addr = _tokreg(token, NULL);
+
+    tokop(operand);
+    *mode = ispost && (*operand != NONE) ? POST : PRE;
+
+    return base_addr;
 }
 
 /*
