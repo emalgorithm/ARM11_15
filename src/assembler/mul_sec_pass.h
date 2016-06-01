@@ -1,7 +1,7 @@
 #ifndef MUL_SEC_PASS
 #define MUL_SEC_PASS
 
-#include "imports.h"
+#include "writer_sec_pass.h"
 
 void proc_mul_instr (char*, union decoded_instr*);
 

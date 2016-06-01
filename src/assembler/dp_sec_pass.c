@@ -58,6 +58,7 @@ void dp_set_rd (char*, union decoded_instr*);
 void dp_set_not_rd (char*, union decoded_instr*);
 void dp_set_rn (char*, union decoded_instr*);
 void dp_set_not_rn (char*, union decoded_instr*);
+void dp_lsl (char*, union decoded_instr*);
 
 void dp_set_op2 (char*, union decoded_instr*);
 
@@ -80,6 +81,7 @@ void generate_dp_maps () {
     hashmap_put (opcode_map, "tst", (void *) &TST_OPCODE);
     hashmap_put (opcode_map, "teq", (void *) &TEQ_OPCODE);
     hashmap_put (opcode_map, "cmp", (void *) &CMP_OPCODE);
+    hashmap_put (opcode_map, "lsl", (void *) &MOV_OPCODE);
 
     hashmap_put (dp_s_bit_map, "add", (void *) &ADD_S_BIT);
     hashmap_put (dp_s_bit_map, "sub", (void *) &SUB_S_BIT);
@@ -91,6 +93,7 @@ void generate_dp_maps () {
     hashmap_put (dp_s_bit_map, "tst", (void *) &TST_S_BIT);
     hashmap_put (dp_s_bit_map, "teq", (void *) &TEQ_S_BIT);
     hashmap_put (dp_s_bit_map, "cmp", (void *) &CMP_S_BIT);
+    hashmap_put (dp_s_bit_map, "lsl", (void *) &MOV_S_BIT);
 
     func_hashmap_put (dp_rd_map, "add", dp_set_rd);
     func_hashmap_put (dp_rd_map, "sub", dp_set_rd);
@@ -102,6 +105,7 @@ void generate_dp_maps () {
     func_hashmap_put (dp_rd_map, "tst", dp_set_not_rd);
     func_hashmap_put (dp_rd_map, "teq", dp_set_not_rd);
     func_hashmap_put (dp_rd_map, "cmp", dp_set_not_rd);
+    func_hashmap_put (dp_rd_map, "lsl", dp_set_rd);
 
     func_hashmap_put (dp_rn_map, "add", dp_set_rn);
     func_hashmap_put (dp_rn_map, "sub", dp_set_rn);
@@ -113,6 +117,7 @@ void generate_dp_maps () {
     func_hashmap_put (dp_rn_map, "tst", dp_set_rn);
     func_hashmap_put (dp_rn_map, "teq", dp_set_rn);
     func_hashmap_put (dp_rn_map, "cmp", dp_set_rn);
+    func_hashmap_put (dp_rn_map, "lsl", dp_lsl);
 
     hashmap_put (shift_map, "lsl", (void *) &LSL_VAL);
     hashmap_put (shift_map, "lsr", (void *) &LSR_VAL);
@@ -186,6 +191,37 @@ void dp_set_not_rn(char* dp_char, union decoded_instr* instruction) {
     dp_set_op2(dp_char, instruction);
 }
 
+void dp_lsl(char* dp_char, union decoded_instr* instruction) {
+
+    // Horrible Duplication Ahead
+    struct dp_instr* dp_instr = &instruction->dp;
+
+    // No Rn Register
+    dp_instr->rn = 0x0;
+
+    union op2_gen* op2 = calloc(1, sizeof(union op2_gen));
+
+    struct op2_reg* op2_reg = &op2->reg_op;
+
+    enum operand_type DEFAULT = NONE;
+    enum operand_type* op_type = &DEFAULT;
+
+    tokop(op_type);
+
+    // Shifted register is Rd
+    op2_reg->rm = dp_instr->rd;
+    // Shift by Imm Value
+    op2_reg->bit4 = 0;
+    // Get shift amount
+    op2_reg->shift_val = tokimm();
+    dp_instr->op2 = *((int *) op2);
+
+    free(op2);
+
+    write(instruction);
+
+}
+
 // ------------------------------------------------------------------
 
 void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
@@ -245,9 +281,5 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
 
     free(op2);
 
-    printf("\n%x\n", *((uint32_t *) instruction));
-
-    // Write to file
+    write(instruction);
 }
-
-// ------------------------------------------------------------------

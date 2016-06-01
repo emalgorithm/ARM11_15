@@ -12,4 +12,6 @@
 #include "util/hashmap.h"
 #include "util/func_hashmap.h"
 
+void write (union decoded_instr*);
+
 #endif

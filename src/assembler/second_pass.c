@@ -26,7 +26,7 @@ void generate_maps () {
     func_hashmap_put (instr_map, "ldr", proc_sdt_instr);
     func_hashmap_put (instr_map, "str", proc_sdt_instr);
     func_hashmap_put (instr_map, "b", proc_br_instr);
-    func_hashmap_put (instr_map, "lsl", proc_lsl_instr);
+    func_hashmap_put (instr_map, "lsl", proc_dp_instr);
 }
 
 void proc_lsl_instr(char* lsl_char, union decoded_instr* instruction) {
