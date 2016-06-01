@@ -18,7 +18,7 @@ void tear_down() {}
  */
 static int test_second_pass_1() {
 
-    sec_pass_run("../test/unit/assembler/test.txt");
+    //sec_pass_run("../test/unit/assembler/test.txt");
 
     return 0;
 }
