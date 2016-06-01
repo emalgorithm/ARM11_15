@@ -9,11 +9,38 @@
 func_map_t instr_map;
 func_map_t dp_rd_map;
 func_map_t dp_rn_map;
-func_map_t dp_op2_map;
 
 map_t opcode_map;
+map_t dp_s_bit_map;
 map_t shift_map;
 map_t cond_map;
+
+static const uint32_t ADD_OPCODE = 4;
+static const uint32_t SUB_OPCODE = 2;
+static const uint32_t RSB_OPCODE = 3;
+static const uint32_t AND_OPCODE = 0;
+static const uint32_t EOR_OPCODE = 1;
+static const uint32_t ORR_OPCODE = 12;
+static const uint32_t MOV_OPCODE = 13;
+static const uint32_t TST_OPCODE = 8;
+static const uint32_t TEQ_OPCODE = 9;
+static const uint32_t CMP_OPCODE = 10;
+
+static const uint32_t ADD_S_BIT = 0;
+static const uint32_t SUB_S_BIT = 0;
+static const uint32_t RSB_S_BIT = 0;
+static const uint32_t AND_S_BIT = 0;
+static const uint32_t EOR_S_BIT = 0;
+static const uint32_t ORR_S_BIT = 0;
+static const uint32_t MOV_S_BIT = 0;
+static const uint32_t TST_S_BIT = 1;
+static const uint32_t TEQ_S_BIT = 1;
+static const uint32_t CMP_S_BIT = 1;
+
+static const int LSL_VAL = 0;
+static const int LSR_VAL = 1;
+static const int ASR_VAL = 2;
+static const int ROR_VAL = 3;
 
 struct op2_imm {
     uint32_t imm : 8;
@@ -55,6 +82,7 @@ void generate_maps () {
     dp_rn_map = hashmap_new();
 
     opcode_map = hashmap_new();
+    dp_s_bit_map = hashmap_new();
     shift_map = hashmap_new();
     cond_map = hashmap_new();
 
@@ -75,17 +103,6 @@ void generate_maps () {
     func_hashmap_put (instr_map, "b", proc_br_instr);
     func_hashmap_put (instr_map, "lsl", proc_lsl_instr);
 
-    int ADD_OPCODE = 4;
-    int SUB_OPCODE = 2;
-    int RSB_OPCODE = 3;
-    int AND_OPCODE = 0;
-    int EOR_OPCODE = 1;
-    int ORR_OPCODE = 12;
-    int MOV_OPCODE = 13;
-    int TST_OPCODE = 8;
-    int TEQ_OPCODE = 9;
-    int CMP_OPCODE = 10;
-
     hashmap_put (opcode_map, "add", (void *) &ADD_OPCODE);
     hashmap_put (opcode_map, "sub", (void *) &SUB_OPCODE);
     hashmap_put (opcode_map, "rsb", (void *) &RSB_OPCODE);
@@ -96,6 +113,17 @@ void generate_maps () {
     hashmap_put (opcode_map, "tst", (void *) &TST_OPCODE);
     hashmap_put (opcode_map, "teq", (void *) &TEQ_OPCODE);
     hashmap_put (opcode_map, "cmp", (void *) &CMP_OPCODE);
+
+    hashmap_put (dp_s_bit_map, "add", (void *) &ADD_S_BIT);
+    hashmap_put (dp_s_bit_map, "sub", (void *) &SUB_S_BIT);
+    hashmap_put (dp_s_bit_map, "rsb", (void *) &RSB_S_BIT);
+    hashmap_put (dp_s_bit_map, "and", (void *) &AND_S_BIT);
+    hashmap_put (dp_s_bit_map, "eor", (void *) &EOR_S_BIT);
+    hashmap_put (dp_s_bit_map, "orr", (void *) &ORR_S_BIT);
+    hashmap_put (dp_s_bit_map, "mov", (void *) &MOV_S_BIT);
+    hashmap_put (dp_s_bit_map, "tst", (void *) &TST_S_BIT);
+    hashmap_put (dp_s_bit_map, "teq", (void *) &TEQ_S_BIT);
+    hashmap_put (dp_s_bit_map, "cmp", (void *) &CMP_S_BIT);
 
     func_hashmap_put (dp_rd_map, "add", dp_set_rd);
     func_hashmap_put (dp_rd_map, "sub", dp_set_rd);
@@ -118,11 +146,6 @@ void generate_maps () {
     func_hashmap_put (dp_rn_map, "tst", dp_set_rn);
     func_hashmap_put (dp_rn_map, "teq", dp_set_rn);
     func_hashmap_put (dp_rn_map, "cmp", dp_set_rn);
-
-    int LSL_VAL = 0;
-    int LSR_VAL = 1;
-    int ASR_VAL = 2;
-    int ROR_VAL = 3;
 
     hashmap_put (shift_map, "lsl", (void *) &LSL_VAL);
     hashmap_put (shift_map, "lsr", (void *) &LSR_VAL);
@@ -147,14 +170,17 @@ void proc_dp_instr(char* dp_char, union decoded_instr* instruction) {
     // Set Cond Field
     dp_instr->cond = 0xE;
 
+
     // Set Id Field
-    dp_instr->cond = 0x0;
+    dp_instr->_id = 0x0;
+
 
     // Set S Field
-    //dp_instr->op_code = *((int *) hashmap_get(s_bit_map, dp_char));
+    dp_instr->set_cond = *((uint8_t *) hashmap_get(dp_s_bit_map, dp_char));
 
     // Set OpCode
-    dp_instr->op_code = *((int *) hashmap_get(opcode_map, dp_char));
+
+    dp_instr->op_code = *((uint8_t *) hashmap_get(opcode_map, dp_char));
 
     // Continue
     func_hashmap_get(dp_rd_map, dp_char)(dp_char, instruction);
@@ -205,7 +231,7 @@ void dp_set_rn(char* dp_char, union decoded_instr* instruction) {
     dp_instr->rn = tokreg();
 
     // Continue
-    func_hashmap_get(dp_op2_map, dp_char)(dp_char, instruction);
+    dp_set_op2(dp_char, instruction);
 }
 
 void dp_set_not_rn(char* dp_char, union decoded_instr* instruction) {
@@ -226,6 +252,8 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
     union op2_gen* op2 = calloc(1, sizeof(union op2_gen));
 
     enum operandType* op_type = NULL;
+
+    printf("\n%x\n", *((uint32_t *) instruction));
 
     tokop(op_type);
 
@@ -267,6 +295,10 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
     }
     dp_instr->op2 = *((int *) op2);
 
+    free(op2);
+
+    printf("%x\n", *((uint32_t *) instruction));
+
     // Write to file
 }
 
@@ -281,14 +313,14 @@ void sec_pass_run (const char* path) {
     // Iinitialise tokeniser
     tokinit (path);
 
-    while (hastok()) {
+    char* next;
+
+    while ((next = toknext()) != NULL) {
         instruction = calloc(1, sizeof(union decoded_instr));
-        char* next = toknext();
         func_hashmap_get(instr_map, next)(next, instruction);
-
-        // Free up memory
-
     }
+
+    free(instruction);
 
     tokdestroy ();
 }
