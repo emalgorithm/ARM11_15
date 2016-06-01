@@ -1,4 +1,11 @@
 #include "second_pass.h"
+#include "util/hashmap.h"
+#include "util/func_hashmap.h"
+#include "util/tokeniser.h"
+#include "dp_sec_pass.h"
+#include "br_sec_pass.h"
+#include "sdt_sec_pass.h"
+#include "mul_sec_pass.h"
 
 func_map_t instr_map;
 

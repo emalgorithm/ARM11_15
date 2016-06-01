@@ -127,9 +127,9 @@ static int test_addr_base_with_reg_offset() {
     free(positive);
 
     enum operand_type *shift = malloc(sizeof(enum operand_type));
-    char *sname = tokshift(shift);
+    int scode = tokshift(shift);
 
-    mu_assert(strcmp(sname, "lsl") == 0);
+    mu_assert(scode == 0);
     mu_assert(*shift == IMMEDIATE);
 
     mu_assert(tokimm() == 0x3);
@@ -162,9 +162,9 @@ static int test_addr_base_with_reg_offset_shift() {
     free(positive);
 
     enum operand_type *shift = malloc(sizeof(enum operand_type));
-    char *sname = tokshift(shift);
+    int scode = tokshift(shift);
 
-    mu_assert(strcmp(sname, "asr") == 0);
+    mu_assert(scode == 2);
     mu_assert(*shift == SHIFT_REG);
 
     mu_assert(toksignedreg(NULL) == 4);
@@ -197,9 +197,9 @@ static int test_addr_neg_pc() {
     free(positive);
 
     enum operand_type *shift = malloc(sizeof(enum operand_type));
-    char *sname = tokshift(shift);
+    int scode = tokshift(shift);
 
-    mu_assert(strcmp(sname, "lsl") == 0);
+    mu_assert(scode == 0);
     mu_assert(*shift == IMMEDIATE);
 
     mu_assert(tokimm() == 13);
@@ -257,9 +257,9 @@ static int test_post_idx_shift() {
     free(positive);
 
     enum operand_type *shift = malloc(sizeof(enum operand_type));
-    char *sname = tokshift(shift);
+    int scode = tokshift(shift);
 
-    mu_assert(strcmp(sname, "lsr") == 0);
+    mu_assert(scode == 1);
     mu_assert(*shift == SHIFT_REG);
 
     mu_assert(toksignedreg(NULL) == 5);

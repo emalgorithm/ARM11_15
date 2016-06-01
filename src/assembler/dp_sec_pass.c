@@ -1,16 +1,20 @@
 #include "dp_sec_pass.h"
+#include "util/hashmap.h"
+#include "util/func_hashmap.h"
+#include "bwriter.h"
+#include <assert.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include "util/tokeniser.h"
+#include "util/shift_map.h"
 
 func_map_t dp_rd_map;
 func_map_t dp_rn_map;
 
-map_t shift_map;
 map_t opcode_map;
 map_t dp_s_bit_map;
-
-static const int LSL_VAL = 0;
-static const int LSR_VAL = 1;
-static const int ASR_VAL = 2;
-static const int ROR_VAL = 3;
 
 static const uint32_t ADD_OPCODE = 4;
 static const uint32_t SUB_OPCODE = 2;
@@ -34,23 +38,6 @@ static const uint32_t TST_S_BIT = 1;
 static const uint32_t TEQ_S_BIT = 1;
 static const uint32_t CMP_S_BIT = 1;
 
-struct op2_imm {
-    uint32_t imm : 8;
-    uint32_t rot : 4;
-};
-
-struct op2_reg {
-    uint32_t rm        : 4;
-    uint32_t bit4      : 1;
-    uint32_t sh_ty     : 2;
-    uint32_t shift_val : 5;
-};
-
-union op2_gen {
-    struct op2_reg reg_op;
-    struct op2_imm imm_op;
-};
-
 void proc_dp_instr (char*, union decoded_instr*);
 
 void dp_set_rd (char*, union decoded_instr*);
@@ -67,7 +54,6 @@ void generate_dp_maps () {
 
     opcode_map = func_hashmap_new();
     dp_s_bit_map = func_hashmap_new();
-    shift_map = func_hashmap_new();
 
     hashmap_put (opcode_map, "add", (void *) &ADD_OPCODE);
     hashmap_put (opcode_map, "sub", (void *) &SUB_OPCODE);
@@ -116,11 +102,6 @@ void generate_dp_maps () {
     func_hashmap_put (dp_rn_map, "teq", dp_set_rn);
     func_hashmap_put (dp_rn_map, "cmp", dp_set_rn);
     func_hashmap_put (dp_rn_map, "lsl", dp_lsl);
-
-    hashmap_put (shift_map, "lsl", (void *) &LSL_VAL);
-    hashmap_put (shift_map, "lsr", (void *) &LSR_VAL);
-    hashmap_put (shift_map, "asr", (void *) &ASR_VAL);
-    hashmap_put (shift_map, "ror", (void *) &ROR_VAL);
 }
 
 // -----------------------------------------------------------------------
@@ -216,7 +197,7 @@ void dp_lsl(char* dp_char, union decoded_instr* instruction) {
 
     free(op2);
 
-    write(instruction);
+    bwr_instr(instruction);
 
 }
 
@@ -234,50 +215,50 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
 
     switch (*op_type) {
 
+    case IMMEDIATE: ;
+        // Union is of type op2_imm
+        struct op2_imm* op2_imm = &op2->imm_op;
+        // Set I Bit
+        dp_instr->imm_op = 0x1;
+        // Improper Call to tokimm. Must try rotation.
+        op2_imm->imm = tokimm();
+        op2_imm->rot = 0x0;
+        break;
+    case SHIFT_REG: ;
+        // Union is of type op2_reg
+        struct op2_reg* op2_reg = &op2->reg_op;
+        // Not set I Bit
+        dp_instr->imm_op = 0x0;
+        // Set Rm
+        op2_reg->rm = tokreg();
+
+        enum operand_type DEFAULT2 = NONE;
+        enum operand_type* sh_op_type = &DEFAULT2;
+
+        op2_reg->sh_ty = tokshift(sh_op_type);
+
+        switch (*sh_op_type) {
         case IMMEDIATE: ;
-            // Union is of type op2_imm
-            struct op2_imm* op2_imm = &op2->imm_op;
-            // Set I Bit
-            dp_instr->imm_op = 0x1;
-            // Improper Call to tokimm. Must try rotation.
-            op2_imm->imm = tokimm();
-            op2_imm->rot = 0x0;
+            op2_reg->bit4 = 0;
+            op2_reg->shift_val = tokimm();
             break;
         case SHIFT_REG: ;
-            // Union is of type op2_reg
-            struct op2_reg* op2_reg = &op2->reg_op;
-            // Not set I Bit
-            dp_instr->imm_op = 0x0;
-            // Set Rm
-            op2_reg->rm = tokreg();
-
-            enum operand_type DEFAULT2 = NONE;
-            enum operand_type* sh_op_type = &DEFAULT2;
-
-            op2_reg->sh_ty = * ((int *)hashmap_get(shift_map, tokshift(sh_op_type)));
-
-            switch (*sh_op_type) {
-                case IMMEDIATE: ;
-                    op2_reg->bit4 = 0;
-                    op2_reg->shift_val = tokimm();
-                    break;
-                case SHIFT_REG: ;
-                    op2_reg->bit4 = 1;
-                    // Rotate left register to have empty bit7
-                    op2_reg->shift_val = tokreg() << 1;
-                    break;
-                default:
-                assert(false);
-                    break;
-            }
+            op2_reg->bit4 = 1;
+            // Rotate left register to have empty bit7
+            op2_reg->shift_val = tokreg() << 1;
             break;
         default:
-        assert(false);
+            assert(false);
             break;
+        }
+        break;
+    default:
+        assert(false);
+        break;
     }
     dp_instr->op2 = *((int *) op2);
 
     free(op2);
 
-    write(instruction);
+    bwr_instr(instruction);
 }

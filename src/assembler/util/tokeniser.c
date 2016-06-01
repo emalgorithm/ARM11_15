@@ -13,6 +13,7 @@
 #include "tokeniser.h"
 #include "hash_string.h"
 #include "cond_map.h"
+#include "shift_map.h"
 
 #define OPEN_ERR "Tokeniser: Could not open file"
 #define FILE_ERR "Tokeniser: File error"
@@ -202,9 +203,9 @@ long int tokimm() {
 /*
  * Function : tokshift
  * -------------------
- * Return the name of a shift and set the type
+ * Return the shift code and set the type
  */
-char *tokshift(enum operand_type *type) {
+uint32_t tokshift(enum operand_type *type) {
     assert(type != NULL);
 
     token = next();
@@ -215,7 +216,7 @@ char *tokshift(enum operand_type *type) {
     // Determine shift type
     tokop(type);
 
-    return shift;
+    return shift_map(hash(shift));
 }
 
 /*
