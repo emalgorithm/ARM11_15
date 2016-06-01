@@ -6,6 +6,7 @@
 #include "br_sec_pass.h"
 #include "sdt_sec_pass.h"
 #include "mul_sec_pass.h"
+#include "bwriter.h"
 
 func_map_t instr_map;
 
@@ -52,7 +53,7 @@ void sec_pass_run (const char* path) {
 
     generate_maps();
     generate_dp_maps();
-    generate_sdt_maps();
+    proc_sdt_init();
 
     // Iinitialise tokeniser
     tokinit (path);
@@ -65,9 +66,13 @@ void sec_pass_run (const char* path) {
     while ((next = toknext()) != NULL) {
         instruction = calloc(1, sizeof(union decoded_instr));
         func_hashmap_get(instr_map, next)(next, instruction);
+        bwr_instr(instruction);
         curr_instr_addr += 4;
     }
 
     free(instruction);
 
+    write_data_section();
+
+    //tokdestroy ();
 }

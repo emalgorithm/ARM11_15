@@ -343,3 +343,7 @@ uint32_t toklabel(char *label) {
 char *tokbrlabel() {
     return (token = next());
 }
+
+uint32_t lastaddr() {
+    return address;
+}
