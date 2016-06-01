@@ -6,7 +6,6 @@ func_map_t dp_rn_map;
 map_t shift_map;
 map_t opcode_map;
 map_t dp_s_bit_map;
-map_t cond_map;
 
 static const int LSL_VAL = 0;
 static const int LSR_VAL = 1;
@@ -66,10 +65,9 @@ void generate_dp_maps () {
     dp_rd_map = hashmap_new();
     dp_rn_map = hashmap_new();
 
-    opcode_map = hashmap_new();
-    dp_s_bit_map = hashmap_new();
-    cond_map = hashmap_new();
-    shift_map = hashmap_new();
+    opcode_map = func_hashmap_new();
+    dp_s_bit_map = func_hashmap_new();
+    shift_map = func_hashmap_new();
 
     hashmap_put (opcode_map, "add", (void *) &ADD_OPCODE);
     hashmap_put (opcode_map, "sub", (void *) &SUB_OPCODE);

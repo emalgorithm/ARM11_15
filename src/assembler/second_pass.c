@@ -55,5 +55,5 @@ void sec_pass_run (const char* path) {
 
     free(instruction);
 
-    tokdestroy ();
+    //tokdestroy ();
 }
