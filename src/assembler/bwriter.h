@@ -5,6 +5,9 @@
  * Authors : Tencho Tenev
  */
 
+#ifndef BWRITER_H
+#define BWRITER_H
+
 #include "../emulator/arm11.h"
 
 /*
@@ -27,3 +30,5 @@ int bwr_instr(union decoded_instr *instr);
  * Close the file stream and return non-zero if there were any errors
  */
 int bwr_destroy();
+
+#endif

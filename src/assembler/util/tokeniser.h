@@ -83,7 +83,7 @@ long int tokimm();
  * -------------------
  * Return the name of a shift and set the type
  */
-char *tokshift(enum operand_type *type);
+uint32_t tokshift(enum operand_type *type);
 
 /*
  * Usage: This information is sufficient to set the I and P bits of SDT
@@ -139,5 +139,12 @@ int hastok();
  * instruction in the file is at address 0.
  */
 uint32_t toklabel(char *label);
+
+/*
+ * Function : tokbrlabel
+ * ---------------------
+ * This function gives the name of a label in a branch instruction
+ */
+char *tokbrlabel();
 
 #endif

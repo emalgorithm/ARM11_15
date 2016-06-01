@@ -1,7 +1,7 @@
 #ifndef DP_SEC_PASS
 #define DP_SEC_PASS
 
-#include "writer_sec_pass.h"
+#include "../emulator/arm11.h"
 
 void proc_dp_instr (char*, union decoded_instr*);
 
