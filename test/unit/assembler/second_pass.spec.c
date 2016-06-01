@@ -17,19 +17,19 @@ void tear_down() {}
  * imm_off = 0, index_bit = 1,
  * up = 1 */
 
- /*static int test_second_pass_1() {
+/*static int test_second_pass_1() {
 
-     sec_pass_run("../test/unit/assembler/test.txt");
+    sec_pass_run("../test/unit/assembler/test.txt");
 
 
-     return 0;
- }*/
+    return 0;
+}*/
 
 
 static int test_second_pass_2() {
 
-    const char* input_path = "../test/unit/assembler/test.txt";
-    const char* output_path = "../test/unit/assembler/test_out";
+    const char* input_path = "../test/unit/assembler/test.s";
+    const char* output_path = "../test/unit/assembler/test_out.o";
 
     bwr_init(output_path);
 
