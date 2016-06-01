@@ -334,3 +334,12 @@ uint32_t toklabel(char *label) {
         address += 4;
     }
 }
+
+/*
+ * Function : tokbrlabel
+ * ---------------------
+ * This function gives the name of a label in a branch instruction
+ */
+char *tokbrlabel() {
+    return (token = next());
+}
