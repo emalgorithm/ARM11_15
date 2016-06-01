@@ -96,7 +96,7 @@ struct sdt_instr {
 */
 struct br_instr {
     uint32_t offset : 24;
-    uint32_t        : 2;
+    uint32_t _id2   : 2;
     uint32_t _id    : 2;
     uint32_t cond   : 4;
 };

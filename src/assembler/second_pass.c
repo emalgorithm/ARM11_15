@@ -40,27 +40,34 @@ void proc_lsl_instr(char* lsl_char, union decoded_instr* instruction) {
 
 }
 
+static uint32_t curr_instr_addr;
+
+uint32_t get_curr_instr_addr(void) {
+    return curr_instr_addr;
+}
+
 void sec_pass_run (const char* path) {
 
     union decoded_instr* instruction;
 
     generate_maps();
     generate_dp_maps();
-    generate_mul_maps();
-    generate_br_maps();
     generate_sdt_maps();
 
     // Iinitialise tokeniser
     tokinit (path);
+
+
+    curr_instr_addr = 0;
 
     char* next;
 
     while ((next = toknext()) != NULL) {
         instruction = calloc(1, sizeof(union decoded_instr));
         func_hashmap_get(instr_map, next)(next, instruction);
+        curr_instr_addr += 4;
     }
 
     free(instruction);
 
-    //tokdestroy ();
 }
