@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "../minunit.h"
-#include "../../../src/emulator/util/binutils.h"
+#include "../../../src/util/binutils.h"
 
 static char spec[] = "binutils";
 

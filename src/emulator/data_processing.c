@@ -8,7 +8,7 @@
 
 #include <stdbool.h>
 #include "data_processing.h"
-#include "util/binutils.h"
+#include "../util/binutils.h"
 #include "util/cpsr_flags.h"
 #include "util/shift_reg.h"
 
@@ -49,7 +49,7 @@ static uint32_t get_op2 (struct dp_instr* dp_instruction) {
         // Gets the rotation value and performs the said rotation over Imm
         uint32_t rotate = get_bits(dp_instruction->op2, ROT_BIT, ROT_LEN);
         uint32_t imm_val = get_bits(dp_instruction->op2, VAL_BIT, VAL_LEN);
-        return rot_right(rotate*2, imm_val, dp_instruction->set_cond);
+        return rot_right(rotate * 2, imm_val, dp_instruction->set_cond);
     } else {
         // Operand2 is NOT an Immediate Operand
         // Op2 is thus a shifted instruction
@@ -193,9 +193,9 @@ static void mov_instr (struct dp_instr* dp_instruction, bool write) {
 
 void dp_exec (union decoded_instr* instruction) {
 
-	// Downcast void* to struct dp_instr* AND dereferencing.
+    // Downcast void* to struct dp_instr* AND dereferencing.
     struct dp_instr* dp_instruction;
-	dp_instruction = &instruction->dp;
+    dp_instruction = &instruction->dp;
 
     /* Function Pointer Array, given an OpCode as an index, points to the
      * right function.

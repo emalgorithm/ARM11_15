@@ -1,7 +1,7 @@
 #include "branch.h"
 #include <stdint.h>
 #include "pipeline.h"
-#include "util/binutils.h"
+#include "../util/binutils.h"
 
 #define OFFSET_SHIFT 2
 #define OFFSET_SIZE 24
@@ -20,7 +20,7 @@ void br_exec(union decoded_instr *instruction) {
 static void sign_extend(int32_t *val, short sign_pos) {
     uint32_t sign = get_bit(*val, sign_pos);
 
-    if(sign) {
-      *val |= (0xffffffff << sign_pos);
+    if (sign) {
+        *val |= (0xffffffff << sign_pos);
     }
 }

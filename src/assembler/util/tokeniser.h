@@ -5,6 +5,9 @@
  * Authors : Tencho Tenev
  */
 
+#ifndef TOKENISER_H
+#define TOKENISER_H
+
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -114,7 +117,7 @@ long tokaddr(enum addressing_mode *mode, enum operand_type *operand);
  * ------------------
  * Returns the condition part of an instruction token (al if no token)
  */
-char *tokcond(char *token);
+uint32_t tokcond(char *token);
 
 /*
  * Function : tokcond
@@ -136,3 +139,5 @@ int hastok();
  * instruction in the file is at address 0.
  */
 uint32_t toklabel(char *label);
+
+#endif

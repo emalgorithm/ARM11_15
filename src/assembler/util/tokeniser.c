@@ -8,11 +8,11 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
-#include <stdbool.h>
-#include <stdint.h>
 #include <string.h>
 #include <assert.h>
 #include "tokeniser.h"
+#include "hash_string.h"
+#include "cond_map.h"
 
 #define OPEN_ERR "Tokeniser: Could not open file"
 #define FILE_ERR "Tokeniser: File error"
@@ -269,10 +269,18 @@ long tokaddr(enum addressing_mode *mode, enum operand_type *operand) {
 /*
  * Function : tokcond
  * ------------------
- * Returns the condition part of an instruction token (al if no token)
+ * Returns the hash condition part of an instruction token
  */
-char *tokcond(char *token) {
-    return NULL;
+#define COND_SIZE 2
+uint32_t tokcond(char *token) {
+    int token_size = strlen(token);
+    if (token_size <= COND_SIZE) {
+        return 0; // should be hash of al
+    }
+
+    token += strlen(token) - COND_SIZE; // move pointer to last two characters
+
+    return cond_map(hash(token));
 }
 
 int hastok() {

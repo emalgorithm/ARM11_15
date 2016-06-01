@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 #include "shift_reg.h"
-#include "binutils.h"
+#include "../../util/binutils.h"
 #include "cpsr_flags.h"
 
 /*Declarations*/

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdint.h>
-#include "../minunit.h"
-#include "../../../src/emulator/util/cpsr_flags.h"
-#include "../../../src/emulator/arm11.h"
+#include "../../minunit.h"
+#include "../../../../src/emulator/util/cpsr_flags.h"
+#include "../../../../src/emulator/arm11.h"
 
 static char spec[] = "cpsr_flags";
 
@@ -78,7 +78,7 @@ static int test_mix() {
     clr_zflag;
     set_cflag;
     clr_vflag;
-    mu_assert(get_nflag ==1 && get_zflag ==0 && get_cflag ==1 && get_vflag ==0);
+    mu_assert(get_nflag == 1 && get_zflag == 0 && get_cflag == 1 && get_vflag == 0);
     return 0;
 }
 
