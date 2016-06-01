@@ -251,9 +251,8 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
 
     union op2_gen* op2 = calloc(1, sizeof(union op2_gen));
 
-    enum operandType* op_type = NULL;
-
-    printf("\n%x\n", *((uint32_t *) instruction));
+    enum operand_type DEFAULT = NONE;
+    enum operand_type* op_type = &DEFAULT;
 
     tokop(op_type);
 
@@ -276,7 +275,8 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
             // Set Rm
             op2_reg->rm = tokreg();
 
-            enum operandType* sh_op_type = NULL;
+            enum operand_type DEFAULT2 = NONE;
+            enum operand_type* sh_op_type = &DEFAULT2;
 
             op2_reg->sh_ty = * ((int *)hashmap_get(shift_map, tokshift(sh_op_type)));
 
@@ -290,14 +290,20 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
                     // Rotate left register to have empty bit7
                     op2_reg->shift_val = tokreg() << 1;
                     break;
+                default:
+                assert(false);
+                    break;
             }
+            break;
+        default:
+        assert(false);
             break;
     }
     dp_instr->op2 = *((int *) op2);
 
     free(op2);
 
-    printf("%x\n", *((uint32_t *) instruction));
+    printf("\n%x\n", *((uint32_t *) instruction));
 
     // Write to file
 }

@@ -20,7 +20,6 @@ static int test_second_pass_1() {
 
     sec_pass_run("../test/unit/assembler/test.txt");
 
-    mu_assert(0 == 0);
     return 0;
 }
 
