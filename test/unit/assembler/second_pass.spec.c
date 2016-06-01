@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "../minunit.h"
 #include "../../../src/assembler/second_pass.h"
+#include "../../../src/assembler/bwriter.h"
 
 static char spec[] = "second_pass";
 
@@ -14,11 +15,29 @@ void tear_down() {}
 /*
  * Test case for load_store = 1,
  * imm_off = 0, index_bit = 1,
- * up = 1
- */
-static int test_second_pass_1() {
+ * up = 1 */
 
-    //sec_pass_run("../test/unit/assembler/test.txt");
+ /*static int test_second_pass_1() {
+
+     sec_pass_run("../test/unit/assembler/test.txt");
+
+
+     return 0;
+ }*/
+
+
+static int test_second_pass_2() {
+
+    const char* input_path = "../test/unit/assembler/test.txt";
+    const char* output_path = "../test/unit/assembler/test_out";
+
+    bwr_init(output_path);
+
+    sec_pass_run(input_path);
+
+    bwr_destroy();
+
+
 
     return 0;
 }
@@ -31,7 +50,8 @@ static int test_all() {
      * The position of the failed one is returned and printed.
      * If all pass 0 is returned. */
 
-    mu_run_test(test_second_pass_1);
+    //mu_run_test(test_second_pass_1);
+    mu_run_test(test_second_pass_2);
 
     return 0;
 }
