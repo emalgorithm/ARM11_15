@@ -11,6 +11,9 @@
 #ifndef FUNC_HASHMAP_H
 #define FUNC_HASHMAP_H
 
+#include "hashmap.h"
+#include "../../emulator/arm11.h"
+
 #define MAP_MISSING -3  /* No such element */
 #define MAP_FULL -2 	/* Hashmap is full */
 #define MAP_OMEM -1 	/* Out of Memory */
@@ -20,9 +23,8 @@
  * any_t is a pointer.  This allows you to put arbitrary structures in
  * the hashmap.
  */
-typedef void *any_t;
 
-typedef void (*func_t)(void);
+typedef void (*func_t)(char*, union decoded_instr*);
 
 /*
  * func_map_t is a pointer to an internally maintained data structure.
@@ -62,5 +64,3 @@ extern void func_hashmap_free(func_map_t in);
 extern int func_hashmap_length(func_map_t in);
 
 #endif
-
-

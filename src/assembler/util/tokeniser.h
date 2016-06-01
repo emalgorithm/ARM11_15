@@ -119,6 +119,12 @@ long tokaddr(enum addressing_mode *mode, enum operand_type *operand);
  */
 uint32_t tokcond(char *token);
 
+/*
+ * Function : tokcond
+ * ------------------
+ * Returns true if the file has tokens left.
+ */
+int hastok();
 
 /*
  * Function : toklabel

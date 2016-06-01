@@ -283,6 +283,10 @@ uint32_t tokcond(char *token) {
     return cond_map(hash(token));
 }
 
+int hastok() {
+    return 1;
+}
+
 /*
  * Function : toklabel
  * -------------------
@@ -329,5 +333,3 @@ uint32_t toklabel(char *label) {
         address += 4;
     }
 }
-
-
