@@ -16,7 +16,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "../arm11.h"
-#include "binutils.h"
+#include "../../util/binutils.h"
 
 #define CPSR_FLAGS 16
 #define N_FLAG 31

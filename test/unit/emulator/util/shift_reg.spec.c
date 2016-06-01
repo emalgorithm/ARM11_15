@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdint.h>
-#include "../minunit.h"
-#include "../../../src/emulator/util/shift_reg.h"
-#include "../../../src/emulator/util/cpsr_flags.h"
-#include "../../../src/emulator/arm11.h"
+#include "../../minunit.h"
+#include "../../../../src/emulator/util/shift_reg.h"
+#include "../../../../src/emulator/util/cpsr_flags.h"
+#include "../../../../src/emulator/arm11.h"
 
 static char spec[] = "shift_reg";
 

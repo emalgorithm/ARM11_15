@@ -6,6 +6,7 @@ CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
 # Object files grouped by directory
 EMULATOR_OBJ := $(patsubst %.c, %.o, $(shell find emulator/ -type f -name '*.c'))
 ASSEMBLER_OBJ := $(patsubst %.c, %.o, $(shell find assembler/ -type f -name '*.c'))
+UTIL_OBJ := $(patsubst %.c, %.o, $(shell find util/ -type f -name '*.c'))
 TESTS := $(patsubst %.spec.c, %.spec, $(shell find ../test/ -type f -name '*.spec.c'))
 
 .SUFFIXES: .c .o
@@ -15,10 +16,10 @@ TESTS := $(patsubst %.spec.c, %.spec, $(shell find ../test/ -type f -name '*.spe
 all: assemble emulate test
 
 # Compile assembler executable
-assemble: assemble.o $(ASSEMBLER_OBJ)
+assemble: assemble.o $(ASSEMBLER_OBJ) $(UTIL_OBJ)
 
 # Compile emulator executable
-emulate: emulate.o $(EMULATOR_OBJ)
+emulate: emulate.o $(EMULATOR_OBJ) $(UTIL_OBJ)
 
 # Runs all tests
 # where a test is a *.spec executable in the tree of test/
@@ -28,7 +29,7 @@ test: $(TESTS)
 # Pattern rule for test compilation to handle the fancy suffix
 # See https://www.gnu.org/software/make/manual/make.html#Pattern-Intro
 # and https://www.gnu.org/software/make/manual/make.html#Automatic-Variables
-%.spec %.spec.o: %.spec.c $(EMULATOR_OBJ) $(ASSEMBLER_OBJ)
+%.spec %.spec.o: %.spec.c $(EMULATOR_OBJ) $(ASSEMBLER_OBJ) $(UTIL_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^
 
 # Remove all object files and executables

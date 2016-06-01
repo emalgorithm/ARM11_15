@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include "arm11.h"
 #include "printer.h"
-#include "util/binutils.h"
+#include "../util/binutils.h"
 
 #define PC_LBL "PC"
 #define CPSR_LBL "CPSR"
@@ -17,7 +17,7 @@ void print_registers(void) {
     printf("%s\n", REG_TITLE);
 
     for (uint32_t i = 0; i < NUM_OF_REGISTERS - 4; i++) {
-      print_register(i);
+        print_register(i);
     }
 
     print_reg_label(PC_INDEX, PC_LBL);
@@ -45,7 +45,7 @@ void print_memory(void) {
 
 static void print_word(uint32_t address) {
     uint32_t value = toggle_endian(get_word(address));
-    if(value) {
+    if (value) {
         printf("0x%08x: 0x%08x\n", address, value);
     }
 }
