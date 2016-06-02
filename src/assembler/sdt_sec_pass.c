@@ -59,7 +59,7 @@ void proc_sdt_instr(char *token, union decoded_instr *instr) {
             instr->sdt.index_bit = 1; // only pre-indexing
             int la = lastaddr();
             int ca = get_curr_instr_addr();
-            int offset = la - ca - 8;
+            int offset = la + 4 * data_count - ca - 8;
             instr->sdt.offset = abs(offset);
 
             instr->sdt.up = (offset < 0) ? 0 : 1;
@@ -76,8 +76,13 @@ void proc_sdt_instr(char *token, union decoded_instr *instr) {
                 instr->sdt.offset = 0;
             } else if (*operand == IMMEDIATE) {
                 instr->sdt.imm_off = 0;
-                instr->sdt.offset = tokimm();
+                long offset = tokimm();
+                instr->sdt.offset = abs(offset);
+                if (offset < 0) {
+                    instr->sdt.up = 0;
+                }
             } else if (*operand == SHIFT_REG) {
+                instr->sdt.imm_off = 1;
                 bool *positive = malloc(sizeof(bool));
 
                 struct op2_reg *offset = calloc(1, 32);
@@ -100,7 +105,7 @@ void proc_sdt_instr(char *token, union decoded_instr *instr) {
                     offset->bit4 = 0;
 
                     offset->shift_val = tokimm();
-                } else {
+                } else if (*shift == SHIFT_REG) {
                     // bit 4 is 1
                     offset->bit4 = 1;
                     offset->shift_val = (toksignedreg(NULL) << 1);
@@ -118,8 +123,8 @@ void proc_sdt_instr(char *token, union decoded_instr *instr) {
 }
 
 void write_data_section() {
-    while (data_count) {
-        bwr_data(data_section[data_count--]);
+    for (int i = 0; i < data_count; ++i) {
+        bwr_data(data_section[i]);
     }
 }
 

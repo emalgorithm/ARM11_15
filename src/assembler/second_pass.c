@@ -16,6 +16,10 @@ void proc_lsl_instr (char*, union decoded_instr*);
 
 void sec_pass_run (const char*);
 
+static void halt(char* token, union decoded_instr* instruction) {
+    return;
+}
+
 void generate_maps () {
     instr_map = hashmap_new();
 
@@ -35,10 +39,7 @@ void generate_maps () {
     func_hashmap_put (instr_map, "str", proc_sdt_instr);
     func_hashmap_put (instr_map, "b", proc_br_instr);
     func_hashmap_put (instr_map, "lsl", proc_dp_instr);
-}
-
-void proc_lsl_instr(char* lsl_char, union decoded_instr* instruction) {
-
+    func_hashmap_put (instr_map, "andeq", halt);
 }
 
 static uint32_t curr_instr_addr;
