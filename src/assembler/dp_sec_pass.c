@@ -155,7 +155,7 @@ void dp_set_not_rd(char* dp_char, union decoded_instr* instruction) {
     dp_instr->rd = 0x0;
 
     // Continue
-    dp_set_op2(dp_char, instruction);
+    func_hashmap_get(dp_rn_map, dp_char)(dp_char, instruction);
 }
 
 void dp_set_rn(char* dp_char, union decoded_instr* instruction) {
@@ -280,7 +280,7 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
         case SHIFT_REG: ;
             op2_reg->bit4 = 1;
             // Rotate left register to have empty bit7
-            op2_reg->shift_val = tokreg() << 1;
+            op2_reg->shift_val = toksignedreg(NULL) << 1;
             break;
         default:
             assert(false);
