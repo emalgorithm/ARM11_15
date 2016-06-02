@@ -273,10 +273,11 @@ long tokaddr(enum addressing_mode *mode, enum operand_type *operand) {
  * Returns the hash condition part of an instruction token
  */
 #define COND_SIZE 2
+#define NO_COND 0xe
 uint32_t tokcond(char *token) {
     int token_size = strlen(token);
     if (token_size <= COND_SIZE) {
-        return 0; // should be hash of al
+        return NO_COND; // should be hash of empty condition
     }
 
     token += strlen(token) - COND_SIZE; // move pointer to last two characters
