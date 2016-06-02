@@ -9,6 +9,13 @@
 #include <stdbool.h>
 #include "util/tokeniser.h"
 #include "util/shift_map.h"
+#include "../util/binutils.h"
+#include "../emulator/util/shift_reg.h"
+
+#define MAX_BITS (32)
+#define IMM_BIT (7)
+#define IMM_LEN (8)
+#define MIN_ROT (2)
 
 func_map_t dp_rd_map;
 func_map_t dp_rn_map;
@@ -198,6 +205,26 @@ void dp_lsl(char* dp_char, union decoded_instr* instruction) {
     free(op2);
 }
 
+uint32_t rotate (uint32_t val) {
+
+    for (int i = 0; i < 17; i ++) {
+
+        uint32_t last_bits = get_bits(val, IMM_BIT, IMM_LEN);
+
+        if (last_bits == val) {
+            return last_bits | (i << IMM_LEN);
+        } else {
+            uint32_t left_shift = (int)((unsigned)val >> MIN_ROT);
+            uint32_t right_shift = val << (MAX_BITS - MIN_ROT);
+            val = left_shift | right_shift;
+        }
+    }
+
+    printf("\nInvalid Immediate Operand Rotation\n");
+    assert(false);
+
+}
+
 // ------------------------------------------------------------------
 
 void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
@@ -218,8 +245,10 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
         // Set I Bit
         dp_instr->imm_op = 0x1;
         // Improper Call to tokimm. Must try rotation.
-        op2_imm->imm = tokimm();
-        op2_imm->rot = 0x0;
+
+        printf("\n%x\n",rotate(tokimm()));
+
+        op2_imm->imm = 0;
         break;
     case SHIFT_REG: ;
         // Union is of type op2_reg
