@@ -9,6 +9,14 @@
 #include <stdbool.h>
 #include "util/tokeniser.h"
 #include "util/shift_map.h"
+#include "../util/binutils.h"
+#include "../emulator/util/shift_reg.h"
+
+#define MAX_BITS (32)
+#define IMM_BIT (7)
+#define IMM_LEN (8)
+#define MIN_ROT (2)
+#define MAX_ROT (17)
 
 func_map_t dp_rd_map;
 func_map_t dp_rn_map;
@@ -147,7 +155,7 @@ void dp_set_not_rd(char* dp_char, union decoded_instr* instruction) {
     dp_instr->rd = 0x0;
 
     // Continue
-    dp_set_op2(dp_char, instruction);
+    func_hashmap_get(dp_rn_map, dp_char)(dp_char, instruction);
 }
 
 void dp_set_rn(char* dp_char, union decoded_instr* instruction) {
@@ -198,6 +206,33 @@ void dp_lsl(char* dp_char, union decoded_instr* instruction) {
     free(op2);
 }
 
+static int rotate (uint32_t val, struct op2_imm* op2_imm) {
+
+    for (int i = 0; i < MAX_ROT; i ++) {
+
+        uint32_t last_bits = get_bits(val, IMM_BIT, IMM_LEN);
+
+        // Debugging print statements
+        //printf("---\n");
+        //printf("%x\n", val);
+        //printf("%x\n", last_bits);
+
+        if (last_bits == val) {
+            op2_imm->imm = last_bits;
+            op2_imm->rot = i;
+            return 0;
+        } else {
+            uint32_t left_shift = val << MIN_ROT;
+            uint32_t right_shift = val >> (MAX_BITS - MIN_ROT);
+            val = left_shift | right_shift;
+        }
+    }
+
+    printf("\nInvalid Immediate Operand Rotation\n");
+    assert(false);
+
+}
+
 // ------------------------------------------------------------------
 
 void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
@@ -217,9 +252,8 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
         struct op2_imm* op2_imm = &op2->imm_op;
         // Set I Bit
         dp_instr->imm_op = 0x1;
-        // Improper Call to tokimm. Must try rotation.
-        op2_imm->imm = tokimm();
-        op2_imm->rot = 0x0;
+        // Rotation
+        rotate(tokimm(), op2_imm);
         break;
     case SHIFT_REG: ;
         // Union is of type op2_reg
@@ -227,7 +261,7 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
         // Not set I Bit
         dp_instr->imm_op = 0x0;
         // Set Rm
-        op2_reg->rm = tokreg();
+        op2_reg->rm = toksignedreg(NULL);
 
         enum operand_type DEFAULT2 = NONE;
         enum operand_type* sh_op_type = &DEFAULT2;
@@ -235,6 +269,10 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
         op2_reg->sh_ty = tokshift(sh_op_type);
 
         switch (*sh_op_type) {
+        case NONE: ;
+            op2_reg->bit4 = 0;
+            op2_reg->shift_val = 0;
+            break;
         case IMMEDIATE: ;
             op2_reg->bit4 = 0;
             op2_reg->shift_val = tokimm();
@@ -242,7 +280,7 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
         case SHIFT_REG: ;
             op2_reg->bit4 = 1;
             // Rotate left register to have empty bit7
-            op2_reg->shift_val = tokreg() << 1;
+            op2_reg->shift_val = toksignedreg(NULL) << 1;
             break;
         default:
             assert(false);
