@@ -196,9 +196,6 @@ void dp_lsl(char* dp_char, union decoded_instr* instruction) {
     dp_instr->op2 = *((int *) op2);
 
     free(op2);
-
-    bwr_instr(instruction);
-
 }
 
 // ------------------------------------------------------------------
@@ -259,6 +256,4 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
     dp_instr->op2 = *((int *) op2);
 
     free(op2);
-
-    bwr_instr(instruction);
 }

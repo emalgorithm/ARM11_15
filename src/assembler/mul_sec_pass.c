@@ -13,6 +13,8 @@ void proc_mul_instr(char *mul_char, union decoded_instr *decoded) {
     decoded->mul.rd = rd;
     decoded->mul.rm = rm;
     decoded->mul.rs = rs;
+    decoded->mul._mul4 = 1;
+    decoded->mul._mul7 = 1;
 
     if (strcmp(mul_char, "mla") == 0) {
         decoded->mul.acc = 1;

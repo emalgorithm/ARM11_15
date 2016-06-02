@@ -6,6 +6,7 @@
 #include "br_sec_pass.h"
 #include "sdt_sec_pass.h"
 #include "mul_sec_pass.h"
+#include "bwriter.h"
 
 func_map_t instr_map;
 
@@ -14,6 +15,10 @@ typedef void (*proc_pt)(char*, union decoded_instr*);
 void proc_lsl_instr (char*, union decoded_instr*);
 
 void sec_pass_run (const char*);
+
+static void halt(char* token, union decoded_instr* instruction) {
+    return;
+}
 
 void generate_maps () {
     instr_map = hashmap_new();
@@ -34,10 +39,7 @@ void generate_maps () {
     func_hashmap_put (instr_map, "str", proc_sdt_instr);
     func_hashmap_put (instr_map, "b", proc_br_instr);
     func_hashmap_put (instr_map, "lsl", proc_dp_instr);
-}
-
-void proc_lsl_instr(char* lsl_char, union decoded_instr* instruction) {
-
+    func_hashmap_put (instr_map, "andeq", halt);
 }
 
 static uint32_t curr_instr_addr;
@@ -52,7 +54,7 @@ void sec_pass_run (const char* path) {
 
     generate_maps();
     generate_dp_maps();
-    generate_sdt_maps();
+    proc_sdt_init();
 
     // Iinitialise tokeniser
     tokinit (path);
@@ -65,9 +67,13 @@ void sec_pass_run (const char* path) {
     while ((next = toknext()) != NULL) {
         instruction = calloc(1, sizeof(union decoded_instr));
         func_hashmap_get(instr_map, next)(next, instruction);
+        bwr_instr(instruction);
         curr_instr_addr += 4;
     }
 
     free(instruction);
 
+    write_data_section();
+
+    //tokdestroy ();
 }

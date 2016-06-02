@@ -31,12 +31,22 @@ int bwr_init(const char *path) {
 }
 
 /*
- * Function : write_instr
- * ----------------
+ * Function : bwr_insrt
+ * --------------------
  * Write the contents of a decoded instruction
  */
 int bwr_instr(union decoded_instr *instr) {
     fwrite(instr, sizeof(uint32_t), 1, dest);
+    return 0;
+}
+
+/*
+ * Function : bwr_data
+ * -------------------
+ * Write the contents of an integer
+ */
+int bwr_data(uint32_t data) {
+    fwrite(&data, sizeof(uint32_t), 1, dest);
     return 0;
 }
 

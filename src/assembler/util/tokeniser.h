@@ -120,13 +120,6 @@ long tokaddr(enum addressing_mode *mode, enum operand_type *operand);
 uint32_t tokcond(char *token);
 
 /*
- * Function : tokcond
- * ------------------
- * Returns true if the file has tokens left.
- */
-int hastok();
-
-/*
  * Function : toklabel
  * -------------------
  * This function should only be used during the first pass for collecting
@@ -146,5 +139,12 @@ uint32_t toklabel(char *label);
  * This function gives the name of a label in a branch instruction
  */
 char *tokbrlabel();
+
+/*
+ * Function : lastaddr
+ * -------------------
+ * Get the last address in the source file
+ */
+uint32_t lastaddr();
 
 #endif

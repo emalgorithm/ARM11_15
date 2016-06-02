@@ -167,7 +167,6 @@ int toksignedreg(bool *positive) {
  * An assertion will fail if the next token does not match an operand syntax.
  */
 void tokop(enum operand_type *type) {
-    assert(token != NULL);
     assert(type != NULL);
 
     token = next();
@@ -210,10 +209,17 @@ uint32_t tokshift(enum operand_type *type) {
 
     token = next();
 
+
+
+    if (token == NULL) {
+        // Determine shift type
+        tokop(type);
+        return 0;
+    }
+
     char *shift = malloc(strlen(token) + 1);
     strcpy(shift, token);
 
-    // Determine shift type
     tokop(type);
 
     return shift_map(hash(shift));
@@ -343,4 +349,8 @@ uint32_t toklabel(char *label) {
  */
 char *tokbrlabel() {
     return (token = next());
+}
+
+uint32_t lastaddr() {
+    return address;
 }

@@ -24,6 +24,8 @@ int bwr_init(const char *path);
  */
 int bwr_instr(union decoded_instr *instr);
 
+int bwr_data(uint32_t data);
+
 /*
  * Function : bwr_destroy
  * ---------------------

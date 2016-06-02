@@ -10,8 +10,10 @@
 
 #include "../emulator/arm11.h"
 
+void proc_sdt_init();
+
 void proc_sdt_instr(char *token, union decoded_instr *instr);
 
-void generate_sdt_maps();
+void write_data_section();
 
 #endif
