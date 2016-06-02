@@ -7,3 +7,5 @@ mov r1, #0xC000003F
 sub r2, r1, #1
 sub r5,r4, r3, lsr r2
 cmp r2,#0xFF
+mov r0,#50331648
+mov r0,#0x3000000

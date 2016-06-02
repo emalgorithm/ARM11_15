@@ -219,7 +219,7 @@ static int rotate (uint32_t val, struct op2_imm* op2_imm) {
 
         if (last_bits == val) {
             op2_imm->imm = last_bits;
-            op2_imm->rot = (MAX_ROT - i - 1)%(MAX_ROT-1);
+            op2_imm->rot = i;
             return 0;
         } else {
             uint32_t left_shift = val << MIN_ROT;
