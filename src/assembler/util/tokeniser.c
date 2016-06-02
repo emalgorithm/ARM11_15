@@ -279,10 +279,11 @@ long tokaddr(enum addressing_mode *mode, enum operand_type *operand) {
  * Returns the hash condition part of an instruction token
  */
 #define COND_SIZE 2
+#define AL 0xe
 uint32_t tokcond(char *token) {
     int token_size = strlen(token);
     if (token_size <= COND_SIZE) {
-        return 0; // should be hash of al
+        return AL; // should be hash of AL
     }
 
     token += strlen(token) - COND_SIZE; // move pointer to last two characters
@@ -347,7 +348,9 @@ uint32_t toklabel(char *label) {
  * This function gives the name of a label in a branch instruction
  */
 char *tokbrlabel() {
-    return (token = next());
+    token = next();
+    clrnewline(token);
+    return token;
 }
 
 uint32_t lastaddr() {
