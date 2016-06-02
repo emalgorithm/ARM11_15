@@ -227,7 +227,7 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
         // Not set I Bit
         dp_instr->imm_op = 0x0;
         // Set Rm
-        op2_reg->rm = tokreg();
+        op2_reg->rm = toksignedreg(NULL);
 
         enum operand_type DEFAULT2 = NONE;
         enum operand_type* sh_op_type = &DEFAULT2;
@@ -235,6 +235,10 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
         op2_reg->sh_ty = tokshift(sh_op_type);
 
         switch (*sh_op_type) {
+        case NONE: ;
+            op2_reg->bit4 = 0;
+            op2_reg->shift_val = 0;
+            break;
         case IMMEDIATE: ;
             op2_reg->bit4 = 0;
             op2_reg->shift_val = tokimm();
