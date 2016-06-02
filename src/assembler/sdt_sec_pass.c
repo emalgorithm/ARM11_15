@@ -82,6 +82,7 @@ void proc_sdt_instr(char *token, union decoded_instr *instr) {
                     instr->sdt.up = 0;
                 }
             } else if (*operand == SHIFT_REG) {
+                instr->sdt.imm_off = 1;
                 bool *positive = malloc(sizeof(bool));
 
                 struct op2_reg *offset = calloc(1, 32);
@@ -104,7 +105,7 @@ void proc_sdt_instr(char *token, union decoded_instr *instr) {
                     offset->bit4 = 0;
 
                     offset->shift_val = tokimm();
-                } else {
+                } else if (*shift == SHIFT_REG) {
                     // bit 4 is 1
                     offset->bit4 = 1;
                     offset->shift_val = (toksignedreg(NULL) << 1);
