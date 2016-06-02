@@ -16,6 +16,7 @@
 #define IMM_BIT (7)
 #define IMM_LEN (8)
 #define MIN_ROT (2)
+#define MAX_ROT (17)
 
 func_map_t dp_rd_map;
 func_map_t dp_rn_map;
@@ -205,17 +206,24 @@ void dp_lsl(char* dp_char, union decoded_instr* instruction) {
     free(op2);
 }
 
-uint32_t rotate (uint32_t val) {
+static int rotate (uint32_t val, struct op2_imm* op2_imm) {
 
-    for (int i = 0; i < 17; i ++) {
+    for (int i = 0; i < MAX_ROT; i ++) {
 
         uint32_t last_bits = get_bits(val, IMM_BIT, IMM_LEN);
 
+        // Debugging print statements
+        //printf("---\n");
+        //printf("%x\n", val);
+        //printf("%x\n", last_bits);
+
         if (last_bits == val) {
-            return last_bits | (i << IMM_LEN);
+            op2_imm->imm = last_bits;
+            op2_imm->rot = (MAX_ROT - i - 1)%(MAX_ROT-1);
+            return 0;
         } else {
-            uint32_t left_shift = (int)((unsigned)val >> MIN_ROT);
-            uint32_t right_shift = val << (MAX_BITS - MIN_ROT);
+            uint32_t left_shift = val << MIN_ROT;
+            uint32_t right_shift = val >> (MAX_BITS - MIN_ROT);
             val = left_shift | right_shift;
         }
     }
@@ -244,11 +252,8 @@ void dp_set_op2(char* dp_char, union decoded_instr* instruction) {
         struct op2_imm* op2_imm = &op2->imm_op;
         // Set I Bit
         dp_instr->imm_op = 0x1;
-        // Improper Call to tokimm. Must try rotation.
-
-        printf("\n%x\n",rotate(tokimm()));
-
-        op2_imm->imm = 0;
+        // Rotation
+        rotate(tokimm(), op2_imm);
         break;
     case SHIFT_REG: ;
         // Union is of type op2_reg
