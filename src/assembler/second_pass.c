@@ -38,6 +38,12 @@ void generate_maps () {
     func_hashmap_put (instr_map, "ldr", proc_sdt_instr);
     func_hashmap_put (instr_map, "str", proc_sdt_instr);
     func_hashmap_put (instr_map, "b", proc_br_instr);
+    func_hashmap_put (instr_map, "beq", proc_br_instr);
+    func_hashmap_put (instr_map, "bne", proc_br_instr);
+    func_hashmap_put (instr_map, "bge", proc_br_instr);
+    func_hashmap_put (instr_map, "bgt", proc_br_instr);
+    func_hashmap_put (instr_map, "ble", proc_br_instr);
+    func_hashmap_put (instr_map, "bge", proc_br_instr);
     func_hashmap_put (instr_map, "lsl", proc_dp_instr);
     func_hashmap_put (instr_map, "andeq", halt);
 }

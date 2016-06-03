@@ -15,7 +15,7 @@ void proc_br_instr(char* br_char, union decoded_instr *decoded) {
     uint32_t label_addr = get_label_address(label);
     uint32_t curr_addr = get_curr_instr_addr();
 
-    uint32_t offset = label_addr - curr_addr - 8;
+    int32_t offset = label_addr - (curr_addr + 8);
 
     decoded->br.offset = offset;
 }
