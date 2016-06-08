@@ -56,7 +56,7 @@ static void (*dis_decode (union instruction* instruction, bool* running))(char*,
 
     if(instruction->bin == 0) {
         *running = false;
-        printf("ZERO\n");
+        //printf("ZERO\n");
     }
     switch (instruction->decoded.dp._id) {
 
