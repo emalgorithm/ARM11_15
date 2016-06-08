@@ -10,7 +10,7 @@ void file_init(char* path) {
 
 void file_write(char* str) {
 
-    fprintf(file, "%s\n", str);
+    fprintf(file, "%s", str);
 
 }
 
