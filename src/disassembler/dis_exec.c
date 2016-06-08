@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <assert.h>
+#include <stdio.h>
 
 #include "dis_exec.h"
 #include "dis_dp.h"
@@ -19,7 +20,7 @@ void disassemble_run (char *path) {
     union instruction* instruction;
 
     //generate_maps();
-    //generate_dp_maps();
+    dis_generate_dp_maps();
     //proc_sdt_init();
 
     // Iinitialise tokeniser
@@ -40,7 +41,10 @@ void disassemble_run (char *path) {
 
         dis_ptr = dis_decode(instruction, running);
 
-        dis_ptr(path, &instruction->decoded);
+        if (*running) {
+
+            dis_ptr(path, &instruction->decoded);
+        }
 
         // Update PC
         pc += 4;
@@ -51,8 +55,9 @@ void disassemble_run (char *path) {
 static void (*dis_decode (union instruction* instruction, bool* running))(char*, union decoded_instr*) {
 
     if(instruction->bin == 0) {
-      *running = false;
-      }
+        *running = false;
+        printf("ZERO\n");
+    }
     switch (instruction->decoded.dp._id) {
 
     case DP_MULT_ID: {
