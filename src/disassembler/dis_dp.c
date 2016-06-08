@@ -2,6 +2,8 @@
 
 #include "dis_dp.h"
 #include "../assembler/util/func_hashmap.h"
+#include "../assembler/util/shift_map.h"
+#include "../emulator/util/shift_reg.h"
 
 map_t opcode_map;
 
@@ -84,13 +86,13 @@ void dis_generate_dp_maps () {
 
 void dis_dp_instr(char* path, union decoded_instr* instruction) {
 
-    printf("\nGot Here\n");
+    //printf("\nGot Here\n");
 
     char* tmp_char = malloc(sizeof(uint32_t));
 
     sprintf(tmp_char, "%d", instruction->dp.op_code);
 
-    printf("OpCode: %s\n", tmp_char);
+    //printf("OpCode: %s\n", tmp_char);
 
     char* instr = malloc(sizeof(uint32_t));
 
@@ -98,7 +100,11 @@ void dis_dp_instr(char* path, union decoded_instr* instruction) {
 
     //printf("\nGot Here3\n");
 
-    printf("OpCode: %s\n", instr);
+    //printf("OpCode: %s\n", instr);
+
+    //ADD ASSERTION FOR CONDITION
+
+    //ADD ASSERTION FOR SET CONDITIONS
 
     char* rn = malloc(sizeof(uint32_t));
     char* rd = malloc(sizeof(uint32_t));
@@ -107,10 +113,40 @@ void dis_dp_instr(char* path, union decoded_instr* instruction) {
     func_hashmap_get(dis_dp_rd_map, instr)(rn, instruction);
     func_hashmap_get(dis_dp_rn_map, instr)(rd, instruction);
 
-    //sprintf(rn , "%d", instruction->dp.rn);
-    //sprintf(rd , "%d", instruction->dp.rd);
-    sprintf(op2 , ", #%d", instruction->dp.op2);
+    // Create op2_gen struct and initialise it to the binary
+    union op2_gen* op2_gen = malloc(sizeof(union op2_gen));
+    op2_gen->bin = instruction->dp.op2;
 
+    uint32_t operand2;
+
+    if (instruction->dp.imm_op) {
+        operand2 = rot_right(op2_gen->imm_op.rot, op2_gen->imm_op.imm, 0);
+        sprintf(op2 , ", #%d", operand2);
+    } else {
+        if (op2_gen->reg_op.bit4) {
+            char* shift = '\0';
+            switch (op2_gen->reg_op.sh_ty) {
+                case 0:
+                    shift = "lsl";
+                    break;
+                case 1:
+                    shift = "lsr";
+                    break;
+                case 2:
+                    shift = "asr";
+                    break;
+                case 3:
+                    shift = "ror";
+                    break;
+            }
+            sprintf(op2 , ", r%d, %s r%d", op2_gen->reg_op.rm, shift, op2_gen->reg_op.shift_val>>1);
+
+        } else {
+            sprintf(op2 , ", r%d, #%d", op2_gen->reg_op.rm, op2_gen->reg_op.shift_val);
+        }
+    }
+
+    //Write Statement
     printf("%s%s%s%s\n", instr, rn, rd, op2);
 
 
