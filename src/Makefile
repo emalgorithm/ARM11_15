@@ -17,7 +17,7 @@ TESTS := $(patsubst %.spec.c, %.spec, $(shell find ../test/ -type f -name '*.spe
 all: disassemble assemble emulate test
 
 # Compile disassembler executable
-disassemble: disassemble.o $(DISASSEMBLER_OBJ) $(UTIL_OBJ)
+disassemble: disassemble.o $(DISASSEMBLER_OBJ) $(EMULATOR_OBJ) $(UTIL_OBJ)
 
 # Compile assembler executable
 assemble: assemble.o $(ASSEMBLER_OBJ) $(UTIL_OBJ)

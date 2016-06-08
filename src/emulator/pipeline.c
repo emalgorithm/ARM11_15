@@ -183,13 +183,6 @@ uint32_t em_get_pc(void) {
  * If the fetched instruction is branch also sets is_branch to true
  */
 
-/* The 2 bits that come after Cond */
-enum instr_id {
-    DP_MULT_ID,
-    SDT_ID,
-    BRANCH_ID
-};
-
 static void (*decode(union instruction *fetched))(union decoded_instr * ) {
     // TODO: Implement actual decoding
     // return halt;

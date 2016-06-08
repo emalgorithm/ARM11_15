@@ -24,6 +24,13 @@ enum status {
     terminated,
 };
 
+/* The 2 bits that come after Cond */
+enum instr_id {
+    DP_MULT_ID,
+    SDT_ID,
+    BRANCH_ID
+};
+
 /*
  * Function : emulate
  * Usage    : emulate(0x00000000)
