@@ -86,29 +86,21 @@ void dis_generate_dp_maps () {
 
 void dis_dp_instr(char* path, union decoded_instr* instruction) {
 
-    //printf("\nGot Here\n");
-
-    char* tmp_char = malloc(sizeof(uint32_t));
+    char* tmp_char = malloc(sizeof(char));
 
     sprintf(tmp_char, "%d", instruction->dp.op_code);
 
-    //printf("OpCode: %s\n", tmp_char);
-
-    char* instr = malloc(sizeof(uint32_t));
+    char* instr = malloc(sizeof(char));
 
     instr = (char *) hashmap_get(opcode_map, tmp_char);
-
-    //printf("\nGot Here3\n");
-
-    //printf("OpCode: %s\n", instr);
 
     //ADD ASSERTION FOR CONDITION
 
     //ADD ASSERTION FOR SET CONDITIONS
 
-    char* rn = malloc(sizeof(uint32_t));
-    char* rd = malloc(sizeof(uint32_t));
-    char* op2 = malloc(sizeof(uint32_t));
+    char* rn = malloc(sizeof(char));
+    char* rd = malloc(sizeof(char));
+    char* op2 = malloc(sizeof(char));
 
     func_hashmap_get(dis_dp_rd_map, instr)(rn, instruction);
     func_hashmap_get(dis_dp_rn_map, instr)(rd, instruction);
