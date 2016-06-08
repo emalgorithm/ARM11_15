@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "dis_dp.h"
+#include "writer.h"
 #include "../assembler/util/func_hashmap.h"
 #include "../assembler/util/shift_map.h"
 #include "../emulator/util/shift_reg.h"
@@ -43,8 +45,6 @@ void dis_generate_dp_maps () {
     sprintf(tst_char, "%d", 8);
     sprintf(teq_char, "%d", 9);
     sprintf(cmp_char, "%d", 10);
-
-    printf("%p\n", add_char);
 
     hashmap_put (opcode_map, add_char, (void *) "add");
     hashmap_put (opcode_map, sub_char, (void *) "sub");
@@ -147,8 +147,20 @@ void dis_dp_instr(char* path, union decoded_instr* instruction) {
     }
 
     //Write Statement
-    printf("%s%s%s%s\n", instr, rn, rd, op2);
 
+    char* res = malloc(strlen(instr) + strlen(rn) + strlen(rd) + strlen(op2)+1);
+
+    //printf("\n%s%s%s%s\n", instr, rn, rd, op2);
+
+    sprintf(res, "%s%s%s%s\n", instr, rn, rd, op2);
+
+    file_write(res);
+
+    //free(res);
+    //free(instr);
+    //free(rn);
+    //free(rd);
+    //free(op2);
 
 }
 

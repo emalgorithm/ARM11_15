@@ -7,6 +7,7 @@
 #include "dis_mul.h"
 #include "dis_sdt.h"
 #include "dis_br.h"
+#include "writer.h"
 #include "../emulator/reader.h"
 #include "../emulator/arm11.h"
 #include "../emulator/pipeline.h"
@@ -50,6 +51,8 @@ void disassemble_run (char *path) {
         pc += 4;
     }
     free (running);
+
+    // Destroy Maps
 }
 
 static void (*dis_decode (union instruction* instruction, bool* running))(char*, union decoded_instr*) {

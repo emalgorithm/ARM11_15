@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include "../minunit.h"
 #include "../../../src/disassembler/dis_exec.h"
+#include "../../../src/disassembler/writer.h"
+#include "../../../src/assembler/second_pass.h"
+#include "../../../src/assembler/bwriter.h"
 
 static char spec[] = "dis_exec";
 
@@ -28,12 +31,25 @@ void tear_down() {
 
 static int test_second_pass_2() {
 
-    char* input_path = "../test/unit/disassembler/test.o";
-    //const char* output_path = "../test/unit/assembler/test_out.o";
+    const char* input_ass_path = "../test/unit/disassembler/input.s";
+    const char* output_ass_path = "../test/unit/disassembler/bin.o";
+
+    bwr_init(output_ass_path);
+
+    sec_pass_run(input_ass_path);
+
+    bwr_destroy();
+
+    char* input_path = "../test/unit/disassembler/bin.o";
+    char* output_path = "../test/unit/disassembler/output.s";
 
     //bwr_init(output_path);
 
+    file_init(output_path);
+
     disassemble_run(input_path);
+
+    file_close();
 
     //bwr_destroy();
 
