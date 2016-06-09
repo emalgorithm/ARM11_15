@@ -75,9 +75,9 @@ void sec_pass_run (const char* path) {
         func_hashmap_get(instr_map, next)(next, instruction);
         bwr_instr(instruction);
         curr_instr_addr += 4;
+        free(instruction);
     }
 
-    free(instruction);
 
     write_data_section();
 
