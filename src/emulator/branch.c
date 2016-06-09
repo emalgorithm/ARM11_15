@@ -6,18 +6,21 @@
 #define OFFSET_SHIFT 2
 #define OFFSET_SIZE 24
 
-static void sign_extend(int32_t *, short);
-
 void br_exec(union decoded_instr *instruction) {
-    int32_t offset = instruction->br.offset;
+    int32_t offset = 0;
 
-    offset = offset << OFFSET_SHIFT;
-    sign_extend(&offset, OFFSET_SIZE - 1 + OFFSET_SHIFT);
+    compute_offset(instruction, &offset);
 
     em_acc_pc(offset);
 }
 
-static void sign_extend(int32_t *val, short sign_pos) {
+void compute_offset(union decoded_instr *instruction, int32_t* offset) {
+    *offset = instruction->br.offset;
+    *offset = *offset << OFFSET_SHIFT;
+    sign_extend(offset, OFFSET_SIZE - 1 + OFFSET_SHIFT);
+}
+
+void sign_extend(int32_t *val, short sign_pos) {
     uint32_t sign = get_bit(*val, sign_pos);
 
     if (sign) {

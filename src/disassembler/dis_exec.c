@@ -8,6 +8,7 @@
 #include "dis_sdt.h"
 #include "dis_br.h"
 #include "dis_andeq.h"
+#include "dis_label.h"
 #include "writer.h"
 #include "../emulator/reader.h"
 #include "../emulator/arm11.h"
@@ -25,16 +26,6 @@ void disassemble_run (char *path) {
     dis_generate_dp_maps();
     //proc_sdt_init();
 
-    // Iinitialise memory
-    initialize();
-
-    //Builds char** needed for read_memory
-    char** double_char_arr = malloc(2*sizeof(char*));
-    double_char_arr[1] = path;
-
-    //Reads and saves the memory at the input file
-    read_memory(double_char_arr);
-
     //Initialises the Program Counter to 0
     uint32_t pc = 0;
 
@@ -43,6 +34,8 @@ void disassemble_run (char *path) {
     *running = true;
 
     while (*running) {
+        dis_get_label(pc);
+
         instruction = get_instr(pc);
 
         dis_ptr = dis_decode(instruction, running);
@@ -87,6 +80,7 @@ static void (*dis_decode (union instruction* instruction, bool* running))(char*,
     }
 
     case BRANCH_ID: {
+        printf("Brach ID detected\n");
         return dis_br_instr;
     }
 

@@ -4,13 +4,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 
 /*
 * This function must be called before using get_label.
 * The function creates a map from addresses to labels in memory
 * by scanning the file whose path is given as argument
 */
-void dis_scan_init(const char *path);
+void dis_scan_init();
 
 /*
 * This function must be called when the scanner is no longer
@@ -23,6 +24,6 @@ void dis_scan_terminate();
 * if any, to the label for that address. Returns true if the label exists
 * and has been assigned.
 */
-bool dis_get_label(char *label, uint32_t address);
+void dis_get_label(uint32_t address);
 
 #endif
