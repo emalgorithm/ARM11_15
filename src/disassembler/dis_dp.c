@@ -76,7 +76,6 @@ void dis_dp_instr(char* path, union decoded_instr* instruction) {
     char* tmp = calloc(0, sizeof(char));
     char* res = calloc(0, sizeof(char));
     char* tmp_char = calloc(0, sizeof(char));
-
     char* instr;
 
     itoa(instruction->dp.op_code, tmp, 10);
@@ -98,10 +97,7 @@ void dis_dp_instr(char* path, union decoded_instr* instruction) {
     if (instruction->dp.imm_op) {
         operand2 = rot_right(op2_gen->imm_op.rot*2, op2_gen->imm_op.imm, 0);
 
-        concat(op2, "#0x");
-        itoa(operand2, tmp, 16);
-        concat(op2, tmp);
-        tmp[0] = '\0';
+        gen_oxn(op2, operand2);
 
     } else {
         gen_op2(op2, op2_gen);
@@ -148,23 +144,16 @@ void gen_op2(char* op2, union op2_gen* op2_gen) {
                 break;
         }
 
-        concat(op2, "r");
-        itoa(op2_gen->reg_op.rm, res, 10);
-        concat(op2, res);
+        gen_reg(op2, op2_gen->reg_op.rm);
         concat(op2, ", ");
         concat(op2, shift);
-        concat(op2, " r");
-        itoa(op2_gen->reg_op.shift_val>>1, res, 10);
-        concat(op2, res);
+        gen_reg(op2, op2_gen->reg_op.shift_val>>1);
 
     } else {
 
-        concat(op2, "r");
-        itoa(op2_gen->reg_op.rm, res, 10);
-        concat(op2, res);
-        concat(op2, ", #0x");
-        itoa(op2_gen->reg_op.shift_val, res, 16);
-        concat(op2, res);
+        gen_reg(op2, op2_gen->reg_op.rm);
+        concat(op2, ", ");
+        gen_oxn(op2, op2_gen->reg_op.shift_val);
     }
 
     free(res);
@@ -172,11 +161,8 @@ void gen_op2(char* op2, union op2_gen* op2_gen) {
 
 void dis_dp_set_rd(char* dest, union decoded_instr* instruction) {
 
-    concat(dest, " r");
-    char* res = calloc(0, sizeof(char));
-    itoa(instruction->dp.rd, res, 10);
-    concat(dest, res);
-    free(res);
+    concat(dest, " ");
+    gen_reg(dest, instruction->dp.rd);
 
 }
 
@@ -195,11 +181,8 @@ void dis_dp_set_rn(char* dest, union decoded_instr* instruction) {
 
 void dis_dp_set_rn_first(char* dest, union decoded_instr* instruction) {
 
-    concat(dest, " r");
-    char* res = calloc(0, sizeof(char));
-    itoa(instruction->dp.rn, res, 10);
-    concat(dest, res);
-    free(res);
+    concat(dest, " ");
+    gen_reg(dest, instruction->dp.rn);
 }
 
 void dis_dp_set_not_rn(char* dest, union decoded_instr* instruction) {

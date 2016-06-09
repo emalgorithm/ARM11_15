@@ -3,33 +3,48 @@
 
 #include "dis_mul.h"
 #include "writer.h"
+#include "util/str_util.h"
 
 void dis_mul_instr(char* path, union decoded_instr* instruction) {
 
     //Assert Cond = 0xE and Assert S bit = 0
 
-    char* rd = malloc(sizeof(char));
-    char* rn = malloc(sizeof(char));
-    char* rs = malloc(sizeof(char));
-    char* rm = malloc(sizeof(char));
+    char* rd = calloc(0, sizeof(char));
+    char* rn = calloc(0, sizeof(char));
+    char* rs = calloc(0, sizeof(char));
+    char* rm = calloc(0, sizeof(char));
+    char* res = calloc(0, sizeof(char));
     char* instr;
 
-    sprintf(rd , " r%d", instruction->mul.rd);
-    sprintf(rn , ", r%d", instruction->mul.rn);
-    sprintf(rs , ", r%d", instruction->mul.rs);
+    concat(rd, " ");
+    gen_reg(rd, instruction->mul.rd);
+    concat(rm, ", ");
+    gen_reg(rm, instruction->mul.rm);
+    concat(rs, ", ");
+    gen_reg(rs, instruction->mul.rs);
 
     if (instruction->mul.acc) {
         instr = "mla";
-        sprintf(rm , ", r%d", instruction->mul.rm);
+        concat(rn, ", ");
+        gen_reg(rn, instruction->mul.rn);
     } else {
         instr = "mul";
-        rm[0] = '\0';
+        rn[0] = '\0';
     }
 
-    char* res = malloc(strlen(rd) + strlen(rn) + strlen(rs) + strlen(rm)+1);
-
-    sprintf(res, "%s%s%s%s%s\n", instr, rd, rn, rs, rm);
+    concat(res, instr);
+    concat(res, rd);
+    concat(res, rm);
+    concat(res, rs);
+    concat(res, rn);
+    concat(res, "\n");
 
     file_write(res);
+
+    free(rd);
+    free(rn);
+    free(rs);
+    free(rm);
+    free(res);
 
 }

@@ -14,7 +14,7 @@ char * itoa (int value, char *result, int base) {
     do {
         tmp_value = value;
         value /= base;
-        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789ABCDEFghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
     } while ( value );
 
     // Apply negative sign
@@ -36,4 +36,20 @@ void concat(char *s1, char *s2)
     //+1 for the zero-terminator
     //in real code you would check for errors in malloc here
     strcat(s1, s2);
+}
+
+void gen_reg(char* empty_reg, uint32_t val){
+    concat(empty_reg, "r");
+    char* res = calloc(0, sizeof(char));
+    itoa(val, res, 10);
+    concat(empty_reg, res);
+    free(res);
+}
+
+void gen_oxn(char* empty_reg, uint32_t val){
+    concat(empty_reg, "#0x");
+    char* res = calloc(0, sizeof(char));
+    itoa(val, res, 16);
+    concat(empty_reg, res);
+    free(res);
 }
