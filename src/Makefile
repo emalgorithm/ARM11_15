@@ -7,6 +7,7 @@ CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
 EMULATOR_OBJ := $(patsubst %.c, %.o, $(shell find emulator/ -type f -name '*.c'))
 ASSEMBLER_OBJ := $(patsubst %.c, %.o, $(shell find assembler/ -type f -name '*.c'))
 UTIL_OBJ := $(patsubst %.c, %.o, $(shell find util/ -type f -name '*.c'))
+IMAGER_OBJ := $(patsubst %.c, %.o, $(shell find imager/ -type f -name '*.c'))
 TESTS := $(patsubst %.spec.c, %.spec, $(shell find ../test/ -type f -name '*.spec.c'))
 
 .SUFFIXES: .c .o
@@ -20,6 +21,9 @@ assemble: assemble.o $(ASSEMBLER_OBJ) $(UTIL_OBJ)
 
 # Compile emulator executable
 emulate: emulate.o $(EMULATOR_OBJ) $(UTIL_OBJ)
+
+# Compile imager executable
+bsi: bsi.o $(IMAGER_OBJ)
 
 # Runs all tests
 # where a test is a *.spec executable in the tree of test/
