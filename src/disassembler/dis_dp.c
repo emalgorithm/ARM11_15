@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #include "dis_dp.h"
 #include "writer.h"
@@ -73,6 +74,7 @@ void dis_generate_dp_maps () {
 
 void dis_dp_instr(char* path, union decoded_instr* instruction) {
     //TODO: ADD ASSERTION FOR CONDITION
+    assert(instruction->dp.cond == 0xe);
 
     //TODO: ADD ASSERTION FOR SET CONDITIONS
 

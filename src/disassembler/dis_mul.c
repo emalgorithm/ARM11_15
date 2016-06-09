@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #include "dis_mul.h"
 #include "writer.h"
@@ -7,7 +8,8 @@
 
 void dis_mul_instr(char* path, union decoded_instr* instruction) {
 
-    //Assert Cond = 0xE and Assert S bit = 0
+    assert(instruction->mul.cond == 0xE);
+    assert(!instruction->mul.set_cond);
 
     char* rd = calloc(0, sizeof(char));
     char* rn = calloc(0, sizeof(char));
