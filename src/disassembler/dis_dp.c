@@ -49,16 +49,16 @@ void dis_generate_dp_maps () {
     sprintf(teq_char, "%d", 9);
     sprintf(cmp_char, "%d", 10);
 
-    hashmap_put (opcode_map, add_char, (void *) "add");
-    hashmap_put (opcode_map, sub_char, (void *) "sub");
-    hashmap_put (opcode_map, rsb_char, (void *) "rsb");
-    hashmap_put (opcode_map, and_char, (void *) "and");
-    hashmap_put (opcode_map, eor_char, (void *) "eor");
-    hashmap_put (opcode_map, orr_char, (void *) "orr");
-    hashmap_put (opcode_map, mov_char, (void *) "mov");
-    hashmap_put (opcode_map, tst_char, (void *) "tst");
-    hashmap_put (opcode_map, teq_char, (void *) "teq");
-    hashmap_put (opcode_map, cmp_char, (void *) "cmp");
+    hashmap_put (opcode_map, "4", (void *) "add");
+    hashmap_put (opcode_map, "2", (void *) "sub");
+    hashmap_put (opcode_map, "3", (void *) "rsb");
+    hashmap_put (opcode_map, "0", (void *) "and");
+    hashmap_put (opcode_map, "1", (void *) "eor");
+    hashmap_put (opcode_map, "12", (void *) "orr");
+    hashmap_put (opcode_map, "13", (void *) "mov");
+    hashmap_put (opcode_map, "8", (void *) "tst");
+    hashmap_put (opcode_map, "9", (void *) "teq");
+    hashmap_put (opcode_map, "10", (void *) "cmp");
     //hashmap_put (opcode_map, ??, (void *) "lsl");
 
     func_hashmap_put (dis_dp_rd_map, "add", dis_dp_set_rd);
@@ -92,17 +92,17 @@ void dis_dp_instr(char* path, union decoded_instr* instruction) {
 
     //ADD ASSERTION FOR SET CONDITIONS
 
-    char* rn = malloc(sizeof(char));
-    char* rd = malloc(sizeof(char));
-    char* op2 = malloc(sizeof(char));
-    char* tmp = malloc(sizeof(char));
-    char* res = malloc(sizeof(char));
-    char* tmp_char = malloc(sizeof(char));
+    char* rn = calloc(0, sizeof(char));
+    char* rd = calloc(0, sizeof(char));
+    char* op2 = calloc(0, sizeof(char));
+    char* tmp = calloc(0, sizeof(char));
+    char* res = calloc(0, sizeof(char));
+    char* tmp_char = calloc(0, sizeof(char));
 
     char* instr;
 
     itoa(instruction->dp.op_code, tmp, 10);
-    tmp_char = concat(tmp_char, tmp);
+    concat(tmp_char, tmp);
 
     tmp[0] = '\0';
 
@@ -120,9 +120,9 @@ void dis_dp_instr(char* path, union decoded_instr* instruction) {
     if (instruction->dp.imm_op) {
         operand2 = rot_right(op2_gen->imm_op.rot*2, op2_gen->imm_op.imm, 0);
 
-        op2 = concat(op2, "#0x");
+        concat(op2, "#0x");
         itoa(operand2, tmp, 16);
-        op2 = concat(op2, tmp);
+        concat(op2, tmp);
         tmp[0] = '\0';
 
     } else {
@@ -131,14 +131,12 @@ void dis_dp_instr(char* path, union decoded_instr* instruction) {
 
     //Write Statement
 
-
-
-    res = concat(res, instr);
-    res = concat(res, rn);
-    res = concat(res, rd);
-    res = concat(res, ", ");
-    res = concat(res, op2);
-    res = concat(res, "\n");
+    concat(res, instr);
+    concat(res, rn);
+    concat(res, rd);
+    concat(res, ", ");
+    concat(res, op2);
+    concat(res, "\n");
 
     file_write(res);
 
@@ -152,6 +150,9 @@ void dis_dp_instr(char* path, union decoded_instr* instruction) {
 }
 
 void gen_op2(char* op2, union op2_gen* op2_gen) {
+
+    char* res = calloc(0, sizeof(char));
+
     if (op2_gen->reg_op.bit4) {
         char* shift = '\0';
         switch (op2_gen->reg_op.sh_ty) {
@@ -169,20 +170,34 @@ void gen_op2(char* op2, union op2_gen* op2_gen) {
                 break;
         }
 
-        sprintf(op2 , "r%d, %s r%d", op2_gen->reg_op.rm, shift, op2_gen->reg_op.shift_val>>1);
+        concat(op2, "r");
+        itoa(op2_gen->reg_op.rm, res, 10);
+        concat(op2, res);
+        concat(op2, ", ");
+        concat(op2, shift);
+        concat(op2, " r");
+        itoa(op2_gen->reg_op.shift_val>>1, res, 10);
+        concat(op2, res);
 
     } else {
-        sprintf(op2 , "r%d, #0x%X", op2_gen->reg_op.rm, op2_gen->reg_op.shift_val);
+
+        concat(op2, "r");
+        itoa(op2_gen->reg_op.rm, res, 10);
+        concat(op2, res);
+        concat(op2, ", #0x");
+        itoa(op2_gen->reg_op.shift_val, res, 16);
+        concat(op2, res);
     }
+
+    free(res);
 }
 
 void dis_dp_set_rd(char* dest, union decoded_instr* instruction) {
 
-    dest = concat(dest, " r");
-
-    char* res = malloc(sizeof(char));
+    concat(dest, " r");
+    char* res = calloc(0, sizeof(char));
     itoa(instruction->dp.rd, res, 10);
-    dest = concat(dest, res);
+    concat(dest, res);
     free(res);
 
 }
@@ -196,17 +211,16 @@ void dis_dp_set_not_rd(char* dest, union decoded_instr* instruction) {
 void dis_dp_set_rn(char* dest, union decoded_instr* instruction) {
 
     concat(dest, ",");
-
     dis_dp_set_rn_first(dest, instruction);
 
 }
 
 void dis_dp_set_rn_first(char* dest, union decoded_instr* instruction) {
 
-    dest = concat(dest, " r");
-    char* res = malloc(sizeof(char));
+    concat(dest, " r");
+    char* res = calloc(0, sizeof(char));
     itoa(instruction->dp.rn, res, 10);
-    dest = concat(dest, res);
+    concat(dest, res);
     free(res);
 }
 

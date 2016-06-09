@@ -1,6 +1,8 @@
 #include "str_util.h"
 
 #include <string.h>
+#include <assert.h>
+#include <stdbool.h>
 
 char * itoa (int value, char *result, int base) {
     // check that the base if valid
@@ -26,12 +28,12 @@ char * itoa (int value, char *result, int base) {
     return result;
 }
 
-char* concat(char *s1, char *s2)
+void concat(char *s1, char *s2)
 {
-    char *result = malloc(strlen(s1)+strlen(s2)+1);//+1 for the zero-terminator
+    if (realloc(s1, strlen(s1)+strlen(s2)+1) == NULL) {
+        assert(false);
+    }
+    //+1 for the zero-terminator
     //in real code you would check for errors in malloc here
-    strcpy(result, s1);
-    strcat(result, s2);
-
-    return result;
+    strcat(s1, s2);
 }

@@ -5,6 +5,6 @@
 #include <stdlib.h>
 
 char * itoa (int value, char *result, int base);
-char* concat(char *s1, char *s2);
+void concat(char *s1, char *s2);
 
 #endif

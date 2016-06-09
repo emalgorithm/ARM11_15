@@ -4,6 +4,7 @@
 #include "dis_label.h"
 #include "dis_exec.h"
 #include "writer.h"
+#include "util/str_util.h"
 
 #include <assert.h>
 #include <stdbool.h>
