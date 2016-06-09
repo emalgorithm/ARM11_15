@@ -24,12 +24,14 @@ void disassemble_run (char *path) {
     dis_generate_dp_maps();
     //proc_sdt_init();
 
-    // Iinitialise tokeniser
+    // Iinitialise memory
     initialize();
 
+    //Builds char** needed for read_memory
     char** double_char_arr = malloc(2*sizeof(char*));
     double_char_arr[1] = path;
 
+    //Reads and saves the memory at the input file
     read_memory(double_char_arr);
 
     uint32_t pc = 0;
