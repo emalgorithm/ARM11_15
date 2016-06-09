@@ -7,6 +7,7 @@
 #include "writer.h"
 
 #include <string.h>
+#include <assert.h>
 
 #define OFFSET_SHIFT 2
 #define OFFSET_SIZE 24
@@ -34,11 +35,12 @@ void dis_scan_init() {
 
             compute_offset(&instruction->decoded, &offset);
 
+            //Could do in 1 line
             char* tmp_char = malloc(sizeof(char));
             sprintf(tmp_char, "%d", (pc + offset));
 
             char* label_char = malloc(sizeof(char));
-            sprintf(label_char, "label%d:\n", num_labels);
+            sprintf(label_char, "label%d", num_labels);
 
             hashmap_put (dis_label_map, tmp_char, (void *) label_char);
 
@@ -66,7 +68,7 @@ void dis_scan_terminate() {
 }
 
 
-void dis_get_label(uint32_t address){
+void dis_print_label(uint32_t address){
     char* addr_char = malloc(sizeof(char));
     sprintf(addr_char, "%d", address);
 
@@ -75,6 +77,15 @@ void dis_get_label(uint32_t address){
     res_label = (char*) hashmap_get(dis_label_map, addr_char);
 
     if (res_label != NULL) {
-        file_write(res_label);
+        char* write_char = malloc(sizeof(char));
+        sprintf(write_char, "%s:\n", res_label);
+        file_write(write_char);
     }
+}
+
+char* dis_get_label(uint32_t address){
+    char* addr_char = malloc(sizeof(char));
+    sprintf(addr_char, "%d", address);
+
+    return (char*) hashmap_get(dis_label_map, addr_char);
 }

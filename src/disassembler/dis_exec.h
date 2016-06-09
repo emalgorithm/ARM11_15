@@ -5,4 +5,8 @@
 
 void disassemble_run (char *path);
 
+void inc_pc();
+
+uint32_t get_pc();
+
 #endif

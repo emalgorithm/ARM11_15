@@ -14,6 +14,10 @@
 #include "../emulator/arm11.h"
 #include "../emulator/pipeline.h"
 
+static uint32_t pc;
+
+static void init_pc();
+
 static void (*dis_ptr)(char*, union decoded_instr*);
 
 static void (*dis_decode (union instruction* instruction, bool* running))(char*, union decoded_instr*);
@@ -27,27 +31,39 @@ void disassemble_run (char *path) {
     //proc_sdt_init();
 
     //Initialises the Program Counter to 0
-    uint32_t pc = 0;
+    init_pc();
 
     //Running is the condition for our loop
     bool* running = malloc(sizeof(bool));
     *running = true;
 
     while (*running) {
-        dis_get_label(pc);
+        dis_print_label(get_pc());
 
-        instruction = get_instr(pc);
+        instruction = get_instr(get_pc());
 
         dis_ptr = dis_decode(instruction, running);
         //If it is still running then execute the instruction
         dis_ptr(path, &instruction->decoded);
 
         // Update PC
-        pc += 4;
+        inc_pc();
     }
     free (running);
 
     // Destroy Maps
+}
+
+static void init_pc () {
+    pc = 0;
+}
+
+void inc_pc () {
+    pc += 4;
+}
+
+uint32_t get_pc () {
+    return pc;
 }
 
 static void (*dis_decode (union instruction* instruction, bool* running))(char*, union decoded_instr*) {

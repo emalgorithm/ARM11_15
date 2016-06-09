@@ -24,6 +24,8 @@ void dis_scan_terminate();
 * if any, to the label for that address. Returns true if the label exists
 * and has been assigned.
 */
-void dis_get_label(uint32_t address);
+void dis_print_label(uint32_t address);
+
+char* dis_get_label(uint32_t address);
 
 #endif

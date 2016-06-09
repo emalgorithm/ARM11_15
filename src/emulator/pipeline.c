@@ -242,16 +242,6 @@ static void nop(union decoded_instr *instr) {
   return;
 }
 
-enum condition {
-  eq = 0, // Z
-  ne = 1, // !Z
-  ge = 10, // N == V
-  lt = 11, // N != V
-  gt = 12, // !Z && N == V
-  le = 13, // Z || N != V
-  al = 14  // true
-};
-
 static bool check_cond(uint32_t cond) {
     // TODO: check cond with cpsr
     switch(cond) {
