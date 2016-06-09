@@ -17,6 +17,9 @@ void dis_dp_set_rn (char*, union decoded_instr*);
 void dis_dp_set_rn_first (char*, union decoded_instr*);
 void dis_dp_set_not_rn (char*, union decoded_instr*);
 
+char * itoa (int value, char *result, int base);
+char* concat(char *s1, char *s2);
+
 void gen_op2(char*, union op2_gen*);
 
 void dis_generate_dp_maps () {
@@ -87,15 +90,6 @@ void dis_generate_dp_maps () {
 }
 
 void dis_dp_instr(char* path, union decoded_instr* instruction) {
-
-    char* tmp_char = malloc(sizeof(char));
-
-    sprintf(tmp_char, "%d", instruction->dp.op_code);
-
-    char* instr = malloc(sizeof(char));
-
-    instr = (char *) hashmap_get(opcode_map, tmp_char);
-
     //ADD ASSERTION FOR CONDITION
 
     //ADD ASSERTION FOR SET CONDITIONS
@@ -103,6 +97,18 @@ void dis_dp_instr(char* path, union decoded_instr* instruction) {
     char* rn = malloc(sizeof(char));
     char* rd = malloc(sizeof(char));
     char* op2 = malloc(sizeof(char));
+    char* tmp = malloc(sizeof(char));
+    char* res = malloc(sizeof(char));
+    char* tmp_char = malloc(sizeof(char));
+
+    char* instr;
+
+    itoa(instruction->dp.op_code, tmp, 10);
+    tmp_char = concat(tmp_char, tmp);
+
+    tmp[0] = '\0';
+
+    instr = (char *) hashmap_get(opcode_map, tmp_char);
 
     func_hashmap_get(dis_dp_rd_map, instr)(rn, instruction);
     func_hashmap_get(dis_dp_rn_map, instr)(rd, instruction);
@@ -115,26 +121,35 @@ void dis_dp_instr(char* path, union decoded_instr* instruction) {
 
     if (instruction->dp.imm_op) {
         operand2 = rot_right(op2_gen->imm_op.rot*2, op2_gen->imm_op.imm, 0);
-        sprintf(op2 , "#0x%X", operand2);
+
+        op2 = concat(op2, "#0x");
+        itoa(operand2, tmp, 16);
+        op2 = concat(op2, tmp);
+        tmp[0] = '\0';
+
     } else {
         gen_op2(op2, op2_gen);
     }
 
     //Write Statement
 
-    char* res = malloc(strlen(instr) + strlen(rn) + strlen(rd) + strlen(op2)+1);
 
-    //printf("\n%s%s%s%s\n", instr, rn, rd, op2);
 
-    sprintf(res, "%s%s%s, %s\n", instr, rn, rd, op2);
+    res = concat(res, instr);
+    res = concat(res, rn);
+    res = concat(res, rd);
+    res = concat(res, ", ");
+    res = concat(res, op2);
+    res = concat(res, "\n");
 
     file_write(res);
 
-    //free(res);
-    //free(instr);
-    //free(rn);
-    //free(rd);
-    //free(op2);
+    free(tmp);
+    free(tmp_char);
+    free(res);
+    free(rn);
+    free(rd);
+    free(op2);
 
 }
 
@@ -155,6 +170,7 @@ void gen_op2(char* op2, union op2_gen* op2_gen) {
                 shift = "ror";
                 break;
         }
+
         sprintf(op2 , "r%d, %s r%d", op2_gen->reg_op.rm, shift, op2_gen->reg_op.shift_val>>1);
 
     } else {
@@ -164,7 +180,12 @@ void gen_op2(char* op2, union op2_gen* op2_gen) {
 
 void dis_dp_set_rd(char* dest, union decoded_instr* instruction) {
 
-    sprintf(dest , " r%d", instruction->dp.rd);
+    dest = concat(dest, " r");
+
+    char* res = malloc(sizeof(char));
+    itoa(instruction->dp.rd, res, 10);
+    dest = concat(dest, res);
+    free(res);
 
 }
 
@@ -176,18 +197,57 @@ void dis_dp_set_not_rd(char* dest, union decoded_instr* instruction) {
 
 void dis_dp_set_rn(char* dest, union decoded_instr* instruction) {
 
-    sprintf(dest , ", r%d", instruction->dp.rn);
+    concat(dest, ",");
+
+    dis_dp_set_rn_first(dest, instruction);
 
 }
 
 void dis_dp_set_rn_first(char* dest, union decoded_instr* instruction) {
 
-    sprintf(dest , " r%d", instruction->dp.rn);
-
+    dest = concat(dest, " r");
+    char* res = malloc(sizeof(char));
+    itoa(instruction->dp.rn, res, 10);
+    dest = concat(dest, res);
+    free(res);
 }
 
 void dis_dp_set_not_rn(char* dest, union decoded_instr* instruction) {
 
     dest[0] = '\0';
 
+}
+
+char * itoa (int value, char *result, int base) {
+    // check that the base if valid
+    if (base < 2 || base > 36) { *result = '\0'; return result; }
+
+    char* ptr = result, *ptr1 = result, tmp_char;
+    int tmp_value;
+
+    do {
+        tmp_value = value;
+        value /= base;
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+    } while ( value );
+
+    // Apply negative sign
+    if (tmp_value < 0) *ptr++ = '-';
+    *ptr-- = '\0';
+    while (ptr1 < ptr) {
+        tmp_char = *ptr;
+        *ptr--= *ptr1;
+        *ptr1++ = tmp_char;
+    }
+    return result;
+}
+
+char* concat(char *s1, char *s2)
+{
+    char *result = malloc(strlen(s1)+strlen(s2)+1);//+1 for the zero-terminator
+    //in real code you would check for errors in malloc here
+    strcpy(result, s1);
+    strcat(result, s2);
+
+    return result;
 }
