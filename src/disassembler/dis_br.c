@@ -12,9 +12,9 @@
 
 void dis_br_instr(char* path, union decoded_instr* instruction) {
 
-    char* label_char = calloc(0, sizeof(char));
     char* res_char = calloc(0, sizeof(char));
 
+    char* label_char;
     char* cond_char;
 
     switch(instruction->br.cond) {
@@ -47,13 +47,15 @@ void dis_br_instr(char* path, union decoded_instr* instruction) {
 
     compute_offset(instruction, &off);
 
-    strcpy(label_char, dis_get_label(get_pc() + 8 + off));
+    label_char = dis_get_label(get_pc() + 8 + off);
 
     concat(res_char, "b");
     concat(res_char, cond_char);
     concat(res_char, " ");
     concat(res_char, label_char);
     concat(res_char, "\n");
+
+
 
     file_write(res_char);
 

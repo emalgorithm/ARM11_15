@@ -7,7 +7,7 @@
 //TODO: Add Copyright
 
 char * itoa (int value, char *result, int base) {
-    // check that the base if valid
+    // Check that the base if valid
     if (base < 2 || base > 36) { *result = '\0'; return result; }
 
     char* ptr = result, *ptr1 = result, tmp_char;
@@ -52,6 +52,13 @@ void gen_oxn(char* empty_reg, uint32_t val){
     concat(empty_reg, "#0x");
     char* res = calloc(0, sizeof(char));
     itoa(val, res, 16);
+    concat(empty_reg, res);
+    free(res);
+}
+
+void gen_int(char* empty_reg, uint32_t val){
+    char* res = calloc(0, sizeof(char));
+    itoa(val, res, 10);
     concat(empty_reg, res);
     free(res);
 }

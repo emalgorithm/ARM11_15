@@ -39,6 +39,7 @@ void disassemble_run (char *path) {
     *running = true;
 
     while (*running) {
+
         dis_print_label(get_pc());
 
         instruction = get_instr(get_pc());
@@ -53,6 +54,7 @@ void disassemble_run (char *path) {
     free (running);
 
     dis_free_dp_maps();
+    dis_scan_terminate();
 }
 
 static void init_pc () {

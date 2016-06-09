@@ -13,27 +13,20 @@
 
 #define PROC_COUNT (15)
 
-static int num_loads;
+static int num_loads = 0;
 
 void dis_sdt_instr(char* path, union decoded_instr* instruction) {
 
     char* op2 = calloc(0, sizeof(char));
     char* rn = calloc(0, sizeof(char));
     char* rd = calloc(0, sizeof(char));
-    char* plus_mins = calloc(0, sizeof(char));
-    char* clsr_br1 = calloc(0, sizeof(char));
-    char* opn_br = calloc(0, sizeof(char));
-    char* clsr_br2 = calloc(0, sizeof(char));
+    char* plus_mins = calloc(2, sizeof(char));
+    char* clsr_br1 = calloc(2, sizeof(char));
+    char* opn_br = calloc(2, sizeof(char));
+    char* clsr_br2 = calloc(2, sizeof(char));
     char* res = calloc(0, sizeof(char));
 
     char* instr;
-
-    num_loads = 0;
-
-    opn_br[0] = '\0';
-    clsr_br1[0] = '\0';
-    clsr_br2[0] = '\0';
-    plus_mins[0] = '\0';
 
     // Create op2_gen struct and initialise it to the binary
     union op2_gen* op2_gen = malloc(sizeof(union op2_gen));
