@@ -8,11 +8,14 @@
 
 #include <assert.h>
 #include <stdbool.h>
+#include <string.h>
 
 void dis_br_instr(char* path, union decoded_instr* instruction) {
 
-    char* cond_char = malloc(sizeof(char));
-    char* label_char = malloc(sizeof(char));
+    char* label_char = calloc(0, sizeof(char));
+    char* res_char = calloc(0, sizeof(char));
+
+    char* cond_char;
 
     switch(instruction->br.cond) {
         case eq:
@@ -44,13 +47,16 @@ void dis_br_instr(char* path, union decoded_instr* instruction) {
 
     compute_offset(instruction, &off);
 
-    label_char = dis_get_label(get_pc() + 8 + off);
+    strcpy(label_char, dis_get_label(get_pc() + 8 + off));
 
-    char* res_char = malloc(sizeof(char));
-
-    sprintf(res_char, "b%s %s\n", cond_char, label_char);
+    concat(res_char, "b");
+    concat(res_char, cond_char);
+    concat(res_char, " ");
+    concat(res_char, label_char);
+    concat(res_char, "\n");
 
     file_write(res_char);
 
-
+    free(label_char);
+    free(res_char);
 }

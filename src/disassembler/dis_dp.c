@@ -27,28 +27,6 @@ void dis_generate_dp_maps () {
     dis_dp_rd_map = func_hashmap_new();
     dis_dp_rn_map = func_hashmap_new();
 
-    char* add_char = malloc(sizeof(uint32_t));
-    char* sub_char = malloc(sizeof(uint32_t));
-    char* rsb_char = malloc(sizeof(uint32_t));
-    char* and_char = malloc(sizeof(uint32_t));
-    char* eor_char = malloc(sizeof(uint32_t));
-    char* orr_char = malloc(sizeof(uint32_t));
-    char* mov_char = malloc(sizeof(uint32_t));
-    char* tst_char = malloc(sizeof(uint32_t));
-    char* teq_char = malloc(sizeof(uint32_t));
-    char* cmp_char = malloc(sizeof(uint32_t));
-
-    sprintf(add_char, "%d", 4);
-    sprintf(sub_char, "%d", 2);
-    sprintf(rsb_char, "%d", 3);
-    sprintf(and_char, "%d", 0);
-    sprintf(eor_char, "%d", 1);
-    sprintf(orr_char, "%d", 12);
-    sprintf(mov_char, "%d", 13);
-    sprintf(tst_char, "%d", 8);
-    sprintf(teq_char, "%d", 9);
-    sprintf(cmp_char, "%d", 10);
-
     hashmap_put (opcode_map, "4", (void *) "add");
     hashmap_put (opcode_map, "2", (void *) "sub");
     hashmap_put (opcode_map, "3", (void *) "rsb");
@@ -88,9 +66,9 @@ void dis_generate_dp_maps () {
 }
 
 void dis_dp_instr(char* path, union decoded_instr* instruction) {
-    //ADD ASSERTION FOR CONDITION
+    //TODO: ADD ASSERTION FOR CONDITION
 
-    //ADD ASSERTION FOR SET CONDITIONS
+    //TODO: ADD ASSERTION FOR SET CONDITIONS
 
     char* rn = calloc(0, sizeof(char));
     char* rd = calloc(0, sizeof(char));
