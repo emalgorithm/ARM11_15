@@ -4,6 +4,7 @@
 #include "../emulator/reader.h"
 #include "../emulator/arm11.h"
 #include "dis_label.h"
+#include "dis_exec.h"
 #include "writer.h"
 
 #include <string.h>
@@ -33,20 +34,19 @@ void dis_scan_init() {
 
             int32_t offset = 0;
 
+
             compute_offset(&instruction->decoded, &offset);
 
             //Could do in 1 line
             char* tmp_char = malloc(sizeof(char));
-            sprintf(tmp_char, "%d", (pc + offset));
+            sprintf(tmp_char, "%d", (pc + offset + 8));
 
             char* label_char = malloc(sizeof(char));
-            sprintf(label_char, "label%d", num_labels);
+            sprintf(label_char, "label_%d", num_labels);
 
             hashmap_put (dis_label_map, tmp_char, (void *) label_char);
 
             num_labels ++;
-
-            printf("\nADDED ONE ELEMENT\n");
         } else if(instruction->bin == 0) {
             running = false;
         }
@@ -55,6 +55,8 @@ void dis_scan_init() {
         pc += 4;
 
     }
+
+    set_max_pc(pc);
 }
 
 

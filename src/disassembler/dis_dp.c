@@ -4,7 +4,6 @@
 #include "dis_dp.h"
 #include "writer.h"
 #include "../assembler/util/func_hashmap.h"
-#include "../assembler/util/shift_map.h"
 #include "../emulator/util/shift_reg.h"
 
 map_t opcode_map;
@@ -15,7 +14,10 @@ func_map_t dis_dp_rn_map;
 void dis_dp_set_rd (char*, union decoded_instr*);
 void dis_dp_set_not_rd (char*, union decoded_instr*);
 void dis_dp_set_rn (char*, union decoded_instr*);
+void dis_dp_set_rn_first (char*, union decoded_instr*);
 void dis_dp_set_not_rn (char*, union decoded_instr*);
+
+void gen_op2(char*, union op2_gen*);
 
 void dis_generate_dp_maps () {
 
@@ -77,9 +79,9 @@ void dis_generate_dp_maps () {
     func_hashmap_put (dis_dp_rn_map, "eor", dis_dp_set_rn);
     func_hashmap_put (dis_dp_rn_map, "orr", dis_dp_set_rn);
     func_hashmap_put (dis_dp_rn_map, "mov", dis_dp_set_not_rn);
-    func_hashmap_put (dis_dp_rn_map, "tst", dis_dp_set_rn);
-    func_hashmap_put (dis_dp_rn_map, "teq", dis_dp_set_rn);
-    func_hashmap_put (dis_dp_rn_map, "cmp", dis_dp_set_rn);
+    func_hashmap_put (dis_dp_rn_map, "tst", dis_dp_set_rn_first);
+    func_hashmap_put (dis_dp_rn_map, "teq", dis_dp_set_rn_first);
+    func_hashmap_put (dis_dp_rn_map, "cmp", dis_dp_set_rn_first);
     //func_hashmap_put (dp_rn_map, "lsl", dp_lsl);
 
 }
@@ -112,30 +114,10 @@ void dis_dp_instr(char* path, union decoded_instr* instruction) {
     uint32_t operand2;
 
     if (instruction->dp.imm_op) {
-        operand2 = rot_right(op2_gen->imm_op.rot, op2_gen->imm_op.imm, 0);
-        sprintf(op2 , ", #%d", operand2);
+        operand2 = rot_right(op2_gen->imm_op.rot*2, op2_gen->imm_op.imm, 0);
+        sprintf(op2 , "#0x%X", operand2);
     } else {
-        if (op2_gen->reg_op.bit4) {
-            char* shift = '\0';
-            switch (op2_gen->reg_op.sh_ty) {
-                case 0:
-                    shift = "lsl";
-                    break;
-                case 1:
-                    shift = "lsr";
-                    break;
-                case 2:
-                    shift = "asr";
-                    break;
-                case 3:
-                    shift = "ror";
-                    break;
-            }
-            sprintf(op2 , ", r%d, %s r%d", op2_gen->reg_op.rm, shift, op2_gen->reg_op.shift_val>>1);
-
-        } else {
-            sprintf(op2 , ", r%d, #%d", op2_gen->reg_op.rm, op2_gen->reg_op.shift_val);
-        }
+        gen_op2(op2, op2_gen);
     }
 
     //Write Statement
@@ -144,7 +126,7 @@ void dis_dp_instr(char* path, union decoded_instr* instruction) {
 
     //printf("\n%s%s%s%s\n", instr, rn, rd, op2);
 
-    sprintf(res, "%s%s%s%s\n", instr, rn, rd, op2);
+    sprintf(res, "%s%s%s, %s\n", instr, rn, rd, op2);
 
     file_write(res);
 
@@ -156,10 +138,29 @@ void dis_dp_instr(char* path, union decoded_instr* instruction) {
 
 }
 
-void dis_dp_set_rd (char*, union decoded_instr*);
-void dis_dp_set_not_rd (char*, union decoded_instr*);
-void dis_dp_set_rn (char*, union decoded_instr*);
-void dis_dp_set_not_rn (char*, union decoded_instr*);
+void gen_op2(char* op2, union op2_gen* op2_gen) {
+    if (op2_gen->reg_op.bit4) {
+        char* shift = '\0';
+        switch (op2_gen->reg_op.sh_ty) {
+            case 0:
+                shift = "lsl";
+                break;
+            case 1:
+                shift = "lsr";
+                break;
+            case 2:
+                shift = "asr";
+                break;
+            case 3:
+                shift = "ror";
+                break;
+        }
+        sprintf(op2 , "r%d, %s r%d", op2_gen->reg_op.rm, shift, op2_gen->reg_op.shift_val>>1);
+
+    } else {
+        sprintf(op2 , "r%d, #0x%X", op2_gen->reg_op.rm, op2_gen->reg_op.shift_val);
+    }
+}
 
 void dis_dp_set_rd(char* dest, union decoded_instr* instruction) {
 
@@ -176,6 +177,12 @@ void dis_dp_set_not_rd(char* dest, union decoded_instr* instruction) {
 void dis_dp_set_rn(char* dest, union decoded_instr* instruction) {
 
     sprintf(dest , ", r%d", instruction->dp.rn);
+
+}
+
+void dis_dp_set_rn_first(char* dest, union decoded_instr* instruction) {
+
+    sprintf(dest , " r%d", instruction->dp.rn);
 
 }
 

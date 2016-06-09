@@ -15,6 +15,7 @@
 #include "../emulator/pipeline.h"
 
 static uint32_t pc;
+static uint32_t max_pc;
 
 static void init_pc();
 
@@ -66,6 +67,14 @@ uint32_t get_pc () {
     return pc;
 }
 
+void set_max_pc (uint32_t val) {
+    max_pc = val;
+}
+
+uint32_t get_max_pc () {
+    return max_pc;
+}
+
 static void (*dis_decode (union instruction* instruction, bool* running))(char*, union decoded_instr*) {
 
     if(instruction->bin == 0) {
@@ -96,7 +105,6 @@ static void (*dis_decode (union instruction* instruction, bool* running))(char*,
     }
 
     case BRANCH_ID: {
-        printf("Brach ID detected\n");
         return dis_br_instr;
     }
 

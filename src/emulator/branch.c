@@ -1,5 +1,6 @@
 #include "branch.h"
 #include <stdint.h>
+#include <stdio.h>
 #include "pipeline.h"
 #include "../util/binutils.h"
 

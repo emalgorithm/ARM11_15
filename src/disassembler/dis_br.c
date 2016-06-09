@@ -1,5 +1,6 @@
 #include "dis_br.h"
 #include "../emulator/pipeline.h"
+#include "../emulator/branch.h"
 #include "dis_label.h"
 #include "dis_exec.h"
 #include "writer.h"
@@ -38,7 +39,11 @@ void dis_br_instr(char* path, union decoded_instr* instruction) {
             assert(false);
     }
 
-    label_char = dis_get_label(get_pc());
+    int32_t off = 0;
+
+    compute_offset(instruction, &off);
+
+    label_char = dis_get_label(get_pc() + 8 + off);
 
     char* res_char = malloc(sizeof(char));
 
