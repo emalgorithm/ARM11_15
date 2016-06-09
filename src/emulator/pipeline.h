@@ -24,6 +24,23 @@ enum status {
     terminated,
 };
 
+/* The 2 bits that come after Cond */
+enum instr_id {
+    DP_MULT_ID,
+    SDT_ID,
+    BRANCH_ID
+};
+
+enum condition {
+  eq = 0, // Z
+  ne = 1, // !Z
+  ge = 10, // N == V
+  lt = 11, // N != V
+  gt = 12, // !Z && N == V
+  le = 13, // Z || N != V
+  al = 14  // true
+};
+
 /*
  * Function : emulate
  * Usage    : emulate(0x00000000)

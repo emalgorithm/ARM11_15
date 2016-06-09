@@ -15,5 +15,7 @@ int main(int argc, char **argv) {
     print_registers();
     print_memory();
 
+    destroy();
+
     return EXIT_SUCCESS;
 }
