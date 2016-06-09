@@ -3,6 +3,10 @@
 CC      = gcc
 CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
 
+# Define NDEBUG to enable assertions and other features which should be
+# available only in development
+all: CFLAGS += -DNDEBUG
+
 # Object files grouped by directory
 EMULATOR_OBJ := $(patsubst %.c, %.o, $(shell find emulator/ -type f -name '*.c'))
 ASSEMBLER_OBJ := $(patsubst %.c, %.o, $(shell find assembler/ -type f -name '*.c'))
@@ -14,7 +18,9 @@ TESTS := $(patsubst %.spec.c, %.spec, $(shell find ../test/ -type f -name '*.spe
 
 .PHONY: all clean
 
-all: disassemble assemble emulate test
+all: assemble emulate disassemble
+
+develop: assemble emulate disassemble test
 
 # Compile disassembler executable
 disassemble: disassemble.o $(DISASSEMBLER_OBJ) $(EMULATOR_OBJ) $(ASSEMBLER_OBJ) $(UTIL_OBJ)
@@ -42,4 +48,5 @@ clean:
 	rm -f $(TESTS)                                 # remove test executables
 	rm -f assemble                                 # remove assemble executable
 	rm -f emulate                                  # remove emulate executable
+	rm -f bsi                                      # remove bsi executable
 	rm -f disassemble                              # remove disassemble executable
