@@ -27,6 +27,7 @@ struct op2_reg {
 union op2_gen {
     struct op2_reg reg_op;
     struct op2_imm imm_op;
+    uint32_t bin;
 };
 
 #endif
