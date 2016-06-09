@@ -24,6 +24,7 @@ void scan_init(const char *path) {
 
         //No more labels present
         if (*(label_addresses[num_of_labels]) == -1) {
+            num_of_labels++;
             break;
         }
 
@@ -40,7 +41,7 @@ void scan_terminate(const char *path) {
         free(labels[i]);
         free(label_addresses[i]);
     }
-
+    hashmap_free(label_map);
 }
 
 
