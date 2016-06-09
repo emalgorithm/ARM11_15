@@ -52,7 +52,7 @@ void disassemble_run (char *path) {
     }
     free (running);
 
-    //TODO: Destroy Maps
+    dis_free_dp_maps();
 }
 
 static void init_pc () {
@@ -77,7 +77,7 @@ uint32_t get_max_pc () {
 
 static void (*dis_decode (union instruction* instruction, bool* running))(char*, union decoded_instr*) {
 
-    if (instruction->bin == 0) {
+    if(instruction->bin == 0) {
         *running = false;
         //printf("ZERO\n");
         return dis_andeq_instr;
@@ -86,15 +86,15 @@ static void (*dis_decode (union instruction* instruction, bool* running))(char*,
 
     case DP_MULT_ID: {
         if (instruction->decoded.dp.imm_op == 1) {
-            return dis_dp_instr;
+          return dis_dp_instr;
         }
 
         if (!instruction->decoded.mul._mul4) {
-            return dis_dp_instr;
+          return dis_dp_instr;
         }
 
         if (!instruction->decoded.mul._mul7) {
-            return dis_dp_instr;
+          return dis_dp_instr;
         }
 
         return dis_mul_instr;
@@ -110,7 +110,6 @@ static void (*dis_decode (union instruction* instruction, bool* running))(char*,
 
     default: {
         assert(false); // Invalid instruction
-        exit(EXIT_FAILURE);
     }
     }
 }

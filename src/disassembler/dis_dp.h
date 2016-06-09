@@ -5,6 +5,8 @@
 #include "../emulator/arm11.h"
 #include "../assembler/util/shift_map.h"
 
+void dis_free_dp_maps ();
+
 void dis_generate_dp_maps ();
 
 void gen_op2(char*, union op2_gen*);

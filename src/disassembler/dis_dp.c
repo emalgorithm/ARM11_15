@@ -20,6 +20,12 @@ void dis_dp_set_not_rn (char*, union decoded_instr*);
 
 void gen_op2(char*, union op2_gen*);
 
+void dis_free_dp_maps () {
+    hashmap_free(opcode_map);
+    hashmap_free(dis_dp_rd_map);
+    hashmap_free(dis_dp_rn_map);
+}
+
 void dis_generate_dp_maps () {
 
     opcode_map = hashmap_new();
