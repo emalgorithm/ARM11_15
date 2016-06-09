@@ -56,61 +56,69 @@ void dp_lsl (char*, union decoded_instr*);
 
 void dp_set_op2 (char*, union decoded_instr*);
 
-void generate_dp_maps () {
+void generate_dp_maps (void) {
     dp_rd_map = hashmap_new();
     dp_rn_map = hashmap_new();
 
     opcode_map = func_hashmap_new();
     dp_s_bit_map = func_hashmap_new();
 
-    hashmap_put (opcode_map, "add", (void *) &ADD_OPCODE);
-    hashmap_put (opcode_map, "sub", (void *) &SUB_OPCODE);
-    hashmap_put (opcode_map, "rsb", (void *) &RSB_OPCODE);
-    hashmap_put (opcode_map, "and", (void *) &AND_OPCODE);
-    hashmap_put (opcode_map, "eor", (void *) &EOR_OPCODE);
-    hashmap_put (opcode_map, "orr", (void *) &ORR_OPCODE);
-    hashmap_put (opcode_map, "mov", (void *) &MOV_OPCODE);
-    hashmap_put (opcode_map, "tst", (void *) &TST_OPCODE);
-    hashmap_put (opcode_map, "teq", (void *) &TEQ_OPCODE);
-    hashmap_put (opcode_map, "cmp", (void *) &CMP_OPCODE);
-    hashmap_put (opcode_map, "lsl", (void *) &MOV_OPCODE);
+    hashmap_put(opcode_map, "add", (void *) &ADD_OPCODE);
+    hashmap_put(opcode_map, "sub", (void *) &SUB_OPCODE);
+    hashmap_put(opcode_map, "rsb", (void *) &RSB_OPCODE);
+    hashmap_put(opcode_map, "and", (void *) &AND_OPCODE);
+    hashmap_put(opcode_map, "eor", (void *) &EOR_OPCODE);
+    hashmap_put(opcode_map, "orr", (void *) &ORR_OPCODE);
+    hashmap_put(opcode_map, "mov", (void *) &MOV_OPCODE);
+    hashmap_put(opcode_map, "tst", (void *) &TST_OPCODE);
+    hashmap_put(opcode_map, "teq", (void *) &TEQ_OPCODE);
+    hashmap_put(opcode_map, "cmp", (void *) &CMP_OPCODE);
+    hashmap_put(opcode_map, "lsl", (void *) &MOV_OPCODE);
 
-    hashmap_put (dp_s_bit_map, "add", (void *) &ADD_S_BIT);
-    hashmap_put (dp_s_bit_map, "sub", (void *) &SUB_S_BIT);
-    hashmap_put (dp_s_bit_map, "rsb", (void *) &RSB_S_BIT);
-    hashmap_put (dp_s_bit_map, "and", (void *) &AND_S_BIT);
-    hashmap_put (dp_s_bit_map, "eor", (void *) &EOR_S_BIT);
-    hashmap_put (dp_s_bit_map, "orr", (void *) &ORR_S_BIT);
-    hashmap_put (dp_s_bit_map, "mov", (void *) &MOV_S_BIT);
-    hashmap_put (dp_s_bit_map, "tst", (void *) &TST_S_BIT);
-    hashmap_put (dp_s_bit_map, "teq", (void *) &TEQ_S_BIT);
-    hashmap_put (dp_s_bit_map, "cmp", (void *) &CMP_S_BIT);
-    hashmap_put (dp_s_bit_map, "lsl", (void *) &MOV_S_BIT);
+    hashmap_put(dp_s_bit_map, "add", (void *) &ADD_S_BIT);
+    hashmap_put(dp_s_bit_map, "sub", (void *) &SUB_S_BIT);
+    hashmap_put(dp_s_bit_map, "rsb", (void *) &RSB_S_BIT);
+    hashmap_put(dp_s_bit_map, "and", (void *) &AND_S_BIT);
+    hashmap_put(dp_s_bit_map, "eor", (void *) &EOR_S_BIT);
+    hashmap_put(dp_s_bit_map, "orr", (void *) &ORR_S_BIT);
+    hashmap_put(dp_s_bit_map, "mov", (void *) &MOV_S_BIT);
+    hashmap_put(dp_s_bit_map, "tst", (void *) &TST_S_BIT);
+    hashmap_put(dp_s_bit_map, "teq", (void *) &TEQ_S_BIT);
+    hashmap_put(dp_s_bit_map, "cmp", (void *) &CMP_S_BIT);
+    hashmap_put(dp_s_bit_map, "lsl", (void *) &MOV_S_BIT);
 
-    func_hashmap_put (dp_rd_map, "add", dp_set_rd);
-    func_hashmap_put (dp_rd_map, "sub", dp_set_rd);
-    func_hashmap_put (dp_rd_map, "rsb", dp_set_rd);
-    func_hashmap_put (dp_rd_map, "and", dp_set_rd);
-    func_hashmap_put (dp_rd_map, "eor", dp_set_rd);
-    func_hashmap_put (dp_rd_map, "orr", dp_set_rd);
-    func_hashmap_put (dp_rd_map, "mov", dp_set_rd);
-    func_hashmap_put (dp_rd_map, "tst", dp_set_not_rd);
-    func_hashmap_put (dp_rd_map, "teq", dp_set_not_rd);
-    func_hashmap_put (dp_rd_map, "cmp", dp_set_not_rd);
-    func_hashmap_put (dp_rd_map, "lsl", dp_set_rd);
+    func_hashmap_put(dp_rd_map, "add", dp_set_rd);
+    func_hashmap_put(dp_rd_map, "sub", dp_set_rd);
+    func_hashmap_put(dp_rd_map, "rsb", dp_set_rd);
+    func_hashmap_put(dp_rd_map, "and", dp_set_rd);
+    func_hashmap_put(dp_rd_map, "eor", dp_set_rd);
+    func_hashmap_put(dp_rd_map, "orr", dp_set_rd);
+    func_hashmap_put(dp_rd_map, "mov", dp_set_rd);
+    func_hashmap_put(dp_rd_map, "tst", dp_set_not_rd);
+    func_hashmap_put(dp_rd_map, "teq", dp_set_not_rd);
+    func_hashmap_put(dp_rd_map, "cmp", dp_set_not_rd);
+    func_hashmap_put(dp_rd_map, "lsl", dp_set_rd);
 
-    func_hashmap_put (dp_rn_map, "add", dp_set_rn);
-    func_hashmap_put (dp_rn_map, "sub", dp_set_rn);
-    func_hashmap_put (dp_rn_map, "rsb", dp_set_rn);
-    func_hashmap_put (dp_rn_map, "and", dp_set_rn);
-    func_hashmap_put (dp_rn_map, "eor", dp_set_rn);
-    func_hashmap_put (dp_rn_map, "orr", dp_set_rn);
-    func_hashmap_put (dp_rn_map, "mov", dp_set_not_rn);
-    func_hashmap_put (dp_rn_map, "tst", dp_set_rn);
-    func_hashmap_put (dp_rn_map, "teq", dp_set_rn);
-    func_hashmap_put (dp_rn_map, "cmp", dp_set_rn);
-    func_hashmap_put (dp_rn_map, "lsl", dp_lsl);
+    func_hashmap_put(dp_rn_map, "add", dp_set_rn);
+    func_hashmap_put(dp_rn_map, "sub", dp_set_rn);
+    func_hashmap_put(dp_rn_map, "rsb", dp_set_rn);
+    func_hashmap_put(dp_rn_map, "and", dp_set_rn);
+    func_hashmap_put(dp_rn_map, "eor", dp_set_rn);
+    func_hashmap_put(dp_rn_map, "orr", dp_set_rn);
+    func_hashmap_put(dp_rn_map, "mov", dp_set_not_rn);
+    func_hashmap_put(dp_rn_map, "tst", dp_set_rn);
+    func_hashmap_put(dp_rn_map, "teq", dp_set_rn);
+    func_hashmap_put(dp_rn_map, "cmp", dp_set_rn);
+    func_hashmap_put(dp_rn_map, "lsl", dp_lsl);
 }
+
+void free_dp_maps(void) {
+    hashmap_free(dp_rd_map);
+    hashmap_free(dp_rn_map);
+    hashmap_free(opcode_map);
+    hashmap_free(dp_s_bit_map);
+}
+
 
 // -----------------------------------------------------------------------
 
