@@ -6,4 +6,8 @@
 
 void br_exec(union decoded_instr *);
 
+void compute_offset(union decoded_instr*, int32_t*);
+
+void sign_extend(int32_t* , short);
+
 #endif

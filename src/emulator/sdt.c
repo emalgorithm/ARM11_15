@@ -3,14 +3,26 @@
 #include <assert.h>
 #include "sdt.h"
 #include "util/shift_reg.h"
+#include "gpio.h"
+
+#define INVALID 0
+#define RAM 1
+#define GPIO 2
 
 static bool check_out_of_boundary(uint32_t address) {
-    if(!(address < MEMORY_SIZE)) {
+    if(!(address < MEMORY_SIZE) && !is_gpio(address)) {
         printf("Error: Out of bounds memory access at address 0x%08x\n", address);
         return false;
     }
-
     return true;
+}
+
+static int check_gpio(uint32_t address) {
+    if(is_gpio(address)) {
+        handle_gpio(address);
+        return GPIO;
+    }
+    return RAM;
 }
 
 
@@ -27,13 +39,19 @@ static uint32_t get_scaled_mem_address(uint32_t mem_address, uint32_t offset, bo
 }
 
 static void load_from_mem(uint32_t dst_reg_index, uint32_t mem_address) {
-    uint32_t value = get_word(mem_address);
-    set_register(dst_reg_index, value);
+    if(check_gpio(mem_address) == GPIO){
+        set_register(dst_reg_index, mem_address);
+    } else {
+        uint32_t value = get_word(mem_address);
+        set_register(dst_reg_index, value);
+    }
 }
 
 static void store_into_mem(uint32_t src_reg_index, uint32_t mem_address) {
-    uint32_t value = get_register(src_reg_index);
-    set_word(mem_address, value);
+    if(check_gpio(mem_address) == RAM){
+        uint32_t value = get_register(src_reg_index);
+        set_word(mem_address, value);
+    }
 }
 
 void sdt_exec(union decoded_instr *decoded) {
