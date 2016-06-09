@@ -1,0 +1,610 @@
+Searching 75 files for "()"
+
+/Users/ema/VM_shared_folder/arm11_15/src/assemble.c:
+   18      sec_pass_run(input_path);
+   19  
+   20:     scan_terminate();
+   21:     bwr_destroy();
+   22  
+   23      return EXIT_SUCCESS;
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/br_sec_pass.c:
+   14      decoded->br.cond = tokcond(br_char);
+   15  
+   16:     char *label = tokbrlabel();
+   17  
+   18      uint32_t label_addr = get_label_address(label);
+   19:     uint32_t curr_addr = get_curr_instr_addr();
+   20  
+   21      int32_t offset = (label_addr - (curr_addr + PIPELINE_OFFSET)) >> SHIFT;
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/br_sec_pass.h:
+    6  void proc_br_instr (char*, union decoded_instr*);
+    7  
+    8: void generate_br_maps ();
+    9  
+   10  #endif
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/bwriter.c:
+   56   * Close the file stream and return non-zero if there were any errors
+   57   */
+   58: int bwr_destroy() {
+   59      if (ferror(dest)) {
+   60          perror(FILE_ERR);
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/bwriter.h:
+   32   * Close the file stream and return non-zero if there were any errors
+   33   */
+   34: int bwr_destroy();
+   35  
+   36  #endif
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/dp_sec_pass.c:
+   58  
+   59  void generate_dp_maps (void) {
+   60:     dp_rd_map = hashmap_new();
+   61:     dp_rn_map = hashmap_new();
+   62  
+   63:     opcode_map = func_hashmap_new();
+   64:     dp_s_bit_map = func_hashmap_new();
+   65  
+   66      hashmap_put(opcode_map, "add", (void *) &ADD_OPCODE);
+   ..
+  151  
+  152      // Set Rd register
+  153:     dp_instr->rd = tokreg();
+  154  
+  155      // Continue
+  ...
+  171  
+  172      // Set Rn register
+  173:     dp_instr->rn = tokreg();
+  174  
+  175      // Continue
+  ...
+  209      op2_reg->bit4 = 0;
+  210      // Get shift amount
+  211:     op2_reg->shift_val = tokimm();
+  212      dp_instr->op2 = *((int *) op2);
+  213  
+  ...
+  262          dp_instr->imm_op = 0x1;
+  263          // Rotation
+  264:         rotate(tokimm(), op2_imm);
+  265          break;
+  266      case SHIFT_REG: ;
+  ...
+  284          case IMMEDIATE: ;
+  285              op2_reg->bit4 = 0;
+  286:             op2_reg->shift_val = tokimm();
+  287              break;
+  288          case SHIFT_REG: ;
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/label_scanner.c:
+   14  
+   15  void scan_init(const char *path) {
+   16:     label_map = hashmap_new();
+   17      tokinit(path);
+   18  
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/label_scanner.h:
+   15  * needed, since it frees the memory allocated by scan_init
+   16  */
+   17: void scan_terminate();
+   18  
+   19  /*
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/mul_sec_pass.c:
+    6  
+    7  void proc_mul_instr(char *mul_char, union decoded_instr *decoded) {
+    8:     uint8_t rd = tokreg();
+    9:     uint8_t rm = tokreg();
+   10:     uint8_t rs = tokreg();
+   11  
+   12      decoded->mul.cond = MUL_COND;
+   ..
+   19      if (strcmp(mul_char, "mla") == 0) {
+   20          decoded->mul.acc = 1;
+   21:         uint8_t rn = tokreg();
+   22          decoded->mul.rn = rn;
+   23      }
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/mul_sec_pass.h:
+    6  void proc_mul_instr (char*, union decoded_instr*);
+    7  
+    8: void generate_mul_maps ();
+    9  
+   10  #endif
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/sdt_sec_pass.c:
+   30  // static void handle_post(char *token, decoded_instr *instr);
+   31  
+   32: void proc_sdt_init() {
+   33      data_section = calloc(DATA_SECTION_SIZE, sizeof(uint32_t));
+   34  }
+   ..
+   38      // This can be done because the fields match with DP when MOV
+   39      instr->sdt.cond = COND;
+   40:     instr->sdt.rd = tokreg();
+   41  
+   42      enum addressing_mode *mode = malloc(sizeof(enum addressing_mode));
+   ..
+   58              instr->sdt.rn = 0;
+   59              instr->sdt.index_bit = 1; // only pre-indexing
+   60:             int la = lastaddr();
+   61:             int ca = get_curr_instr_addr();
+   62              int offset = la + 4 * data_count - ca - 8;
+   63              instr->sdt.offset = abs(offset);
+   ..
+   77              } else if (*operand == IMMEDIATE) {
+   78                  instr->sdt.imm_off = 0;
+   79:                 long offset = tokimm();
+   80                  instr->sdt.offset = abs(offset);
+   81                  if (offset < 0) {
+   ..
+  105                      offset->bit4 = 0;
+  106  
+  107:                     offset->shift_val = tokimm();
+  108                  } else if (*shift == SHIFT_REG) {
+  109                      // bit 4 is 1
+  ...
+  123  }
+  124  
+  125: void write_data_section() {
+  126      for (int i = 0; i < data_count; ++i) {
+  127          bwr_data(data_section[i]);
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/sdt_sec_pass.h:
+   11  #include "../emulator/arm11.h"
+   12  
+   13: void proc_sdt_init();
+   14  
+   15  void proc_sdt_instr(char *token, union decoded_instr *instr);
+   16  
+   17: void write_data_section();
+   18  
+   19  #endif
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/second_pass.c:
+   21  }
+   22  
+   23: void generate_maps () {
+   24:     instr_map = hashmap_new();
+   25  
+   26      func_hashmap_put (instr_map, "add", proc_dp_instr);
+   ..
+   51  void free_all_maps(void) {
+   52      hashmap_free(instr_map);
+   53:     free_dp_maps();
+   54  }
+   55  
+   ..
+   64      union decoded_instr* instruction;
+   65  
+   66:     generate_maps();
+   67:     generate_dp_maps();
+   68:     proc_sdt_init();
+   69  
+   70      // Iinitialise tokeniser
+   ..
+   76      char* next;
+   77  
+   78:     while ((next = toknext()) != NULL) {
+   79          instruction = calloc(1, sizeof(union decoded_instr));
+   80          func_hashmap_get(instr_map, next)(next, instruction);
+   ..
+   85  
+   86  
+   87:     write_data_section();
+   88  
+   89:     free_all_maps();
+   90  
+   91:     //tokdestroy ();
+   92  }
+   93  
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/util/func_hashmap.c:
+   28   * Return an empty hashmap, or NULL on failure.
+   29   */
+   30: func_map_t func_hashmap_new() {
+   31      func_hashmap_map* m = (func_hashmap_map*) malloc(sizeof(func_hashmap_map));
+   32      if(!m) goto err;
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/util/func_hashmap.h:
+   37   * Return an empty hashmap. Returns NULL if empty.
+   38  */
+   39: extern func_map_t func_hashmap_new();
+   40  
+   41  /*
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/util/hashmap.c:
+   28   * Return an empty hashmap, or NULL on failure.
+   29   */
+   30: map_t hashmap_new() {
+   31      hashmap_map* m = (hashmap_map*) malloc(sizeof(hashmap_map));
+   32      if(!m) goto err;
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/util/hashmap.h:
+   33   * Return an empty hashmap. Returns NULL if empty.
+   34  */
+   35: extern map_t hashmap_new();
+   36  
+   37  /*
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/util/tokeniser.c:
+   34  static uint32_t address = 0;
+   35  
+   36: static char *next() {
+   37      return strtok(NULL, DELIMITERS);
+   38  }
+   ..
+   98   * Close the file stream and return non-zero if there were any errors
+   99   */
+  100: int tokdestroy() {
+  101      if (ferror(src)) {
+  102          perror(FILE_ERR);
+  ...
+  122   *
+  123   */
+  124: char *toknext() {
+  125      assert(src != NULL);
+  126      assert(!feof(src));
+  ...
+  130          if (fgets(line, BUFFER_SIZE, src) == NULL) {
+  131              // End of file
+  132:             tokdestroy();
+  133              return NULL;
+  134          }
+  ...
+  148   * An assertion will fail if the next token is not a register.
+  149   */
+  150: int tokreg() {
+  151:     return _tokreg(next(), NULL);
+  152  }
+  153  
+  ...
+  170      assert(type != NULL);
+  171  
+  172:     token = next();
+  173  
+  174      if (!token || *token == '\n' || *token == ';') {
+  ...
+  191   * client code.
+  192   */
+  193: long int tokimm() {
+  194      assert(*token == '#');
+  195  
+  ...
+  208      assert(type != NULL);
+  209  
+  210:     token = next();
+  211  
+  212  
+  ...
+  245  
+  246      long base_addr;
+  247:     token = next();
+  248  
+  249      if (*token == '=') {
+  ...
+  292  }
+  293  
+  294: int hastok() {
+  295      return 1;
+  296  }
+  ...
+  316          if (fgets(line, BUFFER_SIZE, src) == NULL) {
+  317              // End of file
+  318:             tokdestroy();
+  319              return -1;
+  320          }
+  ...
+  348   * This function gives the name of a label in a branch instruction
+  349   */
+  350: char *tokbrlabel() {
+  351:     token = next();
+  352      clrnewline(token);
+  353      return token;
+  354  }
+  355  
+  356: uint32_t lastaddr() {
+  357      return address;
+  358  }
+
+/Users/ema/VM_shared_folder/arm11_15/src/assembler/util/tokeniser.h:
+   28   * Close the file stream and return non-zero if there were any errors
+   29   */
+   30: int tokdestroy();
+   31  
+   32  /*
+   ..
+   36   * the current position in the file
+   37   */
+   38: char *toknext();
+   39  
+   40  /*
+   ..
+   45   * An assertion will fail if the next token is not a register.
+   46   */
+   47: int tokreg();
+   48  
+   49  /* TODO */
+   ..
+   77   * client code.
+   78   */
+   79: long int tokimm();
+   80  
+   81  /*
+   ..
+  139   * This function gives the name of a label in a branch instruction
+  140   */
+  141: char *tokbrlabel();
+  142  
+  143  /*
+  ...
+  146   * Get the last address in the source file
+  147   */
+  148: uint32_t lastaddr();
+  149  
+  150  #endif
+
+/Users/ema/VM_shared_folder/arm11_15/src/disassemble.c:
+   16  
+   17      // Iinitialise memory
+   18:     initialize();
+   19  
+   20      //Builds char** needed for read_memory
+   ..
+   25      read_memory(double_char_arr);
+   26  
+   27:     dis_scan_init();
+   28  
+   29      file_init(output_path);
+   ..
+   31      disassemble_run(input_path);
+   32  
+   33:     dis_scan_terminate();
+   34  
+   35:     file_close();
+   36  
+   37      return EXIT_SUCCESS;
+
+/Users/ema/VM_shared_folder/arm11_15/src/disassembler/dis_br.c:
+   44      compute_offset(instruction, &off);
+   45  
+   46:     label_char = dis_get_label(get_pc() + 8 + off);
+   47  
+   48      char* res_char = malloc(sizeof(char));
+
+/Users/ema/VM_shared_folder/arm11_15/src/disassembler/dis_dp.c:
+   20  void gen_op2(char*, union op2_gen*);
+   21  
+   22: void dis_generate_dp_maps () {
+   23  
+   24:     opcode_map = hashmap_new();
+   25  
+   26:     dis_dp_rd_map = func_hashmap_new();
+   27:     dis_dp_rn_map = func_hashmap_new();
+   28  
+   29      char* add_char = malloc(sizeof(uint32_t));
+
+/Users/ema/VM_shared_folder/arm11_15/src/disassembler/dis_dp.h:
+    6  #include "../assembler/util/shift_map.h"
+    7  
+    8: void dis_generate_dp_maps ();
+    9  
+   10  void gen_op2(char*, union op2_gen*);
+
+/Users/ema/VM_shared_folder/arm11_15/src/disassembler/dis_exec.c:
+   18  static uint32_t max_pc;
+   19  
+   20: static void init_pc();
+   21  
+   22  static void (*dis_ptr)(char*, union decoded_instr*);
+   ..
+   28      union instruction* instruction;
+   29  
+   30:     //generate_maps();
+   31:     dis_generate_dp_maps();
+   32:     //proc_sdt_init();
+   33  
+   34      //Initialises the Program Counter to 0
+   35:     init_pc();
+   36  
+   37      //Running is the condition for our loop
+   ..
+   40  
+   41      while (*running) {
+   42:         dis_print_label(get_pc());
+   43  
+   44:         instruction = get_instr(get_pc());
+   45  
+   46          dis_ptr = dis_decode(instruction, running);
+   ..
+   49  
+   50          // Update PC
+   51:         inc_pc();
+   52      }
+   53      free (running);
+   ..
+   56  }
+   57  
+   58: static void init_pc () {
+   59      pc = 0;
+   60  }
+   61  
+   62: void inc_pc () {
+   63      pc += 4;
+   64  }
+   65  
+   66: uint32_t get_pc () {
+   67      return pc;
+   68  }
+   ..
+   72  }
+   73  
+   74: uint32_t get_max_pc () {
+   75      return max_pc;
+   76  }
+
+/Users/ema/VM_shared_folder/arm11_15/src/disassembler/dis_exec.h:
+    6  void disassemble_run (char *path);
+    7  
+    8: void inc_pc();
+    9  
+   10: uint32_t get_pc();
+   11  
+   12: uint32_t get_max_pc();
+   13  
+   14: void set_max_pc();
+   15  
+   16  #endif
+
+/Users/ema/VM_shared_folder/arm11_15/src/disassembler/dis_label.c:
+   18  static uint32_t num_labels;
+   19  
+   20: void dis_scan_init() {
+   21:     dis_label_map = hashmap_new();
+   22      num_labels = 0;
+   23  
+   ..
+   61  
+   62  
+   63: void dis_scan_terminate() {
+   64  
+   65      /*for (int i = 0; i < num_of_labels; i++) {
+
+/Users/ema/VM_shared_folder/arm11_15/src/disassembler/dis_label.h:
+   12  * by scanning the file whose path is given as argument
+   13  */
+   14: void dis_scan_init();
+   15  
+   16  /*
+   ..
+   18  * needed, since it frees the memory allocated by scan_init
+   19  */
+   20: void dis_scan_terminate();
+   21  
+   22  /*
+
+/Users/ema/VM_shared_folder/arm11_15/src/disassembler/dis_sdt.c:
+   50      if(instruction->sdt.rn==PROC_COUNT){
+   51          op2[0] = '\0';
+   52:         full_instr = get_instr(get_max_pc() + num_loads*4);
+   53          operand2 = full_instr->bin;
+   54  
+
+/Users/ema/VM_shared_folder/arm11_15/src/disassembler/writer.c:
+   15  }
+   16  
+   17: void file_close() {
+   18  
+   19      fclose(file);
+
+/Users/ema/VM_shared_folder/arm11_15/src/disassembler/writer.h:
+   10  void file_write(char* str);
+   11  
+   12: void file_close();
+   13  
+   14  #endif
+
+/Users/ema/VM_shared_folder/arm11_15/src/emulate.c:
+    7  int main(int argc, char **argv) {
+    8      // TODO
+    9:     initialize();
+   10  
+   11      read_memory(argv);
+   ..
+   13      emulate(0);
+   14  
+   15:     print_registers();
+   16:     print_memory();
+   17  
+   18:     destroy();
+   19  
+   20      return EXIT_SUCCESS;
+
+/Users/ema/VM_shared_folder/arm11_15/src/emulator/arm11.h:
+  164  /*
+  165  * Function : initialize
+  166: * Usage    : initialize()
+  167  * -----------------------
+  168  * This procedure must be called before using the following access procedures.
+
+/Users/ema/VM_shared_folder/arm11_15/src/emulator/pipeline.c:
+    1  /* Module  : pipeline
+    2   *
+    3:  * Usage   : A top-level module which initialises arm11 can call emulate() to
+    4   *           begin program execution. An instruction handler can read the
+    5   *           program counter.
+    .
+  102  
+  103      // Fetch
+  104:     fetched = get_instr(em_get_pc());
+  105  
+  106      // Update PC
+  ...
+  125   * completing the current cycle.
+  126   */
+  127: void em_reset() {
+  128    current = initial;
+  129  }
+  ...
+  131  /*
+  132   * Function : get_status
+  133:  * Usage    : status emu_status = get_status()
+  134   * ---------------------------------
+  135   * Returns one of initial, running, or terminated
+  ...
+  138   *      terminated iff emulate was called and returned
+  139   */
+  140: enum status em_get_status() {
+  141    return current;
+  142  }
+  ...
+  144  /*
+  145   * Function : get_pc
+  146:  * Usage    : uint32_t pc = get_pc()
+  147   * ---------------------------------
+  148   * Provides read access to the program counter. Note that the program counter
+  ...
+  155  /*
+  156   * Function : em_set_pc
+  157:  * Usage    : em_set_pc(em_get_pc() + offset);
+  158   * -------------------------------------
+  159   * Set program counter (used when branching)
+
+/Users/ema/VM_shared_folder/arm11_15/src/emulator/pipeline.h:
+    1  /* Module  : pipeline
+    2   *
+    3:  * Usage   : A top-level module which initialises arm11 can call emulate() to
+    4   *           begin program execution. An instruction handler can read the
+    5   *           program counter.
+    .
+   71   * completing the current cycle.
+   72   */
+   73: void em_reset();
+   74  
+   75  /*
+   76   * Function : em_get_status
+   77:  * Usage    : status em_status = em_get_status()
+   78   * ---------------------------------
+   79   * Returns one of initial, running, or terminated
+   ..
+   82   *      terminated iff emulate was called and returned
+   83   */
+   84: enum status em_get_status();
+   85  
+   86  /*
+   87   * Function : em_get_pc
+   88:  * Usage    : uint32_t pc = em_get_pc()
+   89   * ---------------------------------
+   90   * Provides read access to the program counter. Note that the program counter
+   ..
+   95  /*
+   96   * Function : em_set_pc
+   97:  * Usage    : set_pc(get_pc() + offset);
+   98   * -------------------------------------
+   99   * Set program counter (used when branching)
+
+119 matches across 34 files

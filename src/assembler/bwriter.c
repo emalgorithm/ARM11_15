@@ -55,7 +55,7 @@ int bwr_data(uint32_t data) {
  * ---------------------
  * Close the file stream and return non-zero if there were any errors
  */
-int bwr_destroy() {
+int bwr_destroy(void) {
     if (ferror(dest)) {
         perror(FILE_ERR);
 

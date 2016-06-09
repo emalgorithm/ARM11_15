@@ -35,7 +35,7 @@ void scan_init(const char *path) {
 }
 
 
-void scan_terminate(const char *path) {
+void scan_terminate(void) {
 
     for (int i = 0; i < num_of_labels; i++) {
         free(labels[i]);
