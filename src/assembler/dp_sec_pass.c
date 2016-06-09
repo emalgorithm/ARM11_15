@@ -230,7 +230,7 @@ static int rotate (uint32_t val, struct op2_imm* op2_imm) {
 
     printf("\nInvalid Immediate Operand Rotation\n");
     assert(false);
-
+    exit(EXIT_FAILURE);
 }
 
 // ------------------------------------------------------------------
