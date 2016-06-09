@@ -52,7 +52,7 @@ void disassemble_run (char *path) {
     }
     free (running);
 
-    // Destroy Maps
+    //TODO: Destroy Maps
 }
 
 static void init_pc () {
