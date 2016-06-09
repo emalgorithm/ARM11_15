@@ -48,6 +48,11 @@ void generate_maps () {
     func_hashmap_put (instr_map, "andeq", halt);
 }
 
+void free_all_maps(void) {
+    hashmap_free(instr_map);
+    free_dp_maps();
+}
+
 static uint32_t curr_instr_addr;
 
 uint32_t get_curr_instr_addr(void) {
@@ -75,11 +80,13 @@ void sec_pass_run (const char* path) {
         func_hashmap_get(instr_map, next)(next, instruction);
         bwr_instr(instruction);
         curr_instr_addr += 4;
+        free(instruction);
     }
 
-    free(instruction);
 
     write_data_section();
+
+    free_all_maps();
 
     //tokdestroy ();
 }
