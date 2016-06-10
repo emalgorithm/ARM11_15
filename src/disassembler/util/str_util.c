@@ -4,9 +4,17 @@
 #include <assert.h>
 #include <stdbool.h>
 
-//TODO: Add Copyright
-
+/* Copyright:
+ * Adapted from: http://www.strudel.org.uk/itoa/
+ */
 char * itoa (int value, char *result, int base) {
+
+    /**
+	 * C++ version 0.4 char* style "itoa":
+	 * Written by Lukás Chmela
+	 * Released under GPLv3.
+
+	 */
 
     // Cmake heck that the base if valid
     if (base < 2 || base > 36) { *result = '\0'; return result; }
