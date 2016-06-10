@@ -1,0 +1,22 @@
+# Reference https://gitlab.doc.ic.ac.uk/help/ci/yaml/README.md#after_script
+variables:
+  SRC_DIR: "src" # the directory of Makefile
+
+before_script:
+  - which gcc
+
+build:
+  script:
+    - export TOOLDIR=$HOME/c-tools
+    - export ARCH=x86_64
+    - make --directory=$SRC_DIR emulate  # compiles emulate
+    - make --directory=$SRC_DIR assemble # compiles assemble
+
+test:
+  script:
+    - export TOOLDIR=$HOME/c-tools
+    - export ARCH=x86_64
+    - make --directory=$SRC_DIR test    # compiles and runs tests
+
+after_script:
+  - make --directory=$SRC_DIR clean     # rm executables and object files

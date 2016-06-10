@@ -1,5 +1,8 @@
 #This the the canonical lab .gitignore file
 
+#ignore vim plugin files
+.ycm*
+
 #ignore temp files
 *~
 
@@ -17,6 +20,8 @@
 *.o
 emulate
 assemble
+disassemble
+CMakeLists.txt
 
 #ignore junk files from compiling Haskell code
 *.hi
@@ -32,4 +37,15 @@ assemble
 *.vrb
 *.nav
 *.toc
+*.dSYM
 
+#IntelliJ Folder
+.idea/
+*.iml
+
+#ignore unit test executables
+*.spec
+
+#ignore some of Alberto's files
+*.h.gch
+*.exe
