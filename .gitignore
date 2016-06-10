@@ -12,6 +12,7 @@
 *.aux
 *.dvi
 *.ps
+*.sty
 
 #ignore junk files from compiling C code
 *.o
