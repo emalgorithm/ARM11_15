@@ -66,8 +66,6 @@ static int test_second_pass_2() {
 
     disassemble_run(input_path);
 
-    dis_scan_terminate();
-
     file_close();
 
     //bwr_destroy();
