@@ -87,6 +87,4 @@ void sec_pass_run (const char* path) {
     write_data_section();
 
     free_all_maps();
-
-    //tokdestroy ();
 }
