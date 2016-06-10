@@ -18,8 +18,59 @@ static map_t dis_label_map;
 
 static uint32_t num_labels;
 
+struct link_str {
+    char* str;
+    struct link_str* next;
+    struct link_str* prev;
+};
+
+static struct link_str* start;
+static struct link_str* end;
+
+static void gen_list() {
+    start = malloc(sizeof(struct link_str));
+    end = malloc(sizeof(struct link_str));
+
+    start->str = "start";
+    start->next = end;
+    start->prev = NULL;
+
+    end->str = "end";
+    end->next = NULL;
+    end->prev = start;
+}
+
+static void del_list() {
+    free(start);
+    free(end);
+}
+
+static struct link_str* get_start() {
+    return start->next;
+}
+
+static struct link_str* get_end() {
+    return end;
+}
+
+static void add_elem(char* elem) {
+    struct link_str* curr_end = get_end();
+
+    struct link_str* new_elem = malloc(sizeof(struct link_str));
+
+    struct link_str* curr_prev = curr_end->prev;
+
+    curr_prev->next = new_elem;
+    end->prev = new_elem;
+
+    new_elem->str = elem;
+    new_elem->prev = curr_prev;
+    new_elem->next = curr_end;
+}
+
 void dis_scan_init() {
     dis_label_map = hashmap_new();
+    gen_list();
     num_labels = 0;
 
     bool running = true;
@@ -48,6 +99,11 @@ void dis_scan_init() {
 
             hashmap_put (dis_label_map, tmp_char, (void *) label_char);
 
+            //Add elements to a Linked List to free them later
+
+            add_elem(label_char);
+            add_elem(tmp_char);
+
             //free(tmp_char);
             //free(label_char);
 
@@ -67,20 +123,28 @@ void dis_scan_init() {
 
 void dis_scan_terminate() {
 
-    //TODO: :(
+    struct link_str* head = get_start();
 
-    /*for (int i = 0; i < num_of_labels; i++) {
-        free(labels[i]);
-        free(label_addresses[i]);
-    } */
+    struct link_str* curr;
 
-    //hashmap_free(dis_label_map);
+    //Free contents of Linked List
+    while ((curr = head) != get_end()) {
+        //TODO: Free Memory in HashMap
+        //free(curr->str)
+        //free(curr);
+        head = head->next;
+    }
+
+    free(head);
+
+    del_list();
 
 }
 
 
 void dis_print_label(uint32_t address){
-    char* addr_char = malloc(sizeof(char));
+    char* addr_char = calloc(0, sizeof(char));
+    char* prnt_label;
 
     gen_int(addr_char, address);
 
@@ -89,8 +153,11 @@ void dis_print_label(uint32_t address){
     res_label = (char*) hashmap_get(dis_label_map, addr_char);
 
     if (res_label != NULL) {
-        concat(res_label, "\n");
-        file_write(res_label);
+        prnt_label = calloc(sizeof(res_label)+1, sizeof(char));
+        strcpy(prnt_label, res_label);
+
+        concat(prnt_label, ":\n");
+        file_write(prnt_label);
     }
 
     free(addr_char);

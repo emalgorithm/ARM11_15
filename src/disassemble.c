@@ -30,8 +30,6 @@ int main(int argc, char **argv) {
 
     disassemble_run(input_path);
 
-    dis_scan_terminate();
-
     file_close();
 
     return EXIT_SUCCESS;

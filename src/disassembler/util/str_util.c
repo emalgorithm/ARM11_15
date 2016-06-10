@@ -7,7 +7,8 @@
 //TODO: Add Copyright
 
 char * itoa (int value, char *result, int base) {
-    // Check that the base if valid
+
+    // Cmake heck that the base if valid
     if (base < 2 || base > 36) { *result = '\0'; return result; }
 
     char* ptr = result, *ptr1 = result, tmp_char;
@@ -27,23 +28,32 @@ char * itoa (int value, char *result, int base) {
         *ptr--= *ptr1;
         *ptr1++ = tmp_char;
     }
+
+    if ((result = realloc(result, strlen(result) + 1)) == NULL) {
+        assert(false);
+    }
     return result;
 }
 
-void concat(char *s1, char *s2)
-{
-    if (realloc(s1, strlen(s1)+strlen(s2)+1) == NULL) {
+void concat(char *s1, char *s2) {
+    // Would use realloc, but fails using valgrind
+
+    char* res = calloc(strlen(s1)+strlen(s2)+1, sizeof(char));
+
+    if (res == NULL) {
         assert(false);
     }
-    //+1 for the zero-terminator
-    //in real code you would check for errors in malloc here
-    strcat(s1, s2);
+    strcat(res, s1);
+    strcat(res, s2);
+    strcpy(s1, res);
+
+    free(res);
 }
 
 void gen_reg(char* empty_reg, uint32_t val){
     concat(empty_reg, "r");
     char* res = calloc(0, sizeof(char));
-    itoa(val, res, 10);
+    res = itoa(val, res, 10);
     concat(empty_reg, res);
     free(res);
 }
@@ -51,14 +61,14 @@ void gen_reg(char* empty_reg, uint32_t val){
 void gen_oxn(char* empty_reg, uint32_t val){
     concat(empty_reg, "#0x");
     char* res = calloc(0, sizeof(char));
-    itoa(val, res, 16);
+    res = itoa(val, res, 16);
     concat(empty_reg, res);
     free(res);
 }
 
 void gen_int(char* empty_reg, uint32_t val){
     char* res = calloc(0, sizeof(char));
-    itoa(val, res, 10);
+    res = itoa(val, res, 10);
     concat(empty_reg, res);
     free(res);
 }
