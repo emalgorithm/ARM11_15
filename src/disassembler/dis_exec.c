@@ -114,4 +114,7 @@ static void (*dis_decode (union instruction* instruction, bool* running))(char*,
         assert(false); // Invalid instruction
     }
     }
+
+    //Unreachable but required by compiler
+    return NULL;
 }
