@@ -3,8 +3,6 @@
 
 #include "../emulator/arm11.h"
 
-void proc_br_instr (char*, union decoded_instr*);
-
-void generate_br_maps ();
+void proc_br_instr(char*, union decoded_instr*);
 
 #endif

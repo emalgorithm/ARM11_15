@@ -14,7 +14,7 @@ void scan_init(const char *path);
 * This function must be called when the scanner is no longer
 * needed, since it frees the memory allocated by scan_init
 */
-void scan_terminate();
+void scan_terminate(void);
 
 /*
 * This functions returns the address in memory of a given

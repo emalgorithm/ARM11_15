@@ -21,6 +21,7 @@
 emulate
 assemble
 bsi
+disassemble
 CMakeLists.txt
 
 #ignore junk files from compiling Haskell code

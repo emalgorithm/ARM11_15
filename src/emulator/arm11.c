@@ -27,6 +27,16 @@ void initialize(void) {
 }
 
 /*
+ * Function : destroy
+ * ------------------
+ * Must be called when the arm11 state can be deallocated
+ */
+void destroy(void) {
+    free(arm11.memory);
+    free(arm11.registers);
+}
+
+/*
  * This function takes an address in memory and
  * returns the instruction starting at that address
  */

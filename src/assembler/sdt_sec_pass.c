@@ -126,6 +126,8 @@ void write_data_section() {
     for (int i = 0; i < data_count; ++i) {
         bwr_data(data_section[i]);
     }
+
+    free(data_section);
 }
 
 static void handle_mov(char *token, union decoded_instr *instr) {
